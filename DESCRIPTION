@@ -1,0 +1,27 @@
+Package: CimpleG
+Type: Package
+Title: CimpleG - Individual/Single CpG sites For Classification and Deconvolution
+Version: 0.0.1
+Authors@R:
+    person("Tiago"," A.F.V."," Maié",
+        email="tiagomaie@hotmail.com",
+        role=c("aut","cre"))
+Maintainer: Tiago Maié <tiagomaie@hotmail.com>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: What license is it under?
+URL: thegithubrep
+BugReports: thegithubrepbug
+Encoding: UTF-8
+LazyData: false
+Depends:
+    R (>= 3.6)
+Imports:
+    mlr3,
+    mlr3viz,
+    precrec,
+    dplyr,
+    assertthat,
+    MLmetrics,
+    Biobase,
+    devtools
