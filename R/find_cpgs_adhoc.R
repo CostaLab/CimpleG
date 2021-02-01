@@ -1,7 +1,6 @@
 
 
 
-
 do_cv = function(
   train_data,
   target_col="target",
@@ -30,14 +29,14 @@ do_cv = function(
     message(paste0("K folds reset to k=",k_folds))
   }
 
-  fold_list <- caret::createFolds(y=target_vec, k=k_folds, list=TRUE)
+  # fold_list <- caret::createFolds(y=target_vec, k=k_folds, list=TRUE)
 
 
   f_data = rsample::vfold_cv(
     train_data,
     v=k_folds,
     repeats=n_repeats,
-    strata=target_col
+    strata=dplyr::all_of(target_col)
   )
 
   f_data$results <- map(
@@ -68,6 +67,7 @@ find_predictors <- function(
   #   assay_name=assay_name)
 
   train_set = rsample::analysis(f_data$splits[[1]])
+
   tru_v = train_set$target == p_class
   train_set$target=NULL
 
@@ -102,14 +102,52 @@ find_predictors <- function(
     }
     message(paste0("Fold param:",final_param))
 
-
-
     df_dMean_sVar <- df_dMean_sVar[which(df_dMean_sVar$selectFeat),]
+    train_set <- train_set[,rownames(df_dMean_sVar)]
   }
 
   df_dMean_sVar$predType <- df_dMean_sVar$diffMeans >= 0
+  df_dMean_sVar %>% arrange(diffMeans)
+  df_dMean_sVar["cg10209670",]
+  df_dMean_sVar["cg06300264",]
 
-  train_set <- train_set[,rownames(df_dMean_sVar)]
+
+  rsample::analysis(f_data$splits[[1]]) %>% head
+
+  res = rpart::rpart(target~.,data = rsample::analysis(f_data$splits[[1]]))
+
+  c5mod = rules::C5_rules(trees = 10,min_n = length(which(tru_v)))
+
+  c5res = c5mod %>%
+    parsnip::fit(
+      target ~ .,
+      data = rsample::analysis(f_data$splits[[1]])
+    )
+
+  summary(c5res$fit)
+
+
+  rsample::analysis(f_data$splits[[1]])$target %>% table
+
+    predict(
+      c5res,
+      rsample::analysis(f_data$splits[[1]]),
+      type="class"
+    )%>%table
+
+    #plot(c5res$fit)
+
+  c5res$fit$boostResults %>% arrange(Errors)
+
+
+    predict(
+      c5res,
+      rsample::assessment(f_data$splits[[1]]),
+      type="class"
+    )%>%table
+
+  table(rsample::assessment(f_data$splits[[1]])$target)
+
 
   # get performance measures for hyper methylated cpgs
   hyperM_predictors <- apply(
