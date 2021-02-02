@@ -47,44 +47,86 @@ do_cv = function(
   tictoc::toc()
 
 
+  prroc_prauc_vec = function(truth, estimate,estimator = "binary", na_rm = TRUE, ...){
+    prroc_prauc_impl = function(truth,estimate,event_level){
+      res=PRROC::pr.curve(
+        scores.class0=estimate,
+        weights.class0=ifelse(truth=="positive_class",1,0),
+        curve=FALSE,
+        max.compute=FALSE,
+        min.compute=FALSE,
+        rand.compute=FALSE,
+        dg.compute=FALSE
+      )$auc.integral
+      return(res)
+    }
+    yardstick::metric_vec_template(
+      metric_impl = prroc_prauc_impl,
+      truth = truth,
+      estimate = estimate,
+      estimator=estimator,
+      na_rm = na_rm,
+      cls = c("factor","numeric"),
+      ...
+    )
+  }
+  prroc_prauc = function(data, ...){UseMethod("prroc_prauc")}
+  prroc_prauc.data.frame <- function(
+    data,
+    truth,
+    estimate,
+    estimator = "binary",
+    na_rm = TRUE,
+    event_level = "first",
+    ...) {
 
+    yardstick::metric_summarizer(
+      metric_nm = "prroc_prauc",
+      metric_fn = prroc_prauc_vec,
+      data = data,
+      truth = !! rlang::enquo(truth),
+      estimate = !! rlang::enquo(estimate),
+      na_rm = na_rm,
+      estimator=estimator,
+      event_level = event_level,
+      ...
+    )
+
+  }
+
+  prroc_prauc = yardstick::new_prob_metric(prroc_prauc,"maximize")
+
+  class_and_probs_metrics <- yardstick::metric_set(
+    prroc_prauc,
+    roc_auc,
+    pr_auc,
+    accuracy,
+    f_meas
+  )
+
+
+  # get metrics per fold and predictor
   f_data$results %>%
     bind_rows%>%
-    group_by(predictor)%>%
-    accuracy(truth, prediction)
-  f_data$results %>%
-    bind_rows%>%
-    group_by(predictor)%>%
-    f_meas(truth, prediction)
+    dplyr::group_by(resample,predictor)%>%
+    dplyr::mutate(truth = relevel(truth,"positive_class"))%>%
+    dplyr::mutate(prediction = relevel(prediction,"positive_class"))%>%
+    class_and_probs_metrics(
+      truth,
+      positive_prob,
+      estimate=prediction
+    )%>%
+    dplyr::group_by(predictor,.metric)%>%
+    dplyr::summarise(mean_estimate = mean(.estimate),
+      n = length(predictor),
+      .groups = "drop"
+    )
 
-
-  f_data$results %>%
-    bind_rows%>%
-    group_by(resample,predictor)%>%
-    # metric_set(accuracy, kap)(truth, prediction)
-    accuracy(truth, prediction) %>%
-    ungroup %>%
-    group_by(predictor)%>%
-    summarize(
-      acc = mean(.estimate),
-      n=length(.estimate))
-
-
-  f_data$results %>%
-    bind_rows%>%
-    group_by(resample,predictor)%>%
-    # metric_set(accuracy, kap)(truth, prediction)
-    f_meas(truth, prediction) %>%
-    ungroup %>%
-    group_by(predictor)%>%
-    summarize(
-      mean_f1 = mean(.estimate),
-      n=length(.estimate))
-
+  # get PRROC::pr.curve per fold per predictor and mean over folds
   f_data$results %>%
     bind_rows%>%
     group_by(resample) %>%
-    group_map(function(x,...){
+    group_modify(function(x,...){
       res=PRROC::pr.curve(
         scores.class0=x$positive_prob,
         weights.class0=ifelse(x$truth=="positive_class",1,0),
@@ -94,59 +136,40 @@ do_cv = function(
         rand.compute=FALSE,
         dg.compute=FALSE
       )$auc.integral
-      # names(res)=unique(x$predictor)
-
-      return(data.frame(prauc=res,predictor=unique(x$predictor)))
+      return(data.frame(
+        predictor=unique(x$predictor),
+        .metric="prauc",
+        .estimator="binary",
+        .estimate=res
+      ))
     }) %>%
-    bind_rows %>%
     group_by(predictor)%>%
-    summarise(prauc = mean(prauc))
+    summarise(
+      prauc = mean(.estimate),
+      n = length(predictor),
+      .groups = "drop"
+    )
 
 
 
+  # get yardstick::pr_auc per fold per predictor and mean over folds
   f_data$results %>%
     bind_rows%>%
     group_by(resample,predictor)%>%
-    pr_auc(truth, positive_prob)
+    mutate(truth = relevel(truth,"positive_class"))%>%
+    pr_auc(
+      truth,
+      positive_prob,
+      estimator="binary"
+    )%>%
+    group_by(predictor)%>%
+    summarise(pr_auc = mean(.estimate),n=length(predictor),.groups="drop")
 
 
-    data("hpc_cv")
-
-    table(hpc_cv$Resample)
-
-  # assessment(f_data$splits[[10]])
-
-  # class(f_data$results)
-  # str(f_data$results,1)
-  # str(f_data$results[[1]],1)
+  # data("hpc_cv")
+  # table(hpc_cv$Resample)
 
 
-  f_data$accuracy <- purrr::map_df(f_data$results, function(x){
-    res=mean(x$correct)
-    names(res)=unique(x$predictor)
-    return(res)
-  })
-
-
-  f_data$AUPR <- map_df(f_data$results, function(x){
-    res=PRROC::pr.curve(
-      scores.class0=x$positive_prob,
-      weights.class0=ifelse(x$truth=="positive_class",1,0),
-      curve=FALSE,
-      max.compute=FALSE,
-      min.compute=FALSE,
-      rand.compute=FALSE,
-      dg.compute=FALSE
-    )$auc.integral
-    names(res)=unique(x$predictor)
-    return(res)
-  })
-
-
-f_data$results %>% collect_metrics
-  metrics(f_data)
-
-  summary(f_data$AUPR)
 
 
 }
@@ -310,6 +333,18 @@ find_predictors <- function(
     # cpg_predictors$parabolaSearchParam <- final_param
     #
     # rownames(cpg_predictors) <- cpg_predictors$.id
+
+    if(do_parab){
+      res_df = tibble::tibble(
+        resample=split_train_set$id%>%unlist,
+        samples=rownames(holdout_res),
+        predictor=rownames(best_pred),
+        truth=holdout_res$target,
+        prediction=pred_res,
+        correct=pred_res == holdout_res$target,
+        parab_param=final_param
+      )
+    }
 
     res_df = tibble::tibble(
       resample=split_train_set$id%>%unlist,
