@@ -19,7 +19,6 @@ do_cv <- function(
   }
 
   set.seed(42)
-  print("Training is starting...", quote = FALSE)
   tictoc::tic("Training has finished.")
   f_data <- rsample::vfold_cv(
     train_data,
@@ -48,7 +47,7 @@ do_cv <- function(
 
   # get metrics per fold and predictor
   train_summary <- f_data$results %>%
-    bind_rows() %>%
+    dplyr::bind_rows() %>%
     dplyr::group_by(resample, predictor, type, ) %>%
     dplyr::mutate(truth = relevel(truth, "positive_class")) %>%
     dplyr::mutate(prediction = relevel(prediction, "positive_class")) %>%
@@ -96,7 +95,7 @@ eval_test_data <- function(
         truth = test_data$target,
         estimate = factor(
           ifelse(
-            test_data %>% pull(final_model$predictor) > 0.5,
+            test_data %>% dplyr::pull(final_model$predictor) > 0.5,
             "positive_class",
             "negative_class"
           ),
@@ -108,7 +107,7 @@ eval_test_data <- function(
         truth = test_data$target,
         estimate = factor(
           ifelse(
-            test_data %>% pull(final_model$predictor) <= 0.5,
+            test_data %>% dplyr::pull(final_model$predictor) <= 0.5,
             "positive_class",
             "negative_class"
           ),
@@ -532,4 +531,35 @@ prroc_prauc.data.frame <- function(
 #' timing func
 print_timings <- function(quiet = FALSE) {
   tictoc::toc(quiet = quiet)
+}
+
+
+
+#' @importFrom dplyr %>%
+compute_deconv_reference <- function(
+  signatures,
+  data,
+  target_table,
+  targets
+){
+
+  data <- data[, signatures]
+
+  ref_deconv_mat <- lapply(
+    targets,
+    function(target){
+      apply(
+        X=data,
+        MARGIN=2,
+        function(X){
+          mean(X[unlist(target_table[, target]) %in% 1])
+        }
+      )
+    }
+  ) %>%
+    magrittr::set_names(targets) %>%
+    as.data.frame() %>%
+    as.matrix()
+
+  return(ref_deconv_mat)
 }
