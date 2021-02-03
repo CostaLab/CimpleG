@@ -7,21 +7,31 @@ Authors@R:
         email="tiagomaie@hotmail.com",
         role=c("aut","cre"))
 Maintainer: Tiago Maié <tiagomaie@hotmail.com>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
-URL: thegithubrep
-BugReports: thegithubrepbug
+Description: CimpleG is a simple package to find single-CpG based signatures for use in classification and deconvolution.
+License: GPL-2
+URL: https://github.com/tiagomaie/CimpleG
+BugReports: https://github.com/tiagomaie/CimpleG/issues
 Encoding: UTF-8
-LazyData: false
+LazyData: true
 Depends:
-    R (>= 3.6)
+    R (>= 4.0)
 Imports:
     mlr3,
     mlr3viz,
-    precrec,
+    tictoc,
+    tidymodels,
+    rsample,
+    yardstick,
+    OneR,
     dplyr,
+    plyr,
+    tibble,
+    parsnip,
+    rules,
+    matrixStats,
+    magrittr,
     assertthat,
     MLmetrics,
     Biobase,
     devtools
+RoxygenNote: 7.1.1

@@ -4,5 +4,9 @@ install_package:
 
 build_package:
 	Rscript -e "devtools::build('.')"
-#devtools::document('.')
 
+load_all_package:
+	Rscript -e "devtools::load_all()"
+
+document_package:
+	Rscript -e "devtools::document()"
