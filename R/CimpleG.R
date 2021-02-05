@@ -62,7 +62,14 @@ CimpleG <- function(
     }
   ) %>% magrittr::set_names(targets)
 
-  return(res)
+  signatures = purrr::map_chr(
+    res,
+    function(cg_res){
+      cg_res$train_res$CpG
+    }
+  )
+
+  return(list(signatures=signatures,results=res))
 }
 
 #' Perform deconvolution using the results from CimpleG

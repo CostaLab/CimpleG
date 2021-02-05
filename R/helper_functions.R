@@ -18,7 +18,6 @@ do_cv <- function(
     message(paste0("K folds reset to k=", k_folds))
   }
 
-  set.seed(42)
   tictoc::tic("Training has finished.")
   f_data <- rsample::vfold_cv(
     train_data,
@@ -48,7 +47,7 @@ do_cv <- function(
   # get metrics per fold and predictor
   train_summary <- f_data$results %>%
     dplyr::bind_rows() %>%
-    dplyr::group_by(resample, predictor, type, ) %>%
+    dplyr::group_by(resample, predictor, type) %>%
     dplyr::mutate(truth = relevel(truth, "positive_class")) %>%
     dplyr::mutate(prediction = relevel(prediction, "positive_class")) %>%
     class_and_probs_metrics(
@@ -200,28 +199,10 @@ find_predictors <- function(
   df_dMean_sVar$predType <- df_dMean_sVar$diffMeans >= 0
 
   if (do_parab) {
-    init_fs <- init_step
-    final_param <- init_fs
-    df_dMean_sVar$selectFeat <- select_features(
-      x = df_dMean_sVar$diffMeans,
-      y = df_dMean_sVar$sumVariance,
-      a = init_fs
-    )
 
-    # Find features in feature space (diffMeans,sumVar)
-    while (updt_selected_feats(df_dMean_sVar, min_feat_search)) {
-      df_dMean_sVar$selectFeat <- select_features(
-        x = df_dMean_sVar$diffMeans,
-        y = df_dMean_sVar$sumVariance,
-        a = init_fs
-      )
-      final_param <- init_fs
-      init_fs <- init_fs + step_increment
-    }
-    message(paste0("Fold param:", final_param))
+    parab_res <- parabola_iter_loop(df_dMean_sVar,init_step,step_increment,min_feat_search)
+    df_dMean_sVar <- parab_res$df_dMean_sVar
 
-    df_dMean_sVar <- df_dMean_sVar[which(df_dMean_sVar$selectFeat), ]
-    # train_set <- train_set[,rownames(df_dMean_sVar)]
   }
 
   if (adhoc | do_parab) {
@@ -244,6 +225,7 @@ find_predictors <- function(
         dplyr::mutate(predType = "hyper") %>%
         dplyr::mutate(diffMeans = df_dMean_sVar[.id, ]$diffMeans) %>%
         dplyr::mutate(sumVariance = df_dMean_sVar[.id, ]$sumVariance)
+
     }
     if(any(!df_dMean_sVar$predType)){
       # get PRAUC for hypo methylated cpgs
@@ -430,6 +412,41 @@ find_predictors <- function(
   }
 }
 
+
+#' Loop iterating through parabola selecting cpgs
+#' @return list
+parabola_iter_loop <- function(
+  df_dMean_sVar,init_step,step_increment,min_feat_search
+){
+  init_fs <- init_step
+  final_param <- init_fs
+  df_dMean_sVar$selectFeat <- select_features(
+    x = df_dMean_sVar$diffMeans,
+    y = df_dMean_sVar$sumVariance,
+    a = init_fs
+  )
+
+  # Find features in feature space (diffMeans,sumVar)
+  i_iter <- 0
+  while (updt_selected_feats(df_dMean_sVar, min_feat_search) & i_iter < 1000) {
+    df_dMean_sVar$selectFeat <- select_features(
+      x = df_dMean_sVar$diffMeans,
+      y = df_dMean_sVar$sumVariance,
+      a = init_fs
+    )
+    final_param <- init_fs
+    init_fs <- init_fs + step_increment
+    i_iter <- i_iter + 1
+  }
+  message(paste0("Fold parabola parameter: ", final_param))
+
+  df_dMean_sVar <- df_dMean_sVar[which(df_dMean_sVar$selectFeat), ]
+
+  return(list(
+    df_dMean_sVar=df_dMean_sVar,
+    parabola_param=final_param
+  ))
+}
 
 
 
