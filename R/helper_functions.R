@@ -6,7 +6,7 @@ do_cv <- function(
   train_data,
   k_folds = 10,
   n_repeats = 1,
-  method = c("parab", "adhoc", "oner")
+  method = c("parab", "parab_scale", "adhoc", "oner")
 ) {
   assertthat::assert_that("target" %in% colnames(train_data))
 
@@ -19,22 +19,43 @@ do_cv <- function(
   }
 
   tictoc::tic("Training has finished.")
-  f_data <- rsample::vfold_cv(
-    train_data,
-    v = k_folds,
-    repeats = n_repeats,
-    strata = "target"
+  # f_data <- rsample::vfold_cv(
+  #   train_data,
+  #   v = k_folds,
+  #   repeats = n_repeats,
+  #   strata = "target"
+  # )
+  # vfold_cv stratification not working properly, using caret instead
+  cv_index = caret::createFolds(
+    train_data$target,
+    k = 10,
+    returnTrain = TRUE,
+    list=TRUE
   )
+  tc <- caret::trainControl(
+    index = cv_index,
+    indexOut = purrr::map(cv_index,function(x){setdiff(seq_len(nrow(train_data)),x)}),
+    method = 'cv',
+    number = 10
+  )
+
+  f_data = rsample::caret2rsample(ctrl=tc,data = train_data)
+
+  # adding split id within the splits
+  for(i in seq_len(length(caret_tmp$splits))){
+    f_data$splits[[i]]$id = tibble::tibble(id=sprintf("Fold%02d",i))
+  }
 
   f_data$results <- purrr::map(
     .x = f_data$splits,
     .f = find_predictors,
     adhoc = any(grepl("adhoc", method, fixed = TRUE)),
-    do_parab = any(grepl("parab", method, fixed = TRUE))
+    do_parab = any(grepl("parab", method, fixed = TRUE)),
+    scale_scores = any(grepl("parab_scale", method, fixed = TRUE))
   )
   tictoc::toc()
 
-
+  # FIXME pproc not working
   prroc_prauc <- yardstick::new_prob_metric(prroc_prauc, "maximize")
   class_and_probs_metrics <- yardstick::metric_set(
     # prroc_prauc,
@@ -57,21 +78,22 @@ do_cv <- function(
     ) %>%
     dplyr::group_by(predictor, type, .metric) %>%
     dplyr::summarise(
-      mean_fold_estimate = mean(.estimate),
+      mean_fold_performance = mean(.estimate,na.rm=TRUE),
       n = length(predictor),
       .groups = "drop"
-    )
+    ) %>%
+    dplyr::arrange(desc(n), desc(mean_fold_performance))
 
 
   # get predictor that appears in more folds
   best_pred <- train_summary %>%
     dplyr::filter(.metric == "pr_auc") %>%
-    dplyr::arrange(desc(n), desc(mean_fold_estimate)) %>%
+    dplyr::arrange(desc(n), desc(mean_fold_performance)) %>%
     dplyr::slice_head() # %>%
   # dplyr::select(predictor,type)
   # dplyr::pull(predictor)
 
-  fmod <- final_model(train_data, best_pred, method = method)
+  fmod <- final_model(train_data, best_pred, train_summary=train_summary, method = method)
 
   return(fmod)
 }
@@ -79,6 +101,7 @@ do_cv <- function(
 #' Evaluation of produced models on test data
 #'
 #' @importFrom dplyr %>%
+#' @export
 eval_test_data <- function(
   test_data,
   final_model,
@@ -87,6 +110,8 @@ eval_test_data <- function(
   message("Evaluating test data...")
   # get performance on test data
   test_data$target <- test_data$target %>% relevel("positive_class")
+
+  predictor_name <- NULL
 
   if (identical(method, "adhoc") | identical(method, "parab")) {
     if (final_model$type == "hyper") {
@@ -114,6 +139,7 @@ eval_test_data <- function(
         )
       )
     }
+    predictor_name <- final_model$predictor
   }
 
   if (identical(method, "oner")) {
@@ -125,6 +151,7 @@ eval_test_data <- function(
       ) %>%
         relevel("positive_class")
     )
+    predictor_name <- final_model$feature
 
 
     # pr_auc_vec(
@@ -137,7 +164,8 @@ eval_test_data <- function(
     # )
   }
 
-  return(test_perf)
+  res <- data.frame(predictor = predictor_name, accuracy = test_perf)
+  return(res)
 }
 
 
@@ -147,6 +175,7 @@ eval_test_data <- function(
 final_model <- function(
   train_data,
   best_pred,
+  train_summary,
   method = "oner"
 ) {
   message("Training final model...")
@@ -162,7 +191,11 @@ final_model <- function(
     return(list(CpG=best_pred$predictor,model=oner_mod))
   }
   # if not using any of the prev methods, return best predictor
-  return(list(CpG=best_pred$predictor,model=best_pred))
+  return(list(
+    CpG=best_pred$predictor,
+    model=best_pred,
+    train_summary=train_summary
+  ))
 }
 
 #' Training/Finding the best predictors/CpGs
@@ -175,7 +208,8 @@ find_predictors <- function(
   min_feat_search = 10,
   p_class = "positive_class",
   do_parab = FALSE,
-  adhoc = TRUE
+  adhoc = TRUE,
+  scale_scores=FALSE
 ) {
   tictoc::tic(split_train_set$id %>% unlist())
 
@@ -225,6 +259,12 @@ find_predictors <- function(
         dplyr::mutate(predType = "hyper") %>%
         dplyr::mutate(diffMeans = df_dMean_sVar[.id, ]$diffMeans) %>%
         dplyr::mutate(sumVariance = df_dMean_sVar[.id, ]$sumVariance)
+        if(scale_scores){
+          hyperM_predictors$DiffScaledAUPR <- scales::rescale(
+            abs(hyperM_predictors$diffMeans),
+            to=c(0,1)
+          ) * hyperM_predictors$AUPR
+        }
 
     }
     if(any(!df_dMean_sVar$predType)){
@@ -243,6 +283,13 @@ find_predictors <- function(
         dplyr::mutate(predType = "hypo") %>%
         dplyr::mutate(diffMeans = df_dMean_sVar[.id, ]$diffMeans) %>%
         dplyr::mutate(sumVariance = df_dMean_sVar[.id, ]$sumVariance)
+        if(scale_scores){
+          hypoM_predictors$DiffScaledAUPR <- scales::rescale(
+            abs(hypoM_predictors$diffMeans),
+            to=c(0,1)
+          ) * hypoM_predictors$AUPR
+        }
+
     }
 
     # hypoM_predictors %>% slice_max(AUPR,n = 10)
@@ -253,8 +300,8 @@ find_predictors <- function(
       hyperM_predictors,
       hypoM_predictors
     ) %>%
-      dplyr::mutate(DiffScaledAUPR = abs(diffMeans) * AUPR) %>%
-      tibble::column_to_rownames(".id") %>%
+      #dplyr::mutate(DiffScaledAUPR = abs(diffMeans) * AUPR) %>%
+      #tibble::column_to_rownames(".id") %>%
       dplyr::arrange(dplyr::desc(AUPR))
 
     # meth_predictors %>% arrange(desc(DiffScaledAUPR))
@@ -262,42 +309,44 @@ find_predictors <- function(
     best_pred <- meth_predictors %>%
       dplyr::slice_max(AUPR, with_ties = FALSE)
 
-    # TODO Scale AUPR by scaled values of diffmeans?
-    # meth_predictors$DiffScaledAUPR <- scales::rescale(
-    #   abs(meth_predictors$diffMeans),
-    #   to=c(0,1)
-    # ) * meth_predictors$AUPR
-
-    # meth_predictors %>%
-    #   slice_max(AUPR,n = 1000) %>%
-    #   ggplot(.,aes(x=diffMeans,y=sumVariance))+
-    #   geom_point(aes(col=DiffScaledAUPR),size=3)+
-    #   geom_point(aes(col=AUPR),size=1)+
-    #   scale_colour_gradientn(
-    #     colours=colorRampPalette(rev(RColorBrewer::brewer.pal(11, "Spectral")))(10),
-    #     limits=c(0,1)
-    #   )+
-    #   lims(x = c(-1,1), y = c(0,.25))+
-    #   theme_minimal()
-
     holdout_res <- rsample::assessment(split_train_set)
-    # print(table(holdout_res$target))
     lvls <- levels(holdout_res$target)
 
+    apply_res = apply(
+      X = meth_predictors,
+      #X = best_pred,
+      MARGIN = 1,
+      pred_lvls=lvls,
+      FUN = function(x,pred_lvls){
 
-    if (best_pred$predType == "hyper") {
-      pred_res <- factor(ifelse(
-        holdout_res[, rownames(best_pred)] >= .5,
-        lvls[2], lvls[1]
-      ), levels = lvls)
-      pred_prob <- holdout_res[, rownames(best_pred)]
-    } else {
-      pred_res <- factor(ifelse(
-        (1 - holdout_res[, rownames(best_pred)]) >= .5,
-        lvls[2], lvls[1]
-      ), levels = lvls)
-      pred_prob <- 1 - holdout_res[, rownames(best_pred)]
-    }
+        pred_type = x["predType"]
+        predictor = x[".id"]
+
+        if (pred_type == "hyper") {
+          pred_res <- factor(ifelse(
+            holdout_res[, predictor] >= .5,
+            lvls[2], lvls[1]
+          ), levels = lvls)
+          pred_prob <- holdout_res[, predictor]
+        } else {
+          pred_res <- factor(ifelse(
+            (1 - holdout_res[, predictor]) >= .5,
+            lvls[2], lvls[1]
+          ), levels = lvls)
+          pred_prob <- 1 - holdout_res[, predictor]
+        }
+        return(data.frame(
+          samples=rownames(holdout_res),
+          predictor,
+          truth=holdout_res$target,
+          type=pred_type,
+          prediction=pred_res,
+          positive_prob=pred_prob,
+          row.names = NULL
+        ))
+      }
+    )%>% plyr::ldply() %>% tibble::as_tibble()
+
 
     # TODO?
     # # merge results and sort by scaled
@@ -310,34 +359,16 @@ find_predictors <- function(
     #
     # cpg_predictors$parabolaSearchParam <- final_param
 
+    res_df <- apply_res %>%
+      dplyr::mutate(resample = split_train_set$id %>% unlist())
 
     if (do_parab) {
-      res_df <- tibble::tibble(
-        resample = split_train_set$id %>% unlist(),
-        samples = rownames(holdout_res),
-        predictor = rownames(best_pred),
-        truth = holdout_res$target,
-        type = best_pred$predType,
-        prediction = pred_res,
-        correct = pred_res == holdout_res$target,
-        positive_prob = pred_prob,
-        parab_param = final_param
-      )
+      res_df <- res_df %>%
+        dplyr::mutate(parab_param = parab_res$parabola_param)
 
       print_timings()
       return(res_df)
     }
-
-    res_df <- tibble::tibble(
-      resample = split_train_set$id %>% unlist(),
-      samples = rownames(holdout_res),
-      predictor = rownames(best_pred),
-      truth = holdout_res$target,
-      type = best_pred$predType,
-      prediction = pred_res,
-      correct = pred_res == holdout_res$target,
-      positive_prob = pred_prob
-    )
 
     print_timings()
     return(res_df)
@@ -579,4 +610,19 @@ compute_deconv_reference <- function(
     as.matrix()
 
   return(ref_deconv_mat)
+}
+
+plot <- function(){
+  # TODO to implement
+  # meth_predictors %>%
+  #   slice_max(AUPR,n = 1000) %>%
+  #   ggplot(.,aes(x=diffMeans,y=sumVariance))+
+  #   geom_point(aes(col=DiffScaledAUPR),size=3)+
+  #   geom_point(aes(col=AUPR),size=1)+
+  #   scale_colour_gradientn(
+  #     colours=colorRampPalette(rev(RColorBrewer::brewer.pal(11, "Spectral")))(10),
+  #     limits=c(0,1)
+  #   )+
+  #   lims(x = c(-1,1), y = c(0,.25))+
+  #   theme_minimal()
 }

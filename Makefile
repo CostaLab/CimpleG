@@ -10,3 +10,6 @@ load_all_package:
 
 document_package:
 	Rscript -e "devtools::document()"
+
+update_package_version:
+  bash update_version.sh 
