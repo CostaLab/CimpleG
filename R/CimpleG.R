@@ -11,7 +11,7 @@ CimpleG <- function(
   train_targets,
   test_targets,
   targets,
-  method = c("adhoc", "parab", "oner"),
+  method = c("adhoc", "parab", "parab_scale", "oner"),
   k_folds = 10,
   n_repeats = 1
 ) {
@@ -24,7 +24,7 @@ CimpleG <- function(
   assertthat::are_equal(nrow(train_data), nrow(train_targets))
   assertthat::are_equal(nrow(test_data), nrow(test_targets))
 
-  method <- match.arg(method, choices = c("adhoc", "parab", "oner"))
+  method <- match.arg(method, choices = c("adhoc", "parab", "parab_scale", "oner"))
 
   res <- purrr::map(
     targets,

@@ -57,7 +57,7 @@ do_cv <- function(
 
   # FIXME pproc not working
   prroc_prauc <- yardstick::new_prob_metric(prroc_prauc, "maximize")
-  class_and_probs_metrics <- yardstick::metric_set(
+  class_prob_metrics <- yardstick::metric_set(
     # prroc_prauc,
     yardstick::pr_auc,
     yardstick::roc_auc,
@@ -68,22 +68,56 @@ do_cv <- function(
   # get metrics per fold and predictor
   train_summary <- f_data$results %>%
     dplyr::bind_rows() %>%
-    dplyr::group_by(resample, predictor, type) %>%
+    dplyr::group_by(
+      resample,
+      predictor,
+      type,
+      dplyr::across(tidyselect::any_of("parab_param")),
+      dplyr::across(tidyselect::any_of("diff_means"))
+    ) %>%
     dplyr::mutate(truth = relevel(truth, "positive_class")) %>%
     dplyr::mutate(prediction = relevel(prediction, "positive_class")) %>%
-    class_and_probs_metrics(
+    class_prob_metrics(
       truth,
       positive_prob,
       estimate = prediction
     ) %>%
-    dplyr::group_by(predictor, type, .metric) %>%
-    dplyr::summarise(
-      mean_fold_performance = mean(.estimate,na.rm=TRUE),
-      n = length(predictor),
-      .groups = "drop"
-    ) %>%
-    dplyr::arrange(desc(n), desc(mean_fold_performance))
+    dplyr::group_by(predictor, type, .metric)
 
+  if(any(grepl("parab",method))){
+    train_summary <- train_summary %>%
+      dplyr::summarise(
+        mean_fold_performance = mean(.estimate,na.rm=TRUE),
+        n = length(predictor),
+        mean_parab_param = mean(parab_param),
+        diff_means = mean(diff_means),
+        .groups = "drop"
+      )
+      if(any(grepl("parab_scale",method))){
+        # here is where we do all the scaling
+        train_summary <- train_summary %>%
+          dplyr::mutate(
+            mean_fold_performance = (
+              scales::rescale(abs(diff_means), to=c(0.1, 1)) * mean_fold_performance
+            )
+          ) %>%
+          dplyr::mutate(
+            mean_fold_performance = (
+              scales::rescale(n, to=c(0.1, 1)) * mean_fold_performance
+            )
+          )
+      }
+  }else{
+    train_summary <- train_summary %>%
+      dplyr::summarise(
+        mean_fold_performance = mean(.estimate,na.rm=TRUE),
+        n = length(predictor),
+        .groups = "drop"
+      )
+  }
+
+  train_summary <- train_summary %>%
+    dplyr::arrange(desc(n), desc(mean_fold_performance))
 
   # get predictor that appears in more folds
   best_pred <- train_summary %>%
@@ -113,7 +147,7 @@ eval_test_data <- function(
 
   predictor_name <- NULL
 
-  if (identical(method, "adhoc") | identical(method, "parab")) {
+  if (identical(method, "adhoc") | identical(method, "parab") | identical(method, "parab_scale")) {
     if (final_model$type == "hyper") {
       test_perf <- yardstick::accuracy_vec(
         truth = test_data$target,
@@ -292,35 +326,27 @@ find_predictors <- function(
 
     }
 
-    # hypoM_predictors %>% slice_max(AUPR,n = 10)
-    # hyperM_predictors %>% slice_max(AUPR,n = 10)
-
     # scale AUPR by absolute mean difference between conditions/classes
     meth_predictors <- rbind(
       hyperM_predictors,
       hypoM_predictors
     ) %>%
-      #dplyr::mutate(DiffScaledAUPR = abs(diffMeans) * AUPR) %>%
-      #tibble::column_to_rownames(".id") %>%
       dplyr::arrange(dplyr::desc(AUPR))
 
-    # meth_predictors %>% arrange(desc(DiffScaledAUPR))
-    # meth_predictors
-    best_pred <- meth_predictors %>%
-      dplyr::slice_max(AUPR, with_ties = FALSE)
+
 
     holdout_res <- rsample::assessment(split_train_set)
     lvls <- levels(holdout_res$target)
 
     apply_res = apply(
       X = meth_predictors,
-      #X = best_pred,
       MARGIN = 1,
       pred_lvls=lvls,
       FUN = function(x,pred_lvls){
 
         pred_type = x["predType"]
         predictor = x[".id"]
+        diff_means = as.double(x["diffMeans"])
 
         if (pred_type == "hyper") {
           pred_res <- factor(ifelse(
@@ -342,6 +368,7 @@ find_predictors <- function(
           type=pred_type,
           prediction=pred_res,
           positive_prob=pred_prob,
+          diff_means=diff_means,
           row.names = NULL
         ))
       }
@@ -507,8 +534,12 @@ updt_selected_feats <- function(df_dMean_sVar, feat_threshold = 10) {
 #'
 #' @return OneR object
 fix_oner_boundaries <- function(oner_mod){
-  boundary_vals_l <- as.numeric(strsplit(x = gsub("\\(|\\]", "", (names(oner_mod$rules)[1])), ",", fixed = TRUE)[[1]])
-  boundary_vals_h <- as.numeric(strsplit(x = gsub("\\(|\\]", "", (names(oner_mod$rules)[2])), ",", fixed = TRUE)[[1]])
+  boundary_vals_l <- as.numeric(
+    strsplit(x = gsub("\\(|\\]", "", (names(oner_mod$rules)[1])), ",", fixed = TRUE)[[1]]
+  )
+  boundary_vals_h <- as.numeric(
+    strsplit(x = gsub("\\(|\\]", "", (names(oner_mod$rules)[2])), ",", fixed = TRUE)[[1]]
+  )
   boundary_vals_l[1] <- ifelse(boundary_vals_l[1] > 0, -0.001, boundary_vals_l[1])
   boundary_vals_h[2] <- ifelse(boundary_vals_h[2] < 1, 1.001, boundary_vals_h[2])
 
