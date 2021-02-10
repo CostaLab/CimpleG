@@ -2,5 +2,7 @@
 
 S3method(prroc_prauc,data.frame)
 export(CimpleG)
+export(CimpleG_deconvolution)
+export(eval_test_data)
 export(prroc_prauc)
 importFrom(dplyr,"%>%")
