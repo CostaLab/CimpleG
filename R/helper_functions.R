@@ -42,7 +42,7 @@ do_cv <- function(
   f_data = rsample::caret2rsample(ctrl=tc,data = train_data)
 
   # adding split id within the splits
-  for(i in seq_len(length(caret_tmp$splits))){
+  for(i in seq_len(length(f_data$splits))){
     f_data$splits[[i]]$id = tibble::tibble(id=sprintf("Fold%02d",i))
   }
 
