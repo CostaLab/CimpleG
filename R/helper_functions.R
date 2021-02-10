@@ -6,7 +6,8 @@ do_cv <- function(
   train_data,
   k_folds = 10,
   n_repeats = 1,
-  method = c("parab", "parab_scale", "adhoc", "oner")
+  method = c("parab", "parab_scale", "adhoc", "oner"),
+  pred_type = c("both","hypo","hyper")
 ) {
   assertthat::assert_that("target" %in% colnames(train_data))
 
@@ -51,7 +52,8 @@ do_cv <- function(
     .f = find_predictors,
     adhoc = any(grepl("adhoc", method, fixed = TRUE)),
     do_parab = any(grepl("parab", method, fixed = TRUE)),
-    scale_scores = any(grepl("parab_scale", method, fixed = TRUE))
+    scale_scores = any(grepl("parab_scale", method, fixed = TRUE)),
+    pred_type=pred_type
   )
   tictoc::toc()
 
@@ -243,7 +245,8 @@ find_predictors <- function(
   p_class = "positive_class",
   do_parab = FALSE,
   adhoc = TRUE,
-  scale_scores=FALSE
+  scale_scores=FALSE,
+  pred_type=c("both","hypo","hyper")
 ) {
   tictoc::tic(split_train_set$id %>% unlist())
 
@@ -266,9 +269,20 @@ find_predictors <- function(
 
   df_dMean_sVar$predType <- df_dMean_sVar$diffMeans >= 0
 
+  if(pred_type!="both"){
+    if(pred_type=="hypo") df_dMean_sVar <- df_dMean_sVar %>% dplyr::filter(!predType)
+    if(pred_type=="hyper") df_dMean_sVar <- df_dMean_sVar %>% dplyr::filter(predType)
+  }
+
   if (do_parab) {
 
-    parab_res <- parabola_iter_loop(df_dMean_sVar,init_step,step_increment,min_feat_search)
+    parab_res <- parabola_iter_loop(
+      df_dMean_sVar,
+      init_step,
+      step_increment,
+      min_feat_search,
+      pred_type
+    )
     df_dMean_sVar <- parab_res$df_dMean_sVar
 
   }
@@ -374,18 +388,6 @@ find_predictors <- function(
       }
     )%>% plyr::ldply() %>% tibble::as_tibble()
 
-
-    # TODO?
-    # # merge results and sort by scaled
-    # cpg_predictors <- rbind(hyperM_predictors,hypoM_predictors)
-    # cpg_predictors <- cpg_predictors[order(
-    #   cpg_predictors$DiffScaledAUPR,
-    #   cpg_predictors$AUPR,
-    #   cpg_predictors$F1,
-    #   decreasing=TRUE),]
-    #
-    # cpg_predictors$parabolaSearchParam <- final_param
-
     res_df <- apply_res %>%
       dplyr::mutate(resample = split_train_set$id %>% unlist())
 
@@ -433,40 +435,39 @@ find_predictors <- function(
     )
     print_timings()
     return(res_df)
+  }
+
+  if (FALSE) {
+    # TODO
+    # C50 models
+    c5mod <- rules::C5_rules(trees = 10, min_n = length(which(tru_v)))
+
+    c5res <- c5mod %>%
+      parsnip::fit(
+        target ~ .,
+        data = rsample::analysis(f_data$splits[[1]])
+      )
+
+    rsample::analysis(f_data$splits[[1]])$target %>% table()
+
+    predict(
+      c5res,
+      rsample::analysis(f_data$splits[[1]]),
+      type = "class"
+    ) %>% table()
+
+    # plot(c5res$fit)
+
+    c5res$fit$boostResults %>% arrange(Errors)
 
 
-    if (FALSE) {
-      # TODO
-      # C50 models
-      c5mod <- rules::C5_rules(trees = 10, min_n = length(which(tru_v)))
+    predict(
+      c5res,
+      rsample::assessment(f_data$splits[[1]]),
+      type = "class"
+    ) %>% table()
 
-      c5res <- c5mod %>%
-        parsnip::fit(
-          target ~ .,
-          data = rsample::analysis(f_data$splits[[1]])
-        )
-
-      rsample::analysis(f_data$splits[[1]])$target %>% table()
-
-      predict(
-        c5res,
-        rsample::analysis(f_data$splits[[1]]),
-        type = "class"
-      ) %>% table()
-
-      # plot(c5res$fit)
-
-      c5res$fit$boostResults %>% arrange(Errors)
-
-
-      predict(
-        c5res,
-        rsample::assessment(f_data$splits[[1]]),
-        type = "class"
-      ) %>% table()
-
-      table(rsample::assessment(f_data$splits[[1]])$target)
-    }
+    table(rsample::assessment(f_data$splits[[1]])$target)
   }
 }
 
@@ -474,7 +475,7 @@ find_predictors <- function(
 #' Loop iterating through parabola selecting cpgs
 #' @return list
 parabola_iter_loop <- function(
-  df_dMean_sVar,init_step,step_increment,min_feat_search
+  df_dMean_sVar,init_step,step_increment,min_feat_search,pred_type
 ){
   init_fs <- init_step
   final_param <- init_fs
@@ -486,7 +487,7 @@ parabola_iter_loop <- function(
 
   # Find features in feature space (diffMeans,sumVar)
   i_iter <- 0
-  while (updt_selected_feats(df_dMean_sVar, min_feat_search) & i_iter < 1000) {
+  while (updt_selected_feats(df_dMean_sVar, min_feat_search,pred_type) & i_iter < 1000) {
     df_dMean_sVar$selectFeat <- select_features(
       x = df_dMean_sVar$diffMeans,
       y = df_dMean_sVar$sumVariance,
@@ -514,14 +515,25 @@ select_features <- function(x, y, a) {
   return(y < (a * x)^2)
 }
 
-#' Returns TRUE if:
-#'   less than feat_threshold hyper CpGs have been selected
-#'   less than feat_threshold hypo CpGs have been selected
-#' Returns FALSE if:
-#'   more than feat_threshold hyper and hypo CpGs have been selected
-updt_selected_feats <- function(df_dMean_sVar, feat_threshold = 10) {
+#' Depending on pred_type:
+#'   Returns TRUE if:
+#'     less than feat_threshold hyper CpGs have been selected
+#'     less than feat_threshold hypo CpGs have been selected
+#'   Returns FALSE if:
+#'     more than feat_threshold hyper and hypo CpGs have been selected
+updt_selected_feats <- function(df_dMean_sVar, feat_threshold = 10,pred_type=c("both","hyper","hypo")) {
   if (!all(c("selectFeat", "diffMeans", "sumVariance") %in% colnames(df_dMean_sVar))) {
     stop("Something went wrong when creating the diffMeans sumVariance data.frame!")
+  }
+  if(pred_type=="hyper"){
+    updt_cond <- (
+      length(which(df_dMean_sVar[df_dMean_sVar$diffMeans >= 0, ]$selectFeat)) < feat_threshold
+    )
+  }
+  if(pred_type=="hypo"){
+    updt_cond <- (
+      length(which(df_dMean_sVar[df_dMean_sVar$diffMeans < 0, ]$selectFeat)) < feat_threshold
+    )
   }
   updt_cond <- (
     length(which(df_dMean_sVar[df_dMean_sVar$diffMeans >= 0, ]$selectFeat)) < feat_threshold |
