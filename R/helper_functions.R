@@ -68,6 +68,8 @@ do_cv <- function(
   # get metrics per fold and predictor
   train_summary <- f_data$results %>%
     dplyr::bind_rows() %>%
+    dplyr::mutate(truth = relevel(truth, "positive_class")) %>%
+    dplyr::mutate(prediction = relevel(prediction, "positive_class")) %>%
     dplyr::group_by(
       resample,
       predictor,
@@ -75,8 +77,6 @@ do_cv <- function(
       dplyr::across(tidyselect::any_of("parab_param")),
       dplyr::across(tidyselect::any_of("diff_means"))
     ) %>%
-    dplyr::mutate(truth = relevel(truth, "positive_class")) %>%
-    dplyr::mutate(prediction = relevel(prediction, "positive_class")) %>%
     class_prob_metrics(
       truth,
       positive_prob,
