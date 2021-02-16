@@ -35,7 +35,10 @@ do_cv <- function(
   )
   tc <- caret::trainControl(
     index = cv_index,
-    indexOut = purrr::map(cv_index,function(x){setdiff(seq_len(nrow(train_data)),x)}),
+    indexOut = purrr::map(
+      cv_index,
+      function(x){setdiff(seq_len(nrow(train_data)),x)}
+    ),
     method = 'cv',
     number = 10
   )
@@ -50,6 +53,7 @@ do_cv <- function(
   f_data$results <- purrr::map(
     .x = f_data$splits,
     .f = find_predictors,
+    method = method,
     adhoc = any(grepl("adhoc", method, fixed = TRUE)),
     do_parab = any(grepl("parab", method, fixed = TRUE)),
     scale_scores = any(grepl("parab_scale", method, fixed = TRUE)),
@@ -243,6 +247,7 @@ find_predictors <- function(
   step_increment = 0.1,
   min_feat_search = 10,
   p_class = "positive_class",
+  method,
   do_parab = FALSE,
   adhoc = TRUE,
   scale_scores=FALSE,
@@ -274,20 +279,22 @@ find_predictors <- function(
     if(pred_type=="hyper") df_dMean_sVar <- df_dMean_sVar %>% dplyr::filter(predType)
   }
 
-  if (do_parab) {
 
-    parab_res <- parabola_iter_loop(
-      df_dMean_sVar,
-      init_step,
-      step_increment,
-      min_feat_search,
-      pred_type
-    )
-    df_dMean_sVar <- parab_res$df_dMean_sVar
+  if (method == "adhoc" | grepl("parab",method)) {
 
-  }
+    if (grepl("parab",method)) {
 
-  if (adhoc | do_parab) {
+      parab_res <- parabola_iter_loop(
+        df_dMean_sVar,
+        init_step,
+        step_increment,
+        min_feat_search,
+        pred_type
+      )
+      df_dMean_sVar <- parab_res$df_dMean_sVar
+
+    }
+
     hyperM_predictors <- data.frame(.id=character(), AUPR=double())
     hypoM_predictors <- data.frame(.id=character(), AUPR=double())
 
@@ -348,7 +355,6 @@ find_predictors <- function(
       dplyr::arrange(dplyr::desc(AUPR))
 
 
-
     holdout_res <- rsample::assessment(split_train_set)
     lvls <- levels(holdout_res$target)
 
@@ -391,7 +397,7 @@ find_predictors <- function(
     res_df <- apply_res %>%
       dplyr::mutate(resample = split_train_set$id %>% unlist())
 
-    if (do_parab) {
+    if (grepl("parab",method)) {
       res_df <- res_df %>%
         dplyr::mutate(parab_param = parab_res$parabola_param)
 
@@ -401,7 +407,8 @@ find_predictors <- function(
 
     print_timings()
     return(res_df)
-  } else {
+  }
+  if(method=="oner"){
 
     # rule based models
     # tree based models
@@ -437,28 +444,18 @@ find_predictors <- function(
     return(res_df)
   }
 
-  if (FALSE) {
-    # TODO
+  if (method == "c50") {
+
     # C50 models
     c5mod <- rules::C5_rules(trees = 10, min_n = length(which(tru_v)))
 
-    c5res <- c5mod %>%
-      parsnip::fit(
-        target ~ .,
-        data = rsample::analysis(f_data$splits[[1]])
-      )
+    c5res <- c5mod %>% parsnip::fit(target ~ ., data = train_set)
 
-    rsample::analysis(f_data$splits[[1]])$target %>% table()
-
-    predict(
-      c5res,
-      rsample::analysis(f_data$splits[[1]]),
-      type = "class"
-    ) %>% table()
+    c5_pred <- predict(c5res,rsample::assessment(split_train_set),type = "class") %>% table()
 
     # plot(c5res$fit)
 
-    c5res$fit$boostResults %>% arrange(Errors)
+    #c5res$fit$boostResults %>% arrange(Errors)
 
 
     predict(
@@ -469,6 +466,113 @@ find_predictors <- function(
 
     table(rsample::assessment(f_data$splits[[1]])$target)
   }
+}
+
+
+train_general_model <- function(
+  train_data,
+  k_folds,
+  model_type,
+  engine
+){
+
+  #cv
+  cv_index = caret::createFolds(
+    train_data$target,
+    k = k_folds,
+    returnTrain = TRUE,
+    list=TRUE
+  )
+  tc <- caret::trainControl(
+    index = cv_index,
+    indexOut = purrr::map(
+      cv_index,
+      function(x){setdiff(seq_len(nrow(train_data)),x)}
+    ),
+    method = 'cv',
+    number = k_folds
+  )
+
+  f_data = rsample::caret2rsample(ctrl=tc,data = train_data)
+
+  # adding split id within the splits
+  for(i in seq_len(length(f_data$splits))){
+    f_data$splits[[i]]$id = tibble::tibble(id=sprintf("Fold%02d",i))
+  }
+
+  cimpleg_recipe <- recipe(target~., data=train_data)
+
+  if(model_type == "logistic_reg"){
+    general_model <-
+      # specify the model
+      parsnip::logistic_reg(penalty=tune::tune(), mixture=tune::tune()) %>%
+      # select the engine/package that underlies the model
+      parsnip::set_engine("glmnet")
+  }
+
+  if (model_type == "boost_tree") {
+    general_model <-
+      # specify the model
+      parsnip::boost_tree(
+        tree_depth = tune::tune(),
+        trees = tune::tune(),
+        min_n = tune::tune(),
+        mtry = tune::tune()
+      ) %>%
+      # select the engine/package that underlies the model
+      parsnip::set_engine("xgboost")
+  }
+
+  if (model_type == "mlp") {
+    general_model <-
+      # specify the model
+      parsnip::mlp(
+        tree_depth = tune::tune(),
+        trees = tune::tune(),
+        min_n = tune::tune(),
+        mtry = tune::tune()
+      ) %>%
+      # select the engine/package that underlies the model
+      parsnip::set_engine("nnet")
+  }
+
+  if (model_type == "rand_forest") {
+    general_model <-
+      # specify the model
+      parsnip::rand_forest(
+        trees = tune::tune(),
+        min_n = tune::tune(),
+        mtry = tune::tune()
+      ) %>%
+      # select the engine/package that underlies the model
+      parsnip::set_engine("ranger")
+  }
+
+
+  general_model <- general_model %>%
+    # choose either the continuous regression or binary classification mode
+    set_mode("classification")
+
+  cimpleg_workflow <- workflow()%>%
+    add_recipe(cimpleg_recipe) %>%
+    add_model(general_model)
+
+  cimpleg_res <- cimpleg_workflow %>%
+    tune_grid(
+      resamples=f_data,
+      grid=10,
+      metrics=metric_set(
+        pr_auc,
+        roc_auc,
+        accuracy
+      )
+    )
+
+  cimpleg_final_model <- cimpleg_workflow %>%
+    tune::finalize_workflow(
+      tune::select_best(cimpleg_res,metric = "pr_auc")
+    ) %>%
+    parsnip::fit(data = train_data)
 }
 
 
