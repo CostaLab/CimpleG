@@ -8,7 +8,9 @@ do_cv(
   train_data,
   k_folds = 10,
   n_repeats = 1,
-  method = c("parab", "parab_scale", "adhoc", "oner")
+  method = c("parab", "parab_scale", "adhoc", "oner"),
+  pred_type = c("both", "hypo", "hyper"),
+  target_name
 )
 }
 \description{

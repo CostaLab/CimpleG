@@ -10,9 +10,9 @@ find_predictors(
   step_increment = 0.1,
   min_feat_search = 10,
   p_class = "positive_class",
-  do_parab = FALSE,
-  adhoc = TRUE,
-  scale_scores = FALSE
+  method,
+  scale_scores = FALSE,
+  pred_type = c("both", "hypo", "hyper")
 )
 }
 \description{

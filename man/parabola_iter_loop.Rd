@@ -4,7 +4,13 @@
 \alias{parabola_iter_loop}
 \title{Loop iterating through parabola selecting cpgs}
 \usage{
-parabola_iter_loop(df_dMean_sVar, init_step, step_increment, min_feat_search)
+parabola_iter_loop(
+  df_dMean_sVar,
+  init_step,
+  step_increment,
+  min_feat_search,
+  pred_type
+)
 }
 \value{
 list

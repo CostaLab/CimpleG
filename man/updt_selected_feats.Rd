@@ -2,18 +2,24 @@
 % Please edit documentation in R/helper_functions.R
 \name{updt_selected_feats}
 \alias{updt_selected_feats}
-\title{Returns TRUE if:
-  less than feat_threshold hyper CpGs have been selected
-  less than feat_threshold hypo CpGs have been selected
-Returns FALSE if:
-  more than feat_threshold hyper and hypo CpGs have been selected}
+\title{Depending on pred_type:
+  Returns TRUE if:
+    less than feat_threshold hyper CpGs have been selected
+    less than feat_threshold hypo CpGs have been selected
+  Returns FALSE if:
+    more than feat_threshold hyper and hypo CpGs have been selected}
 \usage{
-updt_selected_feats(df_dMean_sVar, feat_threshold = 10)
+updt_selected_feats(
+  df_dMean_sVar,
+  feat_threshold = 10,
+  pred_type = c("both", "hyper", "hypo")
+)
 }
 \description{
-Returns TRUE if:
-  less than feat_threshold hyper CpGs have been selected
-  less than feat_threshold hypo CpGs have been selected
-Returns FALSE if:
-  more than feat_threshold hyper and hypo CpGs have been selected
+Depending on pred_type:
+  Returns TRUE if:
+    less than feat_threshold hyper CpGs have been selected
+    less than feat_threshold hypo CpGs have been selected
+  Returns FALSE if:
+    more than feat_threshold hyper and hypo CpGs have been selected
 }
