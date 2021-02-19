@@ -44,13 +44,18 @@ CimpleG <- function(
 
       train_data$target <- train_target_vec
       test_data$target <- test_target_vec
-      message(paste0("Training for target '",target,"' is starting..."))
+      message(
+        paste0(
+          "Training for target '",target,"' with '",method,"(",pred_type,")' is starting..."
+        )
+      )
       train_res <- do_cv(
         train_data = train_data,
         method = method,
         k_folds = k_folds,
         n_repeats = n_repeats,
-        pred_type = pred_type
+        pred_type = pred_type,
+        target_name=target
       )
 
       test_res <- eval_test_data(
@@ -75,6 +80,84 @@ CimpleG <- function(
   return(list(signatures=signatures,results=res))
 }
 
+
+#' Main function of the package
+#' Finds the best predictors (CpGs) for the given targets
+#'
+#' @importFrom dplyr %>%
+#' @export
+CimpleG_general <- function(
+  train_data,
+  test_data,
+  train_targets,
+  test_targets,
+  targets,
+  model_type=c(
+    "logistic_reg",
+    "decision_tree",
+    "boost_tree",
+    "mlp",
+    "rand_forest",
+    "null_model"
+  ),
+  engine=c("glmnet","xgboost","nnet","ranger"),
+  k_folds = 10,
+  n_repeats = 1,
+  grid_n=10
+) {
+  # TODO make some diagnostic plots
+
+  assertthat::assert_that(all(targets %in% colnames(train_targets)))
+  assertthat::assert_that(all(targets %in% colnames(test_targets)))
+  assertthat::assert_that(is.numeric(k_folds))
+  assertthat::assert_that(is.numeric(n_repeats))
+  assertthat::are_equal(nrow(train_data), nrow(train_targets))
+  assertthat::are_equal(nrow(test_data), nrow(test_targets))
+
+
+  res <- purrr::map(
+    targets,
+    function(target) {
+      train_target_vec <- factor(ifelse(
+        train_targets[, target] == 1,
+        "positive_class",
+        "negative_class"
+      ), levels = c("positive_class", "negative_class"))
+      test_target_vec <- factor(ifelse(
+        test_targets[, target] == 1,
+        "positive_class",
+        "negative_class"
+      ), levels = c("positive_class", "negative_class"))
+
+      train_data$target <- train_target_vec
+      test_data$target <- test_target_vec
+      message(
+        paste0(
+          "Training for target '",target,"' with '",model_type,"' is starting..."
+        )
+      )
+      train_res <- train_general_model(
+        train_data = train_data,
+        k_folds = k_folds,
+        model_type = model_type,
+        engine = engine,
+        grid_n = grid_n
+      )
+
+      test_res <- eval_general_model(
+        test_data = test_data,
+        final_model = train_res
+      )
+      return(list(
+        train_res = train_res,
+        test_perf = test_res
+      ))
+    }
+  ) %>% magrittr::set_names(targets)
+
+  return(list(results=res))
+}
+
 #' Perform deconvolution using the results from CimpleG
 #' Calculate reference matrix given reference data and targets
 #' Compute deconvolution on new data
@@ -90,6 +173,7 @@ CimpleG_deconvolution <- function(
   method=c("nnls","epidish","nmf")
 ){
 
+  # TODO needs to also work with the general sigs
   # TODO assert that signatures exist in ref and new data
   signatures = purrr::map_chr(
     CimpleG_result,

@@ -17,8 +17,6 @@ LazyData: true
 Depends:
     R (>= 4.0)
 Imports:
-    mlr3,
-    mlr3viz,
     tictoc,
     tidymodels,
     rsample,
@@ -36,4 +34,11 @@ Imports:
     MLmetrics,
     Biobase,
     devtools
+Suggests:
+    PMCMRplus,
+    xgboost,
+    glmnet,
+    C50,
+    ranger,
+    nnet
 RoxygenNote: 7.1.1

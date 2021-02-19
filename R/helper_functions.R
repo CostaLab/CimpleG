@@ -5,9 +5,10 @@
 do_cv <- function(
   train_data,
   k_folds = 10,
-  n_repeats = 1,
+  n_repeats = 1, #FIXME not in use atm
   method = c("parab", "parab_scale", "adhoc", "oner"),
-  pred_type = c("both","hypo","hyper")
+  pred_type = c("both","hypo","hyper"),
+  target_name
 ) {
   assertthat::assert_that("target" %in% colnames(train_data))
 
@@ -19,7 +20,7 @@ do_cv <- function(
     message(paste0("K folds reset to k=", k_folds))
   }
 
-  tictoc::tic("Training has finished.")
+  tictoc::tic(paste0("Training for target '",target_name,"' with '",method,"(",pred_type,")' has finished."))
   # f_data <- rsample::vfold_cv(
   #   train_data,
   #   v = k_folds,
@@ -54,8 +55,6 @@ do_cv <- function(
     .x = f_data$splits,
     .f = find_predictors,
     method = method,
-    adhoc = any(grepl("adhoc", method, fixed = TRUE)),
-    do_parab = any(grepl("parab", method, fixed = TRUE)),
     scale_scores = any(grepl("parab_scale", method, fixed = TRUE)),
     pred_type=pred_type
   )
@@ -204,10 +203,39 @@ eval_test_data <- function(
     # )
   }
 
-  res <- data.frame(predictor = predictor_name, accuracy = test_perf)
+  res <- data.frame(
+    method = method,
+    predictor = predictor_name,
+    accuracy = test_perf
+  )
   return(res)
 }
 
+#' @importFrom dplyr %>%
+eval_general_model <- function(
+  test_data,
+  final_model
+){
+  message("Evaluating test data...")
+  # get performance on test data
+  test_data$target <- test_data$target %>% relevel("positive_class")
+
+  test_pred <- predict(
+    object = final_model,
+    new_data = test_data,
+    type = "class"
+  )
+
+  test_perf <- yardstick::accuracy_vec(
+    truth=test_data$target,
+    estimate=test_pred%>%pull(.pred_class)
+  )
+  res <- data.frame(
+    method=final_model$fit$actions$model$spec$engine,
+    accuracy=test_perf
+  )
+  return(res)
+}
 
 #' Train the final model after training
 #'
@@ -248,16 +276,13 @@ find_predictors <- function(
   min_feat_search = 10,
   p_class = "positive_class",
   method,
-  do_parab = FALSE,
-  adhoc = TRUE,
   scale_scores=FALSE,
   pred_type=c("both","hypo","hyper")
 ) {
+
   tictoc::tic(split_train_set$id %>% unlist())
 
   train_set <- rsample::analysis(split_train_set)
-
-  # print(table(train_set$target))
 
   tru_v <- train_set$target == p_class
 
@@ -361,8 +386,7 @@ find_predictors <- function(
     apply_res = apply(
       X = meth_predictors,
       MARGIN = 1,
-      pred_lvls=lvls,
-      FUN = function(x,pred_lvls){
+      FUN = function(x){
 
         pred_type = x["predType"]
         predictor = x[".id"]
@@ -409,14 +433,7 @@ find_predictors <- function(
     return(res_df)
   }
   if(method=="oner"){
-
-    # rule based models
-    # tree based models
     # oneRule model
-
-    # Using Recursive Partitioning and Regression Trees
-    # res = rpart::rpart(target~.,data = rsample::analysis(f_data$splits[[1]]))
-
     # Using OneRule model
     oner_predata <- OneR::optbin(target ~ ., data = train_set, method = "naive")
     oner_mod <- OneR::OneR(oner_predata)
@@ -428,7 +445,6 @@ find_predictors <- function(
 
     oner_pred <- factor(predict(oner_mod, holdout_res, type = "class"), levels = lvls)
     pred_prob <- predict(oner_mod, holdout_res, type = "prob")[, "positive_class"]
-    # OneR::eval_model(oner_pred,rsample::assessment(split_train_set))
 
     res_df <- tibble::tibble(
       resample = split_train_set$id %>% unlist(),
@@ -443,29 +459,6 @@ find_predictors <- function(
     print_timings()
     return(res_df)
   }
-
-  if (method == "c50") {
-
-    # C50 models
-    c5mod <- rules::C5_rules(trees = 10, min_n = length(which(tru_v)))
-
-    c5res <- c5mod %>% parsnip::fit(target ~ ., data = train_set)
-
-    c5_pred <- predict(c5res,rsample::assessment(split_train_set),type = "class") %>% table()
-
-    # plot(c5res$fit)
-
-    #c5res$fit$boostResults %>% arrange(Errors)
-
-
-    predict(
-      c5res,
-      rsample::assessment(f_data$splits[[1]]),
-      type = "class"
-    ) %>% table()
-
-    table(rsample::assessment(f_data$splits[[1]])$target)
-  }
 }
 
 
@@ -473,10 +466,21 @@ train_general_model <- function(
   train_data,
   k_folds,
   model_type,
-  engine
+  engine,
+  grid_n = 10,
+  target_name
 ){
 
-  #cv
+  target_tbl <- table(train_data$target)
+
+  if (k_folds > target_tbl[which.min(target_tbl)]) {
+    k_folds <- target_tbl[which.min(target_tbl)]
+    message(paste0("Too few samples for set K in cross-validation"))
+    message(paste0("K folds reset to k=", k_folds))
+  }
+
+  tictoc::tic(paste("Training for target '",target_name,"' with ",model_type," has finished."))
+  # making stratified folds, rsample doesnt seem to work properly
   cv_index = caret::createFolds(
     train_data$target,
     k = k_folds,
@@ -487,7 +491,9 @@ train_general_model <- function(
     index = cv_index,
     indexOut = purrr::map(
       cv_index,
-      function(x){setdiff(seq_len(nrow(train_data)),x)}
+      function(x){
+        setdiff(seq_len(nrow(train_data)),x)
+      }
     ),
     method = 'cv',
     number = k_folds
@@ -500,14 +506,34 @@ train_general_model <- function(
     f_data$splits[[i]]$id = tibble::tibble(id=sprintf("Fold%02d",i))
   }
 
-  cimpleg_recipe <- recipe(target~., data=train_data)
+  cimpleg_recipe <- recipes::recipe(target~., data=train_data)
 
   if(model_type == "logistic_reg"){
     general_model <-
       # specify the model
-      parsnip::logistic_reg(penalty=tune::tune(), mixture=tune::tune()) %>%
-      # select the engine/package that underlies the model
+      parsnip::logistic_reg(
+        penalty=tune::tune(),
+        mixture=tune::tune()
+      ) %>%
       parsnip::set_engine("glmnet")
+  }
+  if(model_type == "decision_tree"){
+    general_model <-
+      # specify the model
+      parsnip::decision_tree(
+        # TODO for c50 only one parameter is tuned
+        #cost_complexity=tune::tune(),
+        #tree_depth=tune::tune(),
+        min_n=tune::tune()
+      ) %>%
+      parsnip::set_engine("C5.0")
+  }
+  if(model_type == "null_model"){
+    #FIXME crashes
+    general_model <-
+      # specify the model
+      parsnip::null_model() %>%
+      parsnip::set_engine("parsnip")
   }
 
   if (model_type == "boost_tree") {
@@ -519,7 +545,6 @@ train_general_model <- function(
         min_n = tune::tune(),
         mtry = tune::tune()
       ) %>%
-      # select the engine/package that underlies the model
       parsnip::set_engine("xgboost")
   }
 
@@ -527,12 +552,10 @@ train_general_model <- function(
     general_model <-
       # specify the model
       parsnip::mlp(
-        tree_depth = tune::tune(),
-        trees = tune::tune(),
-        min_n = tune::tune(),
-        mtry = tune::tune()
+        hidden_units = tune::tune(),
+        penalty = tune::tune(),
+        epochs = tune::tune()
       ) %>%
-      # select the engine/package that underlies the model
       parsnip::set_engine("nnet")
   }
 
@@ -544,27 +567,26 @@ train_general_model <- function(
         min_n = tune::tune(),
         mtry = tune::tune()
       ) %>%
-      # select the engine/package that underlies the model
       parsnip::set_engine("ranger")
   }
 
 
   general_model <- general_model %>%
     # choose either the continuous regression or binary classification mode
-    set_mode("classification")
+    parsnip::set_mode("classification")
 
-  cimpleg_workflow <- workflow()%>%
-    add_recipe(cimpleg_recipe) %>%
-    add_model(general_model)
+  cimpleg_workflow <- workflows::workflow()%>%
+    workflows::add_recipe(cimpleg_recipe) %>%
+    workflows::add_model(general_model)
 
   cimpleg_res <- cimpleg_workflow %>%
-    tune_grid(
+    tune::tune_grid(
       resamples=f_data,
-      grid=10,
-      metrics=metric_set(
-        pr_auc,
-        roc_auc,
-        accuracy
+      grid=grid_n,
+      metrics=yardstick::metric_set(
+        yardstick::pr_auc,
+        yardstick::roc_auc,
+        yardstick::accuracy
       )
     )
 
@@ -573,6 +595,9 @@ train_general_model <- function(
       tune::select_best(cimpleg_res,metric = "pr_auc")
     ) %>%
     parsnip::fit(data = train_data)
+
+  print_timings()
+  return(cimpleg_final_model)
 }
 
 
