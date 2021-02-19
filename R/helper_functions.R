@@ -58,7 +58,7 @@ do_cv <- function(
     scale_scores = any(grepl("parab_scale", method, fixed = TRUE)),
     pred_type=pred_type
   )
-  tictoc::toc()
+  print_timings()
 
   # FIXME pproc not working
   prroc_prauc <- yardstick::new_prob_metric(prroc_prauc, "maximize")
@@ -549,6 +549,23 @@ train_general_model <- function(
   }
 
   if (model_type == "mlp") {
+
+    #FIXME Doing filtering should be an option
+    #FIXME Maximum number of weights should be an option
+    #FIXME "MaxNWts"
+
+    corr_filter <- cimpleg_recipe %>%
+      recipes::step_nzv(recipes::all_predictors()) %>%
+      recipes::step_corr(recipes::all_predictors(),threshold = .5) %>%
+      recipes::step_lincomb(recipes::all_predictors())
+
+    cimpleg_recipe <- recipes::prep(
+      corr_filter, training = train_data
+    )
+
+    #FIXME need to use bake later?
+    # filtered_te <- recipes::bake(filter_obj, test_data)
+
     general_model <-
       # specify the model
       parsnip::mlp(
@@ -579,6 +596,7 @@ train_general_model <- function(
     workflows::add_recipe(cimpleg_recipe) %>%
     workflows::add_model(general_model)
 
+  # Training model
   cimpleg_res <- cimpleg_workflow %>%
     tune::tune_grid(
       resamples=f_data,

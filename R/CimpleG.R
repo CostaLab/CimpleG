@@ -141,7 +141,8 @@ CimpleG_general <- function(
         k_folds = k_folds,
         model_type = model_type,
         engine = engine,
-        grid_n = grid_n
+        grid_n = grid_n,
+        target_name = target
       )
 
       test_res <- eval_general_model(
