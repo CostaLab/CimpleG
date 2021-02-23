@@ -7,30 +7,63 @@
 #' @export
 CimpleG <- function(
   train_data,
-  test_data,
   train_targets,
-  test_targets,
   targets,
+  test_data=NULL,
+  test_targets=NULL,
   method = c("adhoc", "parab", "parab_scale", "oner"),
   pred_type = c("both","hypo","hyper"),
   k_folds = 10,
-  n_repeats = 1
+  n_repeats = 1,
+  n_cores=1
 ) {
   # TODO make some diagnostic plots
 
+  if(is.null(test_data) | is.null(test_targets)){
+    message("'test_data' or 'test_targets' is NULL.")
+    message("'train_data' will be partioned to create 'test_data'.")
+
+    split_data <- make_train_test_split(
+      train_d=train_data,
+      train_targets=train_targets,
+      targets=targets
+    )
+    train_data <- split_data$train_data
+    train_targets <- split_data$train_targets
+    test_data <- split_data$test_data
+    test_targets <- split_data$test_targets
+    rm(split_data)
+  }
+
+  # Check train data
   assertthat::assert_that(all(targets %in% colnames(train_targets)))
-  assertthat::assert_that(all(targets %in% colnames(test_targets)))
+  assertthat::are_equal(nrow(train_data), nrow(train_targets))
+
+  # Check cv params
   assertthat::assert_that(is.numeric(k_folds))
   assertthat::assert_that(is.numeric(n_repeats))
-  assertthat::are_equal(nrow(train_data), nrow(train_targets))
+
+  # Check test data
+  assertthat::assert_that(all(targets %in% colnames(test_targets)))
   assertthat::are_equal(nrow(test_data), nrow(test_targets))
 
+  # Check parallel params
+  assertthat::assert_that(is.numeric(n_cores))
+
+  # Check method params
   method <- match.arg(method, choices = c("adhoc", "parab", "parab_scale", "oner"))
   pred_type <- match.arg(pred_type, choices = c("both","hypo","hyper"))
 
-  res <- purrr::map(
-    targets,
-    function(target) {
+  if(n_cores>1){
+    future::plan(future::multisession(),workers=n_cores)
+  }else{
+    future::plan(future::sequential())
+  }
+
+  res <- furrr::future_map(
+    .x=targets,
+    .options = furrr::furrr_options(seed = TRUE),
+    .f=function(target,pred_type) {
       train_target_vec <- factor(ifelse(
         train_targets[, target] == 1,
         "positive_class",
@@ -67,7 +100,8 @@ CimpleG <- function(
         train_res = train_res,
         test_perf = test_res
       ))
-    }
+    },
+    pred_type
   ) %>% magrittr::set_names(targets)
 
   signatures = purrr::map_chr(
@@ -88,10 +122,10 @@ CimpleG <- function(
 #' @export
 CimpleG_general <- function(
   train_data,
-  test_data,
   train_targets,
-  test_targets,
   targets,
+  test_data=NULL,
+  test_targets=NULL,
   model_type=c(
     "logistic_reg",
     "decision_tree",
@@ -107,13 +141,33 @@ CimpleG_general <- function(
 ) {
   # TODO make some diagnostic plots
 
+  if(is.null(test_data) | is.null(test_targets)){
+    message("'test_data' or 'test_targets' is NULL.")
+    message("'train_data' will be partioned to create 'test_data'.")
+
+    split_data <- make_train_test_split(
+      train_d=train_data,
+      train_targets=train_targets,
+      targets=targets
+    )
+    train_data <- split_data$train_data
+    train_targets <- split_data$train_targets
+    test_data <- split_data$test_data
+    test_targets <- split_data$test_targets
+    rm(split_data)
+  }
+
+  # Check train data
   assertthat::assert_that(all(targets %in% colnames(train_targets)))
-  assertthat::assert_that(all(targets %in% colnames(test_targets)))
+  assertthat::are_equal(nrow(train_data), nrow(train_targets))
+
+  # Check cv params
   assertthat::assert_that(is.numeric(k_folds))
   assertthat::assert_that(is.numeric(n_repeats))
-  assertthat::are_equal(nrow(train_data), nrow(train_targets))
-  assertthat::are_equal(nrow(test_data), nrow(test_targets))
 
+  # Check test data
+  assertthat::assert_that(all(targets %in% colnames(test_targets)))
+  assertthat::are_equal(nrow(test_data), nrow(test_targets))
 
   res <- purrr::map(
     targets,

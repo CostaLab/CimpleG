@@ -32,8 +32,11 @@ Imports:
     magrittr,
     assertthat,
     MLmetrics,
+    PRROC,
     devtools
 Suggests:
+    future,
+    furrr,
     PMCMRplus,
     xgboost,
     glmnet,

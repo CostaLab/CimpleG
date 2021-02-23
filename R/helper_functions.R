@@ -816,3 +816,70 @@ plot <- function(){
   #   lims(x = c(-1,1), y = c(0,.25))+
   #   theme_minimal()
 }
+
+
+make_train_test_split <- function(train_d,train_targets,targets,prop=0.75){
+
+  if(is.null(names(targets))) names(targets) <- targets
+
+  # FIXME this is really ugly...
+  target_strat <- purrr::map_dfr(
+    .x = targets,
+    .f = function(target) {
+      res <- ifelse(train_targets[, target] == 1, target, train_targets[, target])
+      return(res)
+    }, .id = "id"
+  ) %>%
+    tidyr::unite(col = "merged") %>%
+    dplyr::mutate(merged = gsub("[0]+", "", merged)) %>%
+    dplyr::mutate(merged = gsub("^[_]+", "", merged)) %>%
+    dplyr::mutate(merged = gsub("[_]+$", "", merged)) %>%
+    dplyr::mutate(merged = ifelse(merged == "", 0, merged))
+
+
+  part_d <- rsample::initial_split(
+    data=train_d%>%dplyr::mutate(target_strat=target_strat%>%dplyr::pull(merged)),
+    prop=prop,
+    strata="target_strat"
+  )
+
+  tmp_train <- rsample::training(part_d)
+  tmp_test <- rsample::testing(part_d)
+
+  new_train_targets <- tmp_train %>%
+    tibble::rownames_to_column("id") %>%
+    dplyr::mutate(tmp_value = 1) %>%
+    tidyr::pivot_wider(
+      id_cols = id,
+      names_from = target_strat,
+      values_from = tmp_value
+    ) %>%
+    dplyr::select(id,dplyr::all_of(targets)) %>%
+    dplyr::mutate_all(tidyr::replace_na, 0) %>%
+    tibble::column_to_rownames("id")
+
+
+  new_test_targets <- tmp_test %>%
+    tibble::rownames_to_column("id") %>%
+    dplyr::mutate(tmp_value = 1) %>%
+    tidyr::pivot_wider(
+      id_cols = id,
+      names_from = target_strat,
+      values_from = tmp_value
+    ) %>%
+    dplyr::select(id,dplyr::all_of(targets)) %>%
+    dplyr::mutate_all(tidyr::replace_na, 0) %>%
+    tibble::column_to_rownames("id")
+
+  tmp_train <- tmp_train %>% dplyr::select(-target_strat)
+  tmp_test <- tmp_test %>% dplyr::select(-target_strat)
+
+  return(
+    list(
+      train_data = tmp_train,
+      test_data = tmp_test,
+      train_targets = new_train_targets,
+      test_targets = new_test_targets
+    )
+  )
+}
