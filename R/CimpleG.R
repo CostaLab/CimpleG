@@ -63,7 +63,7 @@ CimpleG <- function(
   res <- furrr::future_map(
     .x=targets,
     .options = furrr::furrr_options(seed = TRUE),
-    .f=function(target,pred_type) {
+    .f=function(target) {
       train_target_vec <- factor(ifelse(
         train_targets[, target] == 1,
         "positive_class",
@@ -100,8 +100,7 @@ CimpleG <- function(
         train_res = train_res,
         test_perf = test_res
       ))
-    },
-    pred_type
+    }
   ) %>% magrittr::set_names(targets)
 
   signatures = purrr::map_chr(
@@ -137,7 +136,8 @@ CimpleG_general <- function(
   engine=c("glmnet","xgboost","nnet","ranger"),
   k_folds = 10,
   n_repeats = 1,
-  grid_n=10
+  grid_n=10,
+  n_cores=1
 ) {
   # TODO make some diagnostic plots
 
@@ -169,9 +169,19 @@ CimpleG_general <- function(
   assertthat::assert_that(all(targets %in% colnames(test_targets)))
   assertthat::are_equal(nrow(test_data), nrow(test_targets))
 
-  res <- purrr::map(
-    targets,
-    function(target) {
+  # Check parallel params
+  assertthat::assert_that(is.numeric(n_cores))
+
+  if(n_cores>1){
+    future::plan(future::multisession(),workers=n_cores)
+  }else{
+    future::plan(future::sequential())
+  }
+
+  res <- furrr::future_map(
+    .x=targets,
+    .options = furrr::furrr_options(seed = TRUE),
+    .f=function(target) {
       train_target_vec <- factor(ifelse(
         train_targets[, target] == 1,
         "positive_class",
