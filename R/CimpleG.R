@@ -56,6 +56,7 @@ CimpleG <- function(
 
   if(n_cores>1){
     future::plan(future::multisession(),workers=n_cores)
+    options(future.globals.maxSize=3000 * 1024 ^ 2)#3Gb
   }else{
     future::plan(future::sequential())
   }
@@ -174,6 +175,7 @@ CimpleG_general <- function(
 
   if(n_cores>1){
     future::plan(future::multisession(),workers=n_cores)
+    options(future.globals.maxSize=3000 * 1024 ^ 2)#3Gb
   }else{
     future::plan(future::sequential())
   }
