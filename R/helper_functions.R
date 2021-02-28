@@ -330,8 +330,7 @@ find_predictors <- function(
       hyperM_predictors <- apply(
         X = train_set[, selected_feats],
         MARGIN = 2,
-        truth = train_set$target,
-        FUN = prroc_prauc_vec(estimate = X, truth = truth)
+        FUN = prroc_prauc_vec(estimate = X, truth = train_set$target)
       )
       hyperM_predictors <- hyperM_predictors %>%
         plyr::ldply(data.frame) %>%
@@ -355,8 +354,7 @@ find_predictors <- function(
       hypoM_predictors <- apply(
         X = train_set[, selected_feats],
         MARGIN = 2,
-        truth = train_set$target,
-        FUN = prroc_prauc_vec(estimate = 1 - X, truth = truth)
+        FUN = prroc_prauc_vec(estimate = 1 - X, truth = train_set$target)
       )
       hypoM_predictors <- hypoM_predictors %>%
         plyr::ldply(data.frame) %>%
