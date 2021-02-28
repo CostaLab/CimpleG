@@ -325,14 +325,15 @@ find_predictors <- function(
 
     if(any(df_dMean_sVar$predType)){
       # get PRAUC for hyper methylated cpgs
+      selected_feats <- rownames(df_dMean_sVar[df_dMean_sVar$predType, ])
+
       hyperM_predictors <- apply(
-        X = train_set[, rownames(df_dMean_sVar[df_dMean_sVar$predType, ])],
+        X = train_set[, selected_feats],
         MARGIN = 2,
         truth = train_set$target,
-        FUN = function(X, truth) {
-          prroc_prauc_vec(truth = truth, estimate = X)
-        }
-      ) %>%
+        FUN = prroc_prauc_vec(estimate = X, truth = truth)
+      )
+      hyperM_predictors <- hyperM_predictors %>%
         plyr::ldply(data.frame) %>%
         magrittr::set_colnames(c(".id", "AUPR"))%>%
         # attach mean diff, will be used to scale AUPR
@@ -349,14 +350,15 @@ find_predictors <- function(
     }
     if(any(!df_dMean_sVar$predType)){
       # get PRAUC for hypo methylated cpgs
+      selected_feats <- rownames(df_dMean_sVar[!df_dMean_sVar$predType, ])
+
       hypoM_predictors <- apply(
-        X = train_set[, rownames(df_dMean_sVar[!df_dMean_sVar$predType, ])],
+        X = train_set[, selected_feats],
         MARGIN = 2,
         truth = train_set$target,
-        FUN = function(X, truth) {
-          prroc_prauc_vec(truth = truth, estimate = 1 - X)
-        }
-      ) %>%
+        FUN = prroc_prauc_vec(estimate = 1 - X, truth = truth)
+      )
+      hypoM_predictors <- hypoM_predictors %>%
         plyr::ldply(data.frame) %>%
         magrittr::set_colnames(c(".id", "AUPR"))%>%
         # attach mean diff, will be used to scale AUPR
