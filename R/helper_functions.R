@@ -332,7 +332,7 @@ find_predictors <- function(
       #   MARGIN = 2,
       #   FUN = prroc_prauc_vec(estimate = X, truth = train_set$target)
       # )
-      hyperM_predictors <- train_data %>%
+      hyperM_predictors <- train_set %>%
         dplyr::select_at(selected_feats) %>%
         dplyr::summarise_all(~ prroc_prauc_vec(truth = train_set$target, estimate = .))
 
@@ -360,7 +360,7 @@ find_predictors <- function(
       #   MARGIN = 2,
       #   FUN = prroc_prauc_vec(estimate = 1 - X, truth = train_set$target)
       # )
-      hypoM_predictors <- train_data %>%
+      hypoM_predictors <- train_set %>%
         dplyr::select_at(selected_feats) %>%
         dplyr::summarise_all(~ prroc_prauc_vec(truth = train_set$target, estimate = 1 - .))
 
