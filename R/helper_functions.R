@@ -153,60 +153,74 @@ eval_test_data <- function(
   predictor_name <- NULL
 
   if (identical(method, "adhoc") | identical(method, "parab") | identical(method, "parab_scale")) {
-    if (final_model$type == "hyper") {
-      test_perf <- yardstick::accuracy_vec(
-        truth = test_data$target,
-        estimate = factor(
-          ifelse(
-            test_data %>% dplyr::pull(final_model$predictor) > 0.5,
-            "positive_class",
-            "negative_class"
-          ),
-          levels = levels(test_data$target)
-        )
-      )
-    } else {
-      test_perf <- yardstick::accuracy_vec(
-        truth = test_data$target,
-        estimate = factor(
-          ifelse(
-            test_data %>% dplyr::pull(final_model$predictor) <= 0.5,
-            "positive_class",
-            "negative_class"
-          ),
-          levels = levels(test_data$target)
-        )
-      )
+
+    if(final_model$type == "hypo"){
+      final_model$predictor <- 1 - final_model$predictor
     }
+
+    pred_class <- factor(
+      ifelse(
+        test_data %>% dplyr::pull(final_model$predictor) > 0.5,
+        "positive_class",
+        "negative_class"
+      ),
+      levels = levels(test_data$target)
+    )
+    # TODO alternatively for a better binning option we could use
+    # OneR::bin(
+    #   final_model$predictor,
+    #   nbins=2,
+    #   labels=c("negative_class","positive_class")
+    # )
+
+    acc_perf <- yardstick::accuracy_vec(
+      truth = test_data$target,
+      estimate = pred_class
+    )
+
+    f1_perf <- yardstick::f_meas_vec(
+      truth = test_data$target,
+      estimate = pred_class
+    )
+
+    aupr_perf <- yardstick::pr_auc_vec(
+      truth = test_d$target,
+      estimate = final_model$predictor
+    )
+
     predictor_name <- final_model$predictor
   }
 
   if (identical(method, "oner")) {
-    test_perf <- yardstick::accuracy_vec(
-      test_data$target,
-      predict(
-        final_model,
-        newdata = test_data, type = "class"
-      ) %>%
-        relevel("positive_class")
+
+    pred_class <- predict(final_model,newdata = test_data, type = "class") %>%
+      relevel("positive_class")
+
+    pred_prob <- predict(oner_mod,newdata=test_data,type="prob") %>%
+      as.data.frame %>% pull(positive_class)
+
+    acc_perf <- yardstick::accuracy_vec(
+      truth = test_data$target,
+      estimate = pred_class
     )
+    f1_perf <- yardstick::f_meas_vec(
+      truth = test_data$target,
+      estimate = pred_class
+    )
+    aupr_perf <- yardstick::pr_auc_vec(
+      truth = test_data$target,
+      estimate = pred_prob
+    )
+
     predictor_name <- final_model$feature
-
-
-    # pr_auc_vec(
-    #   test_data$target,
-    #   predict(
-    #     oner_mod,
-    #     newdata=test_data,type="prob")%>%
-    #       as.data.frame%>%
-    #       pull(positive_class)
-    # )
   }
 
   res <- data.frame(
     method = method,
     predictor = predictor_name,
-    accuracy = test_perf
+    accuracy = acc_perf,
+    f1 = f1_perf,
+    aupr = aupr_perf
   )
   return(res)
 }
@@ -224,15 +238,32 @@ eval_general_model <- function(
     object = final_model,
     new_data = test_data,
     type = "class"
+  ) %>% pull(.pred_class)
+
+  test_pred_prob <- predict(
+    object = final_model,
+    new_data = test_data,
+    type = "prob"
+   ) %>% as.data.frame %>% pull(.pred_positive_class)
+
+  acc_perf <- yardstick::accuracy_vec(
+    truth=test_data$target,
+    estimate=test_pred
+  )
+  f1_perf <- yardstick::f_meas_vec(
+    truth=test_data$target,
+    estimate=test_pred
+  )
+  aupr_perf <- yardstick::pr_auc_vec(
+    truth = test_data$target,
+    estimate = test_pred_prob
   )
 
-  test_perf <- yardstick::accuracy_vec(
-    truth=test_data$target,
-    estimate=test_pred%>%pull(.pred_class)
-  )
   res <- data.frame(
     method=final_model$fit$actions$model$spec$engine,
-    accuracy=test_perf
+    accuracy=acc_perf,
+    f1 = f1_perf,
+    aupr = aupr_perf
   )
   return(res)
 }
@@ -325,15 +356,22 @@ find_predictors <- function(
 
     if(any(df_dMean_sVar$predType)){
       # get PRAUC for hyper methylated cpgs
-      hyperM_predictors <- apply(
-        X = train_set[, rownames(df_dMean_sVar[df_dMean_sVar$predType, ])],
-        MARGIN = 2,
-        truth = train_set$target,
-        FUN = function(X, truth) {
-          prroc_prauc_vec(truth = truth, estimate = X)
-        }
-      ) %>%
-        plyr::ldply(data.frame) %>%
+      # hyperM_predictors <- apply(
+      #   X = train_set[, rownames(df_dMean_sVar[df_dMean_sVar$predType, ])],
+      #   MARGIN = 2,
+      #   truth = train_set$target,
+      #   FUN = function(X, truth) {
+      #     prroc_prauc_vec(truth = truth, estimate = X)
+      #   }
+      # ) %>%
+      #   plyr::ldply(data.frame) %>%
+      hyperM_predictors <- train_set %>%
+        select(rownames(df_dMean_sVar[which(df_dMean_sVar$predType), ])) %>%
+        summarise(across(.cols=where(is.numeric),.fns = function(x,truth){
+            prroc_prauc_vec(truth = truth, estimate = x)
+          },
+          truth = train_set$target
+        )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id")%>%
         magrittr::set_colnames(c(".id", "AUPR"))%>%
         # attach mean diff, will be used to scale AUPR
         dplyr::mutate(predType = "hyper") %>%
@@ -349,15 +387,22 @@ find_predictors <- function(
     }
     if(any(!df_dMean_sVar$predType)){
       # get PRAUC for hypo methylated cpgs
-      hypoM_predictors <- apply(
-        X = train_set[, rownames(df_dMean_sVar[!df_dMean_sVar$predType, ])],
-        MARGIN = 2,
-        truth = train_set$target,
-        FUN = function(X, truth) {
-          prroc_prauc_vec(truth = truth, estimate = 1 - X)
-        }
-      ) %>%
-        plyr::ldply(data.frame) %>%
+      # hypoM_predictors <- apply(
+      #   X = train_set[, rownames(df_dMean_sVar[!df_dMean_sVar$predType, ])],
+      #   MARGIN = 2,
+      #   truth = train_set$target,
+      #   FUN = function(X, truth) {
+      #     prroc_prauc_vec(truth = truth, estimate = 1 - X)
+      #   }
+      # ) %>%
+      #   plyr::ldply(data.frame) %>%
+      hypoM_predictors <- train_set %>%
+        select(rownames(df_dMean_sVar[which(!df_dMean_sVar$predType), ])) %>%
+        summarise(across(.cols=where(is.numeric),.fns = function(x,truth){
+            prroc_prauc_vec(truth = truth, estimate = 1 - x)
+          },
+          truth = train_set$target
+        )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id")%>%
         magrittr::set_colnames(c(".id", "AUPR"))%>%
         # attach mean diff, will be used to scale AUPR
         dplyr::mutate(predType = "hypo") %>%
