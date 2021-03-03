@@ -154,13 +154,16 @@ eval_test_data <- function(
 
   if (identical(method, "adhoc") | identical(method, "parab") | identical(method, "parab_scale")) {
 
+    new_data_vec <- test_data %>% dplyr::pull(final_model$predictor)
+
     if(final_model$type == "hypo"){
-      final_model$predictor <- 1 - final_model$predictor
+
+      new_data_vec <- 1 - new_data_vec
     }
 
     pred_class <- factor(
       ifelse(
-        test_data %>% dplyr::pull(final_model$predictor) > 0.5,
+        new_data_vec > 0.5,
         "positive_class",
         "negative_class"
       ),
@@ -168,7 +171,7 @@ eval_test_data <- function(
     )
     # TODO alternatively for a better binning option we could use
     # OneR::bin(
-    #   final_model$predictor,
+    #   new_data_vec,
     #   nbins=2,
     #   labels=c("negative_class","positive_class")
     # )
@@ -184,8 +187,8 @@ eval_test_data <- function(
     )
 
     aupr_perf <- yardstick::pr_auc_vec(
-      truth = test_d$target,
-      estimate = final_model$predictor
+      truth = test_data$target,
+      estimate = new_data_vec
     )
 
     predictor_name <- final_model$predictor
@@ -197,7 +200,7 @@ eval_test_data <- function(
       relevel("positive_class")
 
     pred_prob <- predict(oner_mod,newdata=test_data,type="prob") %>%
-      as.data.frame %>% pull(positive_class)
+      as.data.frame %>% dplyr::pull(positive_class)
 
     acc_perf <- yardstick::accuracy_vec(
       truth = test_data$target,
@@ -238,13 +241,13 @@ eval_general_model <- function(
     object = final_model,
     new_data = test_data,
     type = "class"
-  ) %>% pull(.pred_class)
+  ) %>% dplyr::pull(.pred_class)
 
   test_pred_prob <- predict(
     object = final_model,
     new_data = test_data,
     type = "prob"
-   ) %>% as.data.frame %>% pull(.pred_positive_class)
+   ) %>% as.data.frame %>% dplyr::pull(.pred_positive_class)
 
   acc_perf <- yardstick::accuracy_vec(
     truth=test_data$target,
@@ -280,7 +283,6 @@ final_model <- function(
   message("Training final model...")
   if (method == "oner") {
     # OneR
-
     oner_predata <- OneR::optbin(
       as.formula(paste0("target~", best_pred$predictor)),
       data = train_data, method = "logreg"
@@ -356,18 +358,9 @@ find_predictors <- function(
 
     if(any(df_dMean_sVar$predType)){
       # get PRAUC for hyper methylated cpgs
-      # hyperM_predictors <- apply(
-      #   X = train_set[, rownames(df_dMean_sVar[df_dMean_sVar$predType, ])],
-      #   MARGIN = 2,
-      #   truth = train_set$target,
-      #   FUN = function(X, truth) {
-      #     prroc_prauc_vec(truth = truth, estimate = X)
-      #   }
-      # ) %>%
-      #   plyr::ldply(data.frame) %>%
       hyperM_predictors <- train_set %>%
-        select(rownames(df_dMean_sVar[which(df_dMean_sVar$predType), ])) %>%
-        summarise(across(.cols=where(is.numeric),.fns = function(x,truth){
+        dplyr::select(rownames(df_dMean_sVar[which(df_dMean_sVar$predType), ])) %>%
+        dplyr::summarise(dplyr::across(.cols=tidyselect:::where(is.numeric),.fns = function(x,truth){
             prroc_prauc_vec(truth = truth, estimate = x)
           },
           truth = train_set$target
@@ -387,18 +380,9 @@ find_predictors <- function(
     }
     if(any(!df_dMean_sVar$predType)){
       # get PRAUC for hypo methylated cpgs
-      # hypoM_predictors <- apply(
-      #   X = train_set[, rownames(df_dMean_sVar[!df_dMean_sVar$predType, ])],
-      #   MARGIN = 2,
-      #   truth = train_set$target,
-      #   FUN = function(X, truth) {
-      #     prroc_prauc_vec(truth = truth, estimate = 1 - X)
-      #   }
-      # ) %>%
-      #   plyr::ldply(data.frame) %>%
       hypoM_predictors <- train_set %>%
-        select(rownames(df_dMean_sVar[which(!df_dMean_sVar$predType), ])) %>%
-        summarise(across(.cols=where(is.numeric),.fns = function(x,truth){
+        dplyr::select(rownames(df_dMean_sVar[which(!df_dMean_sVar$predType), ])) %>%
+        dplyr::summarise(dplyr::across(.cols=tidyselect:::where(is.numeric),.fns = function(x,truth){
             prroc_prauc_vec(truth = truth, estimate = 1 - x)
           },
           truth = train_set$target
