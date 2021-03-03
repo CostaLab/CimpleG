@@ -199,7 +199,7 @@ eval_test_data <- function(
     pred_class <- predict(final_model,newdata = test_data, type = "class") %>%
       relevel("positive_class")
 
-    pred_prob <- predict(oner_mod,newdata=test_data,type="prob") %>%
+    pred_prob <- predict(final_model,newdata=test_data,type="prob") %>%
       as.data.frame %>% dplyr::pull(positive_class)
 
     acc_perf <- yardstick::accuracy_vec(
