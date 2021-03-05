@@ -5,3 +5,5 @@
 ^.*\.RData$
 ^Makefile$
 ^update_version$
+^README\.html$
+^README\.Rmd$

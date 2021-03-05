@@ -1,7 +1,63 @@
-
-
-#' Main function of the package
-#' Finds the best predictors (CpGs) for the given targets
+#' Method to find the best simple predictors (CpGs) for the given target data.
+#'
+#' @param train_data Training dataset.
+#'  A matrix (s x f) with methylation data (Beta values)
+#'  that will be used to train/find the predictors.
+#'  Samples (s) must be in rows while features/CpGs (f) must be in columns.
+#'
+#' @param train_targets A data frame with the training target samples one-hot encoded.
+#'  A data frame with at least 1 column,
+#'  with as many rows and in the same order as `train_data`.
+#'  Target columms need to be one-hot encoded, meaning that, for that column
+#'  the target samples should be encoded as `1` while every other sample
+#'  should be encoded as `0`.
+#'
+#' @param targets A string specifying the name of the column in `train_targets`
+#'  to be used for training.
+#'  Can be a character vector if there are several columns in `train_targets`
+#'  to be used for training.
+#'  If this argument is a character vector, CimpleG will search for the
+#'  best predictors for each target sequentially or in parallel depending on the
+#'  value of `n_cores`
+#'
+#' @param test_data Testing dataset.
+#'  A matrix (s x f) with methylation data (Beta values)
+#'  that will be used to test the performance of the found predictors.
+#'  Samples (s) must be in rows while features/CpGs (f) must be in columns.
+#'  If `test_data` *OR* `test_targets` are NULL, CimpleG will generate a
+#'  stratified test dataset based on `train_targets` by removing 25% of the
+#'  samples from `train_data` and `train_targets`.
+#'
+#' @param test_targets A data frame with the testing target samples one-hot encoded.
+#'  A data frame with at least 1 column,
+#'  with as many rows and in the same order as `test_data`.
+#'  Target columms need to be one-hot encoded, meaning that, for that column
+#'  the target samples should be encoded as `1` while every other sample
+#'  should be encoded as `0`.
+#'  If `test_data` *OR* `test_targets` are NULL, CimpleG will generate a
+#'  stratified test dataset based on `train_targets` by removing 25% of the
+#'  samples from `train_data` and `train_targets`.
+#'
+#' @param method A string specifying the method to be used for training.
+#'  One of `parab_scale` (default), `adhoc`, `parab` or `oner`
+#'
+#' @param pred_type A string specifying the type of predictor/CpG to be
+#'  searched for during training.
+#'  One of `both` (default), `hypo` or `hyper`.
+#'  If `hypo`, only hypomethylated predictors will be considered.
+#'  If `hyper`, only hypermethylated predictors will be considered.
+#'
+#' @param k_folds An integer specifying the number of folds (K) to be used
+#'  in training for the stratified K-fold cross-validation procedure.
+#'
+#' @param n_repeats An integer specifying the number of repeats (N) to be used
+#'  in training for the stratified N-repeats K-fold cross-validation procedure.
+#'  Currently not in use.
+#'
+#' @param n_cores If larger than `1`, the default, it will use that many cores,
+#'  to search for predictors for multiple targets (up to `n_cores`)
+#'  at the same time (parallel processing) in order to save
+#'  in computational time.
 #'
 #' @importFrom dplyr %>%
 #' @export
@@ -11,7 +67,7 @@ CimpleG <- function(
   targets,
   test_data=NULL,
   test_targets=NULL,
-  method = c("adhoc", "parab", "parab_scale", "oner"),
+  method = c("parab_scale", "adhoc", "parab", "oner"),
   pred_type = c("both","hypo","hyper"),
   k_folds = 10,
   n_repeats = 1,
@@ -41,6 +97,7 @@ CimpleG <- function(
 
   # Check cv params
   assertthat::assert_that(is.numeric(k_folds))
+  assertthat::assert_that(k_folds > 0)
   assertthat::assert_that(is.numeric(n_repeats))
 
   # Check test data
@@ -49,6 +106,7 @@ CimpleG <- function(
 
   # Check parallel params
   assertthat::assert_that(is.numeric(n_cores))
+  assertthat::assert_that(n_cores > 0)
 
   # Check method params
   method <- match.arg(method, choices = c("adhoc", "parab", "parab_scale", "oner"))
@@ -56,7 +114,7 @@ CimpleG <- function(
 
   if(n_cores>1){
     future::plan(future::multisession(),workers=n_cores)
-    options(future.globals.maxSize=4000 * 1024 ^ 2)#8Gb
+    options(future.globals.maxSize=4000 * 1024 ^ 2)#4Gb
   }else{
     future::plan(future::sequential())
   }
@@ -115,8 +173,67 @@ CimpleG <- function(
 }
 
 
-#' Main function of the package
-#' Finds the best predictors (CpGs) for the given targets
+#' Train a classification model using (CpGs) as features
+#' for the given target data.
+#'
+#' @param train_data Training dataset.
+#'  A matrix (s x f) with methylation data (Beta values)
+#'  that will be used to train/find the predictors.
+#'  Samples (s) must be in rows while features/CpGs (f) must be in columns.
+#'
+#' @param train_targets A data frame with the training target samples one-hot encoded.
+#'  A data frame with at least 1 column,
+#'  with as many rows and in the same order as `train_data`.
+#'  Target columms need to be one-hot encoded, meaning that, for that column
+#'  the target samples should be encoded as `1` while every other sample
+#'  should be encoded as `0`.
+#'
+#' @param targets A string specifying the name of the column in `train_targets`
+#'  to be used for training.
+#'  Can be a character vector if there are several columns in `train_targets`
+#'  to be used for training.
+#'  If this argument is a character vector, CimpleG will search for the
+#'  best predictors for each target sequentially or in parallel depending on the
+#'  value of `n_cores`
+#'
+#' @param test_data Testing dataset.
+#'  A matrix (s x f) with methylation data (Beta values)
+#'  that will be used to test the performance of the found predictors.
+#'  Samples (s) must be in rows while features/CpGs (f) must be in columns.
+#'  If `test_data` *OR* `test_targets` are NULL, CimpleG will generate a
+#'  stratified test dataset based on `train_targets` by removing 25% of the
+#'  samples from `train_data` and `train_targets`.
+#'
+#' @param test_targets A data frame with the testing target samples one-hot encoded.
+#'  A data frame with at least 1 column,
+#'  with as many rows and in the same order as `test_data`.
+#'  Target columms need to be one-hot encoded, meaning that, for that column
+#'  the target samples should be encoded as `1` while every other sample
+#'  should be encoded as `0`.
+#'  If `test_data` *OR* `test_targets` are NULL, CimpleG will generate a
+#'  stratified test dataset based on `train_targets` by removing 25% of the
+#'  samples from `train_data` and `train_targets`.
+#'
+#' @param model_type A string specifying the type of
+#'  machine learning model/algorithm to be used for training.
+#'  One of `logistic_reg` (default), `decision_tree`,
+#'  `boost_tree`, `mlp` or `rand_forest`.
+#'
+#' @param engine A string specifying the
+#'  machine learning engine behind `model_type`.
+#'  Currently not in use.
+#'
+#' @param k_folds An integer specifying the number of folds (K) to be used
+#'  in training for the stratified K-fold cross-validation procedure.
+#'
+#' @param n_repeats An integer specifying the number of repeats (N) to be used
+#'  in training for the stratified N-repeats K-fold cross-validation procedure.
+#'  Currently not in use.
+#'
+#' @param n_cores If larger than `1`, the default, it will use that many cores,
+#'  to search for predictors for multiple targets (up to `n_cores`)
+#'  at the same time (parallel processing) in order to save
+#'  in computational time.
 #'
 #' @importFrom dplyr %>%
 #' @export
@@ -175,7 +292,7 @@ CimpleG_general <- function(
 
   if(n_cores>1){
     future::plan(future::multisession(),workers=n_cores)
-    options(future.globals.maxSize=8000 * 1024 ^ 2)#8Gb
+    options(future.globals.maxSize=4000 * 1024 ^ 2)#4Gb
   }else{
     future::plan(future::sequential())
   }
