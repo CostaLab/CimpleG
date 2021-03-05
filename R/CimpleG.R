@@ -59,6 +59,28 @@
 #'  at the same time (parallel processing) in order to save
 #'  in computational time.
 #'
+#' @examples
+#' library("CimpleG")
+#'
+#' # read data
+#' train_d <- readRDS(file.path("data","mock_train.RDS"))
+#' test_d <- readRDS(file.path("data","mock_test.RDS"))
+#' train_target <- readRDS(file.path("data","mock_train_targets.RDS"))
+#' test_target <- readRDS(file.path("data","mock_test_targets.RDS"))
+#'
+#' # run CimpleG
+#' cimpleg_result <- CimpleG(
+#'   train_data = train_d,
+#'   train_targets = train_target,
+#'   test_data = test_d,
+#'   test_targets = test_target,
+#'   targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS")
+#' )
+#'
+#' # check results
+#' cimpleg_result$results
+#' cimpleg_result$signatures
+#'
 #' @importFrom dplyr %>%
 #' @export
 CimpleG <- function(
@@ -234,6 +256,28 @@ CimpleG <- function(
 #'  to search for predictors for multiple targets (up to `n_cores`)
 #'  at the same time (parallel processing) in order to save
 #'  in computational time.
+#'
+#' @examples
+#' library("CimpleG")
+#'
+#' # read data
+#' train_d <- readRDS(file.path("data","mock_train.RDS"))
+#' test_d <- readRDS(file.path("data","mock_test.RDS"))
+#' train_target <- readRDS(file.path("data","mock_train_targets.RDS"))
+#' test_target <- readRDS(file.path("data","mock_test_targets.RDS"))
+#'
+#' # run CimpleG (complex models)
+#' cimpleg_result <- CimpleG_general(
+#'   train_data = train_d,
+#'   train_targets = train_target,
+#'   test_data = test_d,
+#'   test_targets = test_target,
+#'   targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+#'   model_type = "logistic_reg"
+#' )
+#'
+#' # check results
+#' cimpleg_result$results
 #'
 #' @importFrom dplyr %>%
 #' @export
