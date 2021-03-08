@@ -10,7 +10,7 @@
     more than feat_threshold hyper and hypo CpGs have been selected}
 \usage{
 updt_selected_feats(
-  df_dMean_sVar,
+  df_diffmean_sumvar,
   feat_threshold = 10,
   pred_type = c("both", "hyper", "hypo")
 )

@@ -2,7 +2,8 @@
 % Please edit documentation in R/CimpleG.R
 \name{CimpleG}
 \alias{CimpleG}
-\title{Method to find the best simple predictors (CpGs) for the given target data.}
+\title{Train a classification model using (CpGs) as features
+for the given target data.}
 \usage{
 CimpleG(
   train_data,
@@ -10,9 +11,12 @@ CimpleG(
   targets,
   test_data = NULL,
   test_targets = NULL,
-  method = c("parab_scale", "adhoc", "parab", "oner"),
+  method = c("parab_scale", "adhoc", "parab", "oner", "logistic_reg", "decision_tree",
+    "boost_tree", "mlp", "rand_forest", "null_model"),
   pred_type = c("both", "hypo", "hyper"),
+  engine = c("glmnet", "xgboost", "nnet", "ranger"),
   k_folds = 10,
+  grid_n = 10,
   n_repeats = 1,
   n_cores = 1
 )
@@ -56,14 +60,23 @@ If `test_data` *OR* `test_targets` are NULL, CimpleG will generate a
 stratified test dataset based on `train_targets` by removing 25% of the
 samples from `train_data` and `train_targets`.}
 
-\item{method}{A string specifying the method to be used for training.
-One of `parab_scale` (default), `adhoc`, `parab` or `oner`}
+\item{method}{A string specifying the method or type of machine learning
+model/algorithm to be used for training.
+These are divided in two main groups.
+* The simple models (classifiers that use a single feature),
+`parab_scale` (default), `adhoc`, `parab` or `oner`;
+* the complex models (classifiers that use several features),
+`logistic_reg`, `decision_tree`, `boost_tree`, `mlp` or `rand_forest`.}
 
 \item{pred_type}{A string specifying the type of predictor/CpG to be
-searched for during training.
+searched for during training. Only used for simple models.
 One of `both` (default), `hypo` or `hyper`.
 If `hypo`, only hypomethylated predictors will be considered.
 If `hyper`, only hypermethylated predictors will be considered.}
+
+\item{engine}{A string specifying the
+machine learning engine behind `method`. Only used for complex models.
+Currently not in use.}
 
 \item{k_folds}{An integer specifying the number of folds (K) to be used
 in training for the stratified K-fold cross-validation procedure.}
@@ -78,7 +91,8 @@ at the same time (parallel processing) in order to save
 in computational time.}
 }
 \description{
-Method to find the best simple predictors (CpGs) for the given target data.
+Train a classification model using (CpGs) as features
+for the given target data.
 }
 \examples{
 library("CimpleG")
@@ -100,6 +114,5 @@ cimpleg_result <- CimpleG(
 
 # check results
 cimpleg_result$results
-cimpleg_result$signatures
 
 }
