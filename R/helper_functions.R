@@ -319,22 +319,14 @@ find_predictors <- function(
 
   tru_v <- train_set$target == p_class
 
-  df_dMean_sVar <- data.frame(
-    "diffMeans" = (
-      colMeans(train_set[tru_v, -ncol(train_set)]) -
-        colMeans(train_set[!tru_v, -ncol(train_set)])
-    ),
-    "sumVariance" = (
-      matrixStats::colVars(as.matrix(train_set[tru_v, -ncol(train_set)])) +
-        matrixStats::colVars(as.matrix(train_set[!tru_v, -ncol(train_set)]))
-    )
+  df_dMean_sVar <- compute_diffmeans_sumvar(
+    data=train_set[,-ncol(train_set)],
+    target_vector = tru_v
   )
 
-  df_dMean_sVar$predType <- df_dMean_sVar$diffMeans >= 0
-
   if(pred_type!="both"){
-    if(pred_type=="hypo") df_dMean_sVar <- df_dMean_sVar %>% dplyr::filter(!predType)
-    if(pred_type=="hyper") df_dMean_sVar <- df_dMean_sVar %>% dplyr::filter(predType)
+    if(pred_type=="hypo") df_dMean_sVar <- df_dMean_sVar %>% dplyr::filter(!pred_type)
+    if(pred_type=="hyper") df_dMean_sVar <- df_dMean_sVar %>% dplyr::filter(pred_type)
   }
 
 
@@ -343,23 +335,23 @@ find_predictors <- function(
     if (grepl("parab",method)) {
 
       parab_res <- parabola_iter_loop(
-        df_dMean_sVar,
-        init_step,
-        step_increment,
-        min_feat_search,
-        pred_type
+        df_diffmean_sumvar=df_dMean_sVar,
+        init_step=init_step,
+        step_increment=step_increment,
+        min_feat_search=min_feat_search,
+        pred_type=pred_type
       )
-      df_dMean_sVar <- parab_res$df_dMean_sVar
+      df_dMean_sVar <- parab_res$df_diffmean_sumvar
 
     }
 
     hyperM_predictors <- data.frame(.id=character(), AUPR=double())
     hypoM_predictors <- data.frame(.id=character(), AUPR=double())
 
-    if(any(df_dMean_sVar$predType)){
+    if(any(df_dMean_sVar$pred_type)){
       # get PRAUC for hyper methylated cpgs
       hyperM_predictors <- train_set %>%
-        dplyr::select(rownames(df_dMean_sVar[which(df_dMean_sVar$predType), ])) %>%
+        dplyr::select(rownames(df_dMean_sVar[which(df_dMean_sVar$pred_type), ])) %>%
         dplyr::summarise(dplyr::across(.cols=tidyselect:::where(is.numeric),.fns = function(x,truth){
             prroc_prauc_vec(truth = truth, estimate = x)
           },
@@ -367,21 +359,21 @@ find_predictors <- function(
         )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id")%>%
         magrittr::set_colnames(c(".id", "AUPR"))%>%
         # attach mean diff, will be used to scale AUPR
-        dplyr::mutate(predType = "hyper") %>%
-        dplyr::mutate(diffMeans = df_dMean_sVar[.id, ]$diffMeans) %>%
-        dplyr::mutate(sumVariance = df_dMean_sVar[.id, ]$sumVariance)
+        dplyr::mutate(pred_type = "hyper") %>%
+        dplyr::mutate(diff_means = df_dMean_sVar[.id, ]$diff_means) %>%
+        dplyr::mutate(sum_variance = df_dMean_sVar[.id, ]$sum_variance)
         if(scale_scores){
           hyperM_predictors$DiffScaledAUPR <- scales::rescale(
-            abs(hyperM_predictors$diffMeans),
+            abs(hyperM_predictors$diff_means),
             to=c(0,1)
           ) * hyperM_predictors$AUPR
         }
 
     }
-    if(any(!df_dMean_sVar$predType)){
+    if(any(!df_dMean_sVar$pred_type)){
       # get PRAUC for hypo methylated cpgs
       hypoM_predictors <- train_set %>%
-        dplyr::select(rownames(df_dMean_sVar[which(!df_dMean_sVar$predType), ])) %>%
+        dplyr::select(rownames(df_dMean_sVar[which(!df_dMean_sVar$pred_type), ])) %>%
         dplyr::summarise(dplyr::across(.cols=tidyselect:::where(is.numeric),.fns = function(x,truth){
             prroc_prauc_vec(truth = truth, estimate = 1 - x)
           },
@@ -389,12 +381,12 @@ find_predictors <- function(
         )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id")%>%
         magrittr::set_colnames(c(".id", "AUPR"))%>%
         # attach mean diff, will be used to scale AUPR
-        dplyr::mutate(predType = "hypo") %>%
-        dplyr::mutate(diffMeans = df_dMean_sVar[.id, ]$diffMeans) %>%
-        dplyr::mutate(sumVariance = df_dMean_sVar[.id, ]$sumVariance)
+        dplyr::mutate(pred_type = "hypo") %>%
+        dplyr::mutate(diff_means = df_dMean_sVar[.id, ]$diff_means) %>%
+        dplyr::mutate(sum_variance = df_dMean_sVar[.id, ]$sum_variance)
         if(scale_scores){
           hypoM_predictors$DiffScaledAUPR <- scales::rescale(
-            abs(hypoM_predictors$diffMeans),
+            abs(hypoM_predictors$diff_means),
             to=c(0,1)
           ) * hypoM_predictors$AUPR
         }
@@ -417,9 +409,9 @@ find_predictors <- function(
       MARGIN = 1,
       FUN = function(x){
 
-        pred_type = x["predType"]
+        pred_type = x["pred_type"]
         predictor = x[".id"]
-        diff_means = as.double(x["diffMeans"])
+        diff_means = as.double(x["diff_means"])
 
         if (pred_type == "hyper") {
           pred_res <- factor(ifelse(
@@ -480,7 +472,7 @@ find_predictors <- function(
       samples = rownames(holdout_res),
       predictor = oner_mod$feature,
       truth = holdout_res$target,
-      type = ifelse(df_dMean_sVar[oner_mod$feature, ]$predType, "hyper", "hypo"),
+      type = ifelse(df_dMean_sVar[oner_mod$feature, ]$pred_type, "hyper", "hypo"),
       prediction = oner_pred,
       correct = oner_pred == holdout_res$target,
       positive_prob = pred_prob
@@ -651,22 +643,26 @@ train_general_model <- function(
 #' Loop iterating through parabola selecting cpgs
 #' @return list
 parabola_iter_loop <- function(
-  df_dMean_sVar,init_step,step_increment,min_feat_search,pred_type
+  df_diffmean_sumvar,
+  init_step,
+  step_increment,
+  min_feat_search,
+  pred_type
 ){
   init_fs <- init_step
   final_param <- init_fs
-  df_dMean_sVar$selectFeat <- select_features(
-    x = df_dMean_sVar$diffMeans,
-    y = df_dMean_sVar$sumVariance,
+  df_diffmean_sumvar$select_feature <- select_features(
+    x = df_diffmean_sumvar$diff_means,
+    y = df_diffmean_sumvar$sum_variance,
     a = init_fs
   )
 
-  # Find features in feature space (diffMeans,sumVar)
+  # Find features in feature space (diff_means,sum_variance)
   i_iter <- 0
-  while (updt_selected_feats(df_dMean_sVar, min_feat_search,pred_type) & i_iter < 1000) {
-    df_dMean_sVar$selectFeat <- select_features(
-      x = df_dMean_sVar$diffMeans,
-      y = df_dMean_sVar$sumVariance,
+  while (updt_selected_feats(df_diffmean_sumvar, min_feat_search,pred_type) & i_iter < 100) {
+    df_diffmean_sumvar$select_feature <- select_features(
+      x = df_diffmean_sumvar$diff_means,
+      y = df_diffmean_sumvar$sum_variance,
       a = init_fs
     )
     final_param <- init_fs
@@ -675,10 +671,10 @@ parabola_iter_loop <- function(
   }
   message(paste0("Fold parabola parameter: ", final_param))
 
-  df_dMean_sVar <- df_dMean_sVar[which(df_dMean_sVar$selectFeat), ]
+  df_diffmean_sumvar <- df_diffmean_sumvar[which(df_diffmean_sumvar$select_feature), ]
 
   return(list(
-    df_dMean_sVar=df_dMean_sVar,
+    df_diffmean_sumvar=df_diffmean_sumvar,
     parabola_param=final_param
   ))
 }
@@ -697,24 +693,33 @@ select_features <- function(x, y, a) {
 #'     less than feat_threshold hypo CpGs have been selected
 #'   Returns FALSE if:
 #'     more than feat_threshold hyper and hypo CpGs have been selected
-updt_selected_feats <- function(df_dMean_sVar, feat_threshold = 10,pred_type=c("both","hyper","hypo")) {
-  if (!all(c("selectFeat", "diffMeans", "sumVariance") %in% colnames(df_dMean_sVar))) {
-    stop("Something went wrong when creating the diffMeans sumVariance data.frame!")
+updt_selected_feats <- function(
+  df_diffmean_sumvar,
+  feat_threshold = 10,
+  pred_type=c("both","hyper","hypo")
+) {
+  expected_cols <- c("select_feature", "diff_means", "sum_variance","pred_type")
+  if (!all(expected_cols %in% colnames(df_diffmean_sumvar))) {
+    stop("Something went wrong when creating the diff_means sum_variance data.frame!")
   }
-  if(pred_type=="hyper"){
-    updt_cond <- (
-      length(which(df_dMean_sVar[df_dMean_sVar$diffMeans >= 0, ]$selectFeat)) < feat_threshold
-    )
+  if(pred_type=="hyper" | pred_type=="both"){
+    updt_hyper <- length(
+      which(df_diffmean_sumvar$pred_type & df_diffmean_sumvar$select_feature)
+    ) < feat_threshold
+    if(pred_type=="hyper"){
+      return(updt_hyper)
+    }
   }
-  if(pred_type=="hypo"){
-    updt_cond <- (
-      length(which(df_dMean_sVar[df_dMean_sVar$diffMeans < 0, ]$selectFeat)) < feat_threshold
-    )
+  if(pred_type=="hypo" | pred_type=="both"){
+    updt_hypo <- length(
+      which(!df_diffmean_sumvar$pred_type & df_diffmean_sumvar$select_feature)
+    ) < feat_threshold
+    if(pred_type=="hypo"){
+      return(updt_hypo)
+    }
   }
-  updt_cond <- (
-    length(which(df_dMean_sVar[df_dMean_sVar$diffMeans >= 0, ]$selectFeat)) < feat_threshold |
-      length(which(df_dMean_sVar[df_dMean_sVar$diffMeans < 0, ]$selectFeat)) < feat_threshold
-  )
+
+  updt_cond <- updt_hyper | updt_hypo
   return(updt_cond)
 }
 
@@ -801,52 +806,6 @@ print_timings <- function(quiet = FALSE) {
 }
 
 
-
-#' @importFrom dplyr %>%
-compute_deconv_reference <- function(
-  signatures,
-  data,
-  target_table,
-  targets
-){
-
-  data <- data[, signatures]
-
-  ref_deconv_mat <- lapply(
-    targets,
-    function(target){
-      apply(
-        X=data,
-        MARGIN=2,
-        function(X){
-          mean(X[unlist(target_table[, target]) %in% 1])
-        }
-      )
-    }
-  ) %>%
-    magrittr::set_names(targets) %>%
-    as.data.frame() %>%
-    as.matrix()
-
-  return(ref_deconv_mat)
-}
-
-plot <- function(){
-  # TODO to implement
-  # meth_predictors %>%
-  #   slice_max(AUPR,n = 1000) %>%
-  #   ggplot(.,aes(x=diffMeans,y=sumVariance))+
-  #   geom_point(aes(col=DiffScaledAUPR),size=3)+
-  #   geom_point(aes(col=AUPR),size=1)+
-  #   scale_colour_gradientn(
-  #     colours=colorRampPalette(rev(RColorBrewer::brewer.pal(11, "Spectral")))(10),
-  #     limits=c(0,1)
-  #   )+
-  #   lims(x = c(-1,1), y = c(0,.25))+
-  #   theme_minimal()
-}
-
-
 make_train_test_split <- function(train_d,train_targets,targets,prop=0.75){
 
   if(is.null(names(targets))) names(targets) <- targets
@@ -911,4 +870,30 @@ make_train_test_split <- function(train_d,train_targets,targets,prop=0.75){
       test_targets = new_test_targets
     )
   )
+}
+
+
+compute_diffmeans_sumvar <- function(data, target_vector) {
+
+  data <- as.matrix(data)
+
+  id <- colnames(data)
+
+  diff_means <-
+    colMeans(data[target_vector, ]) - colMeans(data[!target_vector, ])
+
+  sum_variance <- {
+    matrixStats::colVars(data[target_vector, ]) +
+      matrixStats::colVars(data[!target_vector, ])
+  }
+
+  df_diffmean_sumvar <- data.frame(
+    "id" = id,
+    "diff_means" = diff_means,
+    "sum_variance" = sum_variance
+  )
+
+  df_diffmean_sumvar$pred_type <- df_diffmean_sumvar$diff_means >= 0
+
+  return(df_diffmean_sumvar)
 }

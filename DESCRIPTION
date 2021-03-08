@@ -1,8 +1,8 @@
 Package: CimpleG
 Type: Package
 Title: CimpleG - Individual/Single CpG sites For Classification and Deconvolution
-Date: 2021-03-05
-Version: 0.0.1.9027
+Date: 2021-03-08
+Version: 0.0.1.9029
 Authors@R:
     person("Tiago"," A.F.V."," Maié",
         email="tiagomaie@hotmail.com",
@@ -42,5 +42,10 @@ Suggests:
     glmnet,
     C50,
     ranger,
-    nnet
+    nnet,
+    ComplexHeatmap,
+    ggplot2,
+    ggExtra,
+    ggrepel,
+    circlize
 RoxygenNote: 7.1.1
