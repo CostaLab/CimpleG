@@ -12,6 +12,12 @@ knitr::opts_chunk$set(
 )
 ```
 
+# CimpleG <img src="man/figures/CimpleG.png" align="right" width="120" />
+
+## Overview
+
+CimpleG, an R package to find (simple) CpG signatures.
+
 ## Installation
 
 ```{r, eval = FALSE}

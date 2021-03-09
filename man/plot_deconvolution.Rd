@@ -7,8 +7,7 @@
 plot_deconvolution(
   deconv_mat,
   name_tag,
-  sorted_classes = c("Epithelial cells", "Hepatocytes", "Glia", "Neurons",
-    "Endothelial cells", "Induced pluripotent stem cells", "Blood cells", "MSCorFibro"),
+  sorted_classes,
   sort_by_class_value = TRUE,
   color_palette_df = NULL,
   facet_by_sample_group = FALSE,

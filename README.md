@@ -1,6 +1,12 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+# CimpleG <img src="man/figures/CimpleG.png" align="right" width="120" />
+
+## Overview
+
+CimpleG, an R package to find (simple) CpG signatures.
+
 ## Installation
 
 ``` r

@@ -1,4 +1,17 @@
-
+#' Represent CpGs in the difference in means, sum of variances space.
+#' This plot is often used to select CpGs that would be good classifiers.
+#' These CpGs are often located on the bottom left and
+#' bottom right of this plot.
+#'
+#' @param data Data to create difference in means, sum of variances plot.
+#'  Either a data.frame with `xcol`,`ycol` and `feature_id_col` or, if
+#'  `target_vector` is not `NULL` a matrix with beta values from which,
+#'  given the target, the difference in means between the target and others,
+#'  and the sum of variances within the target and others will be calculated.
+#'
+#'
+#'
+#'
 # plot diffmean sumvar function
 diffmeans_sumvariance_plot <- function(
   data,
