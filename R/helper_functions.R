@@ -872,7 +872,7 @@ make_train_test_split <- function(train_d,train_targets,targets,prop=0.75){
   )
 }
 
-
+#' @export
 compute_diffmeans_sumvar <- function(data, target_vector) {
 
   data <- as.matrix(data)

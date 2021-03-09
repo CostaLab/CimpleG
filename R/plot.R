@@ -1,13 +1,14 @@
 
 # plot diffmean sumvar function
-pltDiffMeanSumVarBetaAnnot <- function(
-  meanVarBeta_df,
-  xcol="diffMeans",
-  ycol="sumVariance",
-  feature_id_col="cpg_id",
+diffmeans_sumvariance_plot <- function(
+  data,
+  xcol="diff_means",
+  ycol="sum_variance",
+  feature_id_col="id",
   is_feature_selected_col=NULL,
-  label_var1,
+  label_var1="Target",
   label_var2="Others",
+  target_vector=NULL,
   mean_cutoff=NULL,
   var_cutoff=NULL,
   threshold_func=NULL,
@@ -24,26 +25,29 @@ pltDiffMeanSumVarBetaAnnot <- function(
   custom_mods=FALSE
 ){
 
-  assertthat::assert_that(is.data.frame(meanVarBeta_df))
-
-  assertthat::assert_that(xcol%in%colnames(meanVarBeta_df))
-  assertthat::assert_that(ycol%in%colnames(meanVarBeta_df))
-
-  if(!feature_id_col%in%colnames(meanVarBeta_df)){
-    meanVarBeta_df[,feature_id_col] = rownames(meanVarBeta_df)
+  if(!is.null(target_vector)){
+    assertthat::assert_that(is.matrix(data)|is.data.frame(data))
+    assertthat::assert_that(is.logical(target_vector))
+    data <- compute_diffmeans_sumvar(data,target_vector = target_vector)
   }
-  assertthat::assert_that(feature_id_col%in%colnames(meanVarBeta_df))
+
+  assertthat::assert_that(xcol%in%colnames(data))
+  assertthat::assert_that(ycol%in%colnames(data))
+
+  if(!feature_id_col%in%colnames(data)){
+    data[,feature_id_col] = rownames(data)
+  }
+  assertthat::assert_that(feature_id_col%in%colnames(data))
 
   assertthat::assert_that(typeof(label_var1) == 'character' && typeof(label_var2) == 'character')
   # NULL or else
-  assertthat::assert_that(is_feature_selected_col %in% colnames(meanVarBeta_df) || is.null(is_feature_selected_col))
+  assertthat::assert_that(is_feature_selected_col %in% colnames(data) || is.null(is_feature_selected_col))
   assertthat::assert_that(typeof(mean_cutoff) == 'double' || is.null(mean_cutoff))
   assertthat::assert_that(typeof(var_cutoff) == 'double' || is.null(var_cutoff))
   assertthat::assert_that(typeof(func_factor) == 'double' || is.null(func_factor))
   assertthat::assert_that(is.function(threshold_func) || is.null(threshold_func))
-  # assertthat::assert_that()
 
-  density_type = match.arg(density_type)
+  density_type <- match.arg(density_type)
 
   best_cpgs_df<-NULL
   if(!is.null(cpg_ranking_df)){
@@ -67,9 +71,9 @@ pltDiffMeanSumVarBetaAnnot <- function(
 
   #message("plt diffMean,sumVariance")
   if(!is.null(is_feature_selected_col)){
-    plt_diffMeanSumVar <- ggplot(
-      meanVarBeta_df,
-      aes(
+    plt_diffMeanSumVar <- ggplot2::ggplot(
+      data,
+      ggplot2::aes(
         x=!!sym(xcol),
         y=!!sym(ycol),
         fill=!!sym(is_feature_selected_col),
@@ -78,37 +82,37 @@ pltDiffMeanSumVarBetaAnnot <- function(
     )
 
     point_color_vec <- ifelse(
-      meanVarBeta_df[,is_feature_selected_col],
+      data[,is_feature_selected_col],
       points_color,
       light_points_color
     )
     plt_diffMeanSumVar <- plt_diffMeanSumVar +
-      geom_point(
+      ggplot2::geom_point(
         colour=point_color_vec,
         alpha=0.5)
   }else{
-    plt_diffMeanSumVar <- ggplot(
-      meanVarBeta_df,
-      aes(x=!!sym(xcol), y=!!sym(ycol))
+    plt_diffMeanSumVar <- ggplot2::ggplot(
+      data,
+      ggplot2::aes(x=!!sym(xcol), y=!!sym(ycol))
     )
     if(!is.null(feats_to_highlight)){
       plt_diffMeanSumVar <- plt_diffMeanSumVar +
-        geom_point(
+        ggplot2::geom_point(
           data=function(x){x[!x[,feature_id_col] %in% feats_to_highlight,]},
           colour=points_color,
           alpha=0.3)+
-        geom_point(
+        ggplot2::geom_point(
           data=function(x){x[x[,feature_id_col] %in% feats_to_highlight,]},
           colour=ifelse(!is.null(best_cpgs_df),"orange3","red"),
           alpha=1)
     }else{
       plt_diffMeanSumVar <- plt_diffMeanSumVar +
-        geom_point(colour=points_color,alpha=0.3)
+        ggplot2::geom_point(colour=points_color,alpha=0.3)
     }
   }
 
   if(!is.null(best_cpgs_df)){
-    plt_diffMeanSumVar <- plt_diffMeanSumVar + geom_point(
+    plt_diffMeanSumVar <- plt_diffMeanSumVar + ggplot2::geom_point(
       data=function(x){x[x[,feature_id_col] %in% best_cpgs_df$.id,]},
       colour="red",
       alpha=1
@@ -117,9 +121,9 @@ pltDiffMeanSumVarBetaAnnot <- function(
     best_label <- paste0(best_cpgs_df$Rank,"#",best_cpgs_df$.id)
 
     plt_diffMeanSumVar <- plt_diffMeanSumVar +
-      geom_label_repel(
-        data = meanVarBeta_df[best_cpgs_df$.id,],
-        aes(
+      ggrepel::geom_label_repel(
+        data = data[best_cpgs_df$.id,],
+        ggplot2::aes(
           x=!!sym(xcol),
           y=!!sym(ycol),
           label=best_label
@@ -139,9 +143,9 @@ pltDiffMeanSumVarBetaAnnot <- function(
     length(feats_to_highlight)>2
   ){
     plt_diffMeanSumVar <- plt_diffMeanSumVar +
-      geom_label_repel(
-        data = meanVarBeta_df[feats_to_highlight,],
-        aes(
+      ggrepel::geom_label_repel(
+        data = data[feats_to_highlight,],
+        ggplot2::aes(
           x=!!sym(xcol),
           y=!!sym(ycol),
           label=feats_to_highlight
@@ -157,35 +161,20 @@ pltDiffMeanSumVarBetaAnnot <- function(
         max.iter=10000
       )
   }
-    # Regions #BUG ggMarginal
-    # plt_diffMeanSumVar <- plt_diffMeanSumVar +
-    # geom_tile(data=data.frame(x=seq(0,1,0.01), y=0),
-    #           inherit.aes = FALSE,
-    #           aes(x=x, y=y,alpha=abs(x)),fill="red")+
-    # geom_tile(data=data.frame(x=seq(-1,0,0.01), y=0),
-    #           inherit.aes = FALSE,
-    #           aes(x=x, y=y,alpha=abs(x)),fill="blue")+
-    # scale_alpha(guide=FALSE,range = c(0.0, 0.15))
-
 
   if(!is.null(mean_cutoff) & !is.null(var_cutoff)){
     plt_diffMeanSumVar <- plt_diffMeanSumVar +
-      geom_vline(xintercept = -mean_cutoff, alpha=0.5) +
-      geom_vline(xintercept = mean_cutoff, alpha=0.5) +
-      geom_vline(xintercept = 0, alpha=0.5) +
-      geom_hline(yintercept = var_cutoff, alpha=0.5)
+      ggplot2::geom_vline(xintercept = -mean_cutoff, alpha=0.5) +
+      ggplot2::geom_vline(xintercept = mean_cutoff, alpha=0.5) +
+      ggplot2::geom_vline(xintercept = 0, alpha=0.5) +
+      ggplot2::geom_hline(yintercept = var_cutoff, alpha=0.5)
   }
 
   plt_diffMeanSumVar <- plt_diffMeanSumVar +
-  labs(
-    x=expression(bar(beta)[paste(cell)] - bar(beta)[others]),
+  ggplot2::labs(
+    x=expression(bar(beta)[paste(cell)] - bar(beta)[paste(others)]),
     y=expression(var(beta[paste(cell)]) + var(beta[paste(others)])),
     title=paste0(label_var1," vs ",label_var2),
-    subtitle=ifelse(
-      !is.null(best_cpgs_df)||!is.null(feats_to_highlight),
-      "Best predictors (hyper and hypo) are annotated.",
-      ""
-    ),
     caption=unlist(ifelse(is.null(id_tag),waiver(),id_tag))
   )
   # FIXME control creation of simple_plot
@@ -200,7 +189,7 @@ pltDiffMeanSumVarBetaAnnot <- function(
         replacement = func_factor
       )
     )
-    label_ypos <- quantile(meanVarBeta_df$sumVariance)["75%"]
+    label_ypos <- quantile(data$sumVariance)["75%"]
     label_xpos <- 0
 
 
@@ -225,21 +214,21 @@ pltDiffMeanSumVarBetaAnnot <- function(
       )
 
       funlabel<-alt_funlabel
-      label_ypos <- (quantile(meanVarBeta_df[,ycol])["100%"]+quantile(meanVarBeta_df[,ycol])["75%"])/3
+      label_ypos <- (quantile(data[,ycol])["100%"]+quantile(data[,ycol])["75%"])/3
       label_xpos <- 0.
 
       plt_diffMeanSumVar <- plt_diffMeanSumVar +
-        geom_text(
+        ggplot2::geom_text(
           inherit.aes=FALSE,
           data=data.frame(
             x=c(-1,1),
             y=c(0,0),
             txt=c(
-              paste0("n[hypo]==",nrow(meanVarBeta_df[meanVarBeta_df[,xcol]<0 & meanVarBeta_df$selected_feat,])),
-              paste0("n[hyper]==",nrow(meanVarBeta_df[meanVarBeta_df[,xcol]>0 & meanVarBeta_df$selected_feat,]))
+              paste0("n[hypo]==",nrow(data[data[,xcol]<0 & data$selected_feat,])),
+              paste0("n[hyper]==",nrow(data[data[,xcol]>0 & data$selected_feat,]))
             )
           ),
-          aes(
+          ggplot2::aes(
             x=x,
             y=y,
             label=txt
@@ -252,10 +241,10 @@ pltDiffMeanSumVarBetaAnnot <- function(
     }
 
     simple_plot = simple_plot +
-      stat_function(
+      ggplot2::stat_function(
         inherit.aes=FALSE,
         data = data.frame(x=c(-1,1)),
-        aes(x),
+        ggplot2::aes(x),
         fun=threshold_func,
         args=func_factor,
         size=1.5,
@@ -264,17 +253,17 @@ pltDiffMeanSumVarBetaAnnot <- function(
       )
 
     plt_diffMeanSumVar <- plt_diffMeanSumVar +
-      stat_function(
+      ggplot2::stat_function(
         inherit.aes=FALSE,
         data = data.frame(x=c(-1,1)),
-        aes(x),
+        ggplot2::aes(x),
         fun=threshold_func,
         args=func_factor,
         size=1.5,
         geom="line",
         color="grey40"
       )+
-      annotate(
+      ggplot2::annotate(
         geom="label",
         label=funlabel,
         # size=7,
@@ -290,15 +279,15 @@ pltDiffMeanSumVarBetaAnnot <- function(
     length(feats_to_highlight)>0
   ){
     plt_diffMeanSumVar <- plt_diffMeanSumVar +
-      geom_label_repel(
-        data = meanVarBeta_df[feats_to_highlight,],
-        aes(
+      ggrepel::geom_label_repel(
+        data = data[feats_to_highlight,],
+        ggplot2::aes(
           x=!!sym(xcol),
           y=!!sym(ycol),
           label=feats_to_highlight
         ),
-        arrow = arrow(
-          length = unit(0.05, "npc"),
+        arrow = grid::arrow(
+          length = grid::unit(0.05, "npc"),
           type = "closed",
           ends = "last"
         ),
@@ -317,15 +306,15 @@ pltDiffMeanSumVarBetaAnnot <- function(
         xlim=c(-1.,1.),ylim=c(0.3,0.4)
       )
       simple_plot = simple_plot +
-        geom_label_repel(
-          data = meanVarBeta_df[feats_to_highlight,],
-          aes(
+        ggrepel::geom_label_repel(
+          data = data[feats_to_highlight,],
+          ggplot2::aes(
             x=!!sym(xcol),
             y=!!sym(ycol),
             label=feats_to_highlight
           ),
-          arrow = arrow(
-            length = unit(0.05, "npc"),
+          arrow = grid::arrow(
+            length = grid::unit(0.05, "npc"),
             type = "closed",
             ends = "last"
           ),
@@ -346,43 +335,43 @@ pltDiffMeanSumVarBetaAnnot <- function(
   }
 
   ymaxlim <- ifelse(
-    max(meanVarBeta_df[,ycol])<0.4,
+    max(data[,ycol])<0.4,
     0.4,
-    max(meanVarBeta_df[,ycol])
+    max(data[,ycol])
   )
 
   plt_diffMeanSumVar <- plt_diffMeanSumVar +
     #scale_color_manual(values = color_vals)+
-    theme_minimal(base_size=18)+
-    theme(
+    ggplot2::theme_minimal(base_size=18)+
+    ggplot2::theme(
       legend.position="none",
-      axis.title.y = element_text(face="bold",size=22),
-      axis.title.x = element_text(face="bold",size=22),
-      axis.text.x = element_text(face="bold",size=22),
-      axis.text.y = element_text(face="bold",size=22),
-      plot.caption = element_text(size=9)
+      axis.title.y = ggplot2::element_text(face="bold",size=22),
+      axis.title.x = ggplot2::element_text(face="bold",size=22),
+      axis.text.x = ggplot2::element_text(face="bold",size=22),
+      axis.text.y = ggplot2::element_text(face="bold",size=22),
+      plot.caption = ggplot2::element_text(size=9)
     )+
-    xlim(c(-1,1))+
-    ylim(c(0,ymaxlim))
+    ggplot2::xlim(c(-1,1))+
+    ggplot2::ylim(c(0,ymaxlim))
   #print(plt_diffMeanSumVar)
 
   simple_plot = simple_plot +
-    theme_minimal(base_size=18)+
-    theme(
+    ggplot2::theme_minimal(base_size=18)+
+    ggplot2::theme(
       legend.position="none",
-      axis.title.y = element_text(face="bold",size=22),
-      axis.title.x = element_text(face="bold",size=22),
-      axis.text.x = element_text(face="bold",size=22),
-      axis.text.y = element_text(face="bold",size=22),
-      plot.caption = element_text(size=9)
+      axis.title.y = ggplot2::element_text(face="bold",size=22),
+      axis.title.x = ggplot2::element_text(face="bold",size=22),
+      axis.text.x = ggplot2::element_text(face="bold",size=22),
+      axis.text.y = ggplot2::element_text(face="bold",size=22),
+      plot.caption = ggplot2::element_text(size=9)
     )+
-    xlim(c(-1,1))+
-    ylim(c(0,ymaxlim))
+    ggplot2::xlim(c(-1,1))+
+    ggplot2::ylim(c(0,ymaxlim))
 
   if(pltDensity){
-    plt_diffMeanSumVar <- ggMarginal(
+    plt_diffMeanSumVar <- ggExtra::ggMarginal(
       p=plt_diffMeanSumVar,
-      data=meanVarBeta_df,
+      data=data,
       x=xcol,
       y=ycol,
       groupFill=!is.null(is_feature_selected_col),
@@ -390,9 +379,9 @@ pltDiffMeanSumVarBetaAnnot <- function(
       type=density_type,
       size=10)
 
-    simple_plot = ggMarginal(
+    simple_plot = ggExtra::ggMarginal(
       p=simple_plot,
-      data=meanVarBeta_df,
+      data=data,
       x=xcol,
       y=ycol,
       groupFill=!is.null(is_feature_selected_col),
@@ -401,103 +390,43 @@ pltDiffMeanSumVarBetaAnnot <- function(
       size=10)
   }
 
-  name_tag <- ifelse(
-    is.null(file_tag),
-    "_diffMeanSumVar",
-    paste0("_",file_tag,"_diffMeanSumVar")
+  fname_tag <- paste0(
+    "target-",
+    label_var1,
+    "_",
+    file_tag,
+    "_",
+    id_tag,
+    format(Sys.time(),"%Y%m%d-%H%M%S")
   )
 
-  if(!is.null(plot_dir)){
-
-    f_name = paste0(
-      format(Sys.time(),"%Y%m%d-%H%M%S"),
-      "_cond-",
-      label_var1,
-      name_tag
-    )
-
-    f_path_png = file.path(plot_dir,paste0(f_name,".png"))
-    f_path_pdf = file.path(plot_dir,paste0(f_name,".pdf"))
-
-    if(dir.exists(file.path(plot_dir,"png")) & dir.exists(file.path(plot_dir,"pdf"))){
-      f_path_png = file.path(plot_dir,"png",paste0(f_name,".png"))
-      f_path_pdf = file.path(plot_dir,"pdf",paste0(f_name,".pdf"))
-    }
-
-    ggsave(
-      filename=f_path_png,
-      plot = plt_diffMeanSumVar,
-      device = "png",
-      units = "cm",
-      width = 20,
-      height = 20)
-    # ggsave(
-    #   filename=f_path_pdf,
-    #   plot = plt_diffMeanSumVar,
-    #   device = "pdf",
-    #   units = "cm",
-    #   width = 5,
-    #   height = 5)
-
-    ggsave(
-      filename=gsub(
-        x=f_path_png,
-        pattern=name_tag,
-        replacement="_diffMeanSumVar_simple"
-      ),
-      plot = simple_plot,
-      device = "png",
-      units = "cm",
-      width = 20,
-      height = 20)
-    # ggsave(
-    #   filename=gsub(
-    #     x=f_path_pdf,
-    #     pattern=name_tag,
-    #     replacement="_diffMeanSumVar_simple"
-    #   ),
-    #   plot = simple_plot,
-    #   device = "pdf",
-    #   units = "cm",
-    #   width = 5,
-    #   height = 5
-    # )
-
-
-  }
+  save_different_plot_format(
+    plt = plt_diffMeanSumVar,
+    plot_dir = plot_dir,
+    create_plot_subdir = FALSE,
+    save_device = c("ggplot"),
+    type_name = "diffmean_sumvar_plot",
+    name_tag = fname_tag,
+    formats = c("png"),
+    units = "cm",
+    width = 15,
+    height = 15
+  )
+  save_different_plot_format(
+    plt = plt_diffMeanSumVar,
+    plot_dir = plot_dir,
+    create_plot_subdir = FALSE,
+    save_device = c("ggplot"),
+    type_name = "diffmean_sumvar_simpleplot",
+    name_tag = fname_tag,
+    formats = c("png"),
+    units = "cm",
+    width = 15,
+    height = 15
+  )
   return(plt_diffMeanSumVar)
 }
 
-if(FALSE){
-  selected_features = readRDS("/home/tiago/R_projects/DNAmSignatures/ProcessGEOData/output/feature_selection/ver2.0.0_MSCORFIBRO_rfk-0.01_M-cvglmnet_fw-aupr_DEBUG-test_selected_features.RDS")
-  mean_var_df = readRDS("/home/tiago/R_projects/DNAmSignatures/ProcessGEOData/input_data/train_test_data/2.0.0/training_data_CELL_TYPE_mean_var_stats_list_2.0.0.RDS")
-
-
-  resp_classes <- toupper(data.table::fread(file.path("src","selected_vars_train.txt"),header=F)[[1]])
-
-  mean_var_df = (mean_var_df$CELL_TYPE_MSCORFIBRO)
-  mean_var_df$CPG_ID = rownames(mean_var_df)
-
-  mean_var_df$IS_SELECTED = mean_var_df$CPG_ID %in% selected_features
-
-
-# is_feature_selected_col="selected_feat"
-pltDiffMeanSumVarBetaAnnot(
-  meanVarBeta_df = mean_var_df,
-  xcol="DIFF_MEANS",
-  ycol="SUM_VARIANCE",
-  feature_id_col="CPG_ID",
-  # is_feature_selected_col="IS_SELECTED",
-  feats_to_highlight=selected_features[1:20],
-  is_feature_selected_col=NULL,
-  label_var1="mscfib",
-  label_var2="other",
-  plot_dir=NULL,
-  pltDensity=TRUE,
-  density_type="density"
-)
-
-}
 
 
 plot <- function(){

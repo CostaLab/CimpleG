@@ -34,3 +34,25 @@ save_different_plot_format <- function(
     }
   }
 }
+
+
+#' @export
+make_color_palette <- function(classes){
+  if(requireNamespace("ggsci",quietly = TRUE)){
+    color_palette_df <- data.frame(
+      classes=classes,
+      class_color=colorRampPalette(ggsci::pal_ucscgb()(26))(length(classes))
+    )
+  }else if(requireNamespace("RColorBrewer",quietly = TRUE)){
+    color_palette_df <- data.frame(
+      classes=classes,
+      class_color=colorRampPalette(RColorBrewer::brewer.pal(9,"Set1"))(length(classes))
+    )
+  }else{
+    color_palette_df <- data.frame(
+      classes=classes,
+      class_color=colorRampPalette(rainbow(length(classes)+1))(length(classes))
+    )
+  }
+  return(color_palette_df)
+}

@@ -4,16 +4,7 @@
 plot_deconvolution <- function(
   deconv_mat,  # Classes as rows, Samples as columns
   name_tag,
-  sorted_classes=c(
-    'Epithelial cells',
-    'Hepatocytes',
-    'Glia',
-    'Neurons',
-    'Endothelial cells',
-    'Induced pluripotent stem cells',
-    'Blood cells',
-    'MSCorFibro'
-  ),
+  sorted_classes,
   sort_by_class_value=TRUE,
   color_palette_df=NULL,
   facet_by_sample_group=FALSE,
@@ -33,13 +24,8 @@ plot_deconvolution <- function(
 
   message(">>> Plotting deconvoltion results")
 
-  suppressPackageStartupMessages(library("ggplot2"))
-  suppressPackageStartupMessages(library("dplyr"))
-  source("./src/Cell_type_color_code.R")
-
   if(any(is.na(deconv_mat))){
-    warning("Returning NULL. 'deconv_mat' has NA values.")
-    return(NULL)
+    stop("'deconv_mat' has NA values.")
   }
 
   assertthat::assert_that(all(sorted_classes %in% rownames(deconv_mat)))
@@ -51,32 +37,21 @@ plot_deconvolution <- function(
   assertthat::assert_that(is.character(group_split_chr))
   assertthat::assert_that(is.numeric(group_split_pos))
 
-  facet_x_space = match.arg(facet_x_space)
+  facet_x_space <- match.arg(facet_x_space)
 
   if(is.null(color_palette_df)){
-    color_palette_df <- proj_kelly_palette(
-      save_plt=FALSE,
-      print_plt=FALSE
-    )
-    color_palette_df[grep(tolower("MSCORFIBRO"),color_palette_df$cell_type),"hexcode"]<-color_palette_df[grep(tolower("FIBROBLAST"),color_palette_df$cell_type),"hexcode"]
+    color_palette_df <- make_color_palette(sorted_classes)
   }
 
-  deconv_mat_long <- reshape2::melt(deconv_mat)
-  colnames(deconv_mat_long) <- c("Classes","Samples","Value")
+  deconv_mat_long <- reshape2::melt(dec_res) %>%
+    magrittr::set_names(c("Classes","Samples","Value"))
 
-  class_colors <- get_cell_colors(
-    celltype_vec=as.character(deconv_mat_long$Classes),
-    palette_df=color_palette_df
-  )
+  deconv_mat_long$class_colors <-
+    color_palette_df[match(deconv_mat_long$Classes,color_palette_df$classes),]$class_color
 
-  deconv_mat_long$class_colors <- class_colors
-
-  color_tbl<-unique(deconv_mat_long[,c("Classes","class_colors")])
-  color_tbl$Classes<-as.character(color_tbl$Classes)
-  color_vec<-color_tbl$class_color
-  names(color_vec)<-color_tbl$Classes
-  color_vec<-color_vec[rev(sorted_classes)]
-
+  color_vec <-
+    color_palette_df$class_color %>%
+    magrittr::set_names(color_palette_df$classes)
 
   if(facet_by_sample_group){
     deconv_mat_long$groups <- stringr::str_split(
