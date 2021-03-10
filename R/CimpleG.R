@@ -19,7 +19,7 @@
 #'  to be used for training.
 #'  If this argument is a character vector, CimpleG will search for the
 #'  best predictors for each target sequentially or in parallel depending on the
-#'  value of `n_cores`
+#'  value of `run_parallel`
 #'
 #' @param test_data Testing dataset.
 #'  A matrix (s x f) with methylation data (Beta values)
@@ -64,10 +64,12 @@
 #'  in training for the stratified N-repeats K-fold cross-validation procedure.
 #'  Currently not in use.
 #'
-#' @param n_cores If larger than `1`, the default, it will use that many cores,
-#'  to search for predictors for multiple targets (up to `n_cores`)
+#' @param run_parallel A boolean, if `FALSE`, the default, it will search
+#'  for predictors for multiple targets sequentially.
+#'  If `TRUE` it will search for predictors for multiple targets
 #'  at the same time (parallel processing) in order to save
-#'  in computational time.
+#'  in computational time. You need to set up `future::plan()` before running
+#'  this function.
 #'
 #' @examples
 #' library("CimpleG")
@@ -115,7 +117,7 @@ CimpleG <- function(
   k_folds = 10,
   grid_n=10,
   n_repeats = 1,
-  n_cores=1
+  run_parallel=FALSE
 ) {
   # TODO make some diagnostic plots
 
@@ -166,14 +168,6 @@ CimpleG <- function(
   selected_pred_type <- match.arg(pred_type, choices = c("both","hypo","hyper"))
   assertthat::assert_that(grid_n > 0)
 
-  if(n_cores>1){
-    # options(future.globals.maxSize=2000 * 1024 ^ 2)
-    options(future.globals.maxSize=Inf)
-    future::plan(future::multisession(),workers=n_cores)
-    on.exit(future::plan(future::sequential()))
-  }else{
-    # future::plan(future::sequential())
-  }
 
   is_simple_method <- selected_method %in% c("adhoc", "parab", "parab_scale", "oner")
 
@@ -235,11 +229,11 @@ CimpleG <- function(
     ))
   }
 
-  if(n_cores>1){
-    res <- furrr::future_map(
-      .x=targets,
-      .options = furrr::furrr_options(seed = TRUE),
-      .f=work_helper
+  if(run_parallel){
+    res <- future.apply::future_lapply(
+      X = targets,
+      FUN = work_helper,
+      future.seed = TRUE
     ) %>% magrittr::set_names(targets)
   }else{
     res <- purrr::map(
