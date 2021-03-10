@@ -33,7 +33,7 @@ test_targets <- as.data.frame(test_targets)
 
 ncpgs <- ncol(train_data)
 set.seed(42)
-random_cpgs <- sample.int(ncpgs, 10000)
+random_cpgs <- sample.int(ncpgs, 1000)
 
 train_data <- train_data[,random_cpgs ]
 test_data <- test_data[,random_cpgs ]

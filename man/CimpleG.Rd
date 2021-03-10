@@ -18,7 +18,7 @@ CimpleG(
   k_folds = 10,
   grid_n = 10,
   n_repeats = 1,
-  n_cores = 1
+  run_parallel = FALSE
 )
 }
 \arguments{
@@ -40,7 +40,7 @@ Can be a character vector if there are several columns in `train_targets`
 to be used for training.
 If this argument is a character vector, CimpleG will search for the
 best predictors for each target sequentially or in parallel depending on the
-value of `n_cores`}
+value of `run_parallel`}
 
 \item{test_data}{Testing dataset.
 A matrix (s x f) with methylation data (Beta values)
@@ -85,10 +85,12 @@ in training for the stratified K-fold cross-validation procedure.}
 in training for the stratified N-repeats K-fold cross-validation procedure.
 Currently not in use.}
 
-\item{n_cores}{If larger than `1`, the default, it will use that many cores,
-to search for predictors for multiple targets (up to `n_cores`)
+\item{run_parallel}{A boolean, if `FALSE`, the default, it will search
+for predictors for multiple targets sequentially.
+If `TRUE` it will search for predictors for multiple targets
 at the same time (parallel processing) in order to save
-in computational time.}
+in computational time. You need to set up `future::plan()` before running
+this function.}
 }
 \description{
 Train a classification model using (CpGs) as features
