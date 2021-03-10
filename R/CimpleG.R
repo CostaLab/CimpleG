@@ -167,6 +167,9 @@ CimpleG <- function(
 
   is_simple_method <- selected_method %in% c("adhoc", "parab", "parab_scale", "oner")
 
+  train_data <- as.data.frame(train_data)
+  test_data <- as.data.frame(test_data)
+
 
   work_helper <- function(target) {
     train_target_vec <- factor(ifelse(
