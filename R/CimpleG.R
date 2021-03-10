@@ -164,79 +164,87 @@ CimpleG <- function(
     )
   )
   selected_pred_type <- match.arg(pred_type, choices = c("both","hypo","hyper"))
-  assertthat::assert_that(is.numeric(n_cores))
   assertthat::assert_that(grid_n > 0)
 
-
   if(n_cores>1){
+    options(future.globals.maxSize=2000 * 1024 ^ 2)#4Gb
     future::plan(future::multisession(),workers=n_cores)
-    options(future.globals.maxSize=4000 * 1024 ^ 2)#4Gb
   }else{
-    future::plan(future::sequential())
+    # future::plan(future::sequential())
   }
 
   is_simple_method <- selected_method %in% c("adhoc", "parab", "parab_scale", "oner")
 
-  res <- furrr::future_map(
-    .x=targets,
-    .options = furrr::furrr_options(seed = TRUE),
-    .f=function(target) {
-      train_target_vec <- factor(ifelse(
-        train_targets[, target] == 1,
-        "positive_class",
-        "negative_class"
-      ), levels = c("positive_class", "negative_class"))
-      test_target_vec <- factor(ifelse(
-        test_targets[, target] == 1,
-        "positive_class",
-        "negative_class"
-      ), levels = c("positive_class", "negative_class"))
 
-      train_data$target <- train_target_vec
-      test_data$target <- test_target_vec
-      message(
-        paste0(
-          "Training for target '",target,
-          "' with '",selected_method," is starting..."
-        )
+  work_helper <- function(target) {
+    train_target_vec <- factor(ifelse(
+      train_targets[, target] == 1,
+      "positive_class",
+      "negative_class"
+    ), levels = c("positive_class", "negative_class"))
+    test_target_vec <- factor(ifelse(
+      test_targets[, target] == 1,
+      "positive_class",
+      "negative_class"
+    ), levels = c("positive_class", "negative_class"))
+
+    train_data$target <- train_target_vec
+    test_data$target <- test_target_vec
+    message(
+      paste0(
+        "Training for target '",target,
+        "' with '",selected_method," is starting..."
       )
-      if(is_simple_method){
-        train_res <- do_cv(
-          train_data = train_data,
-          method = selected_method,
-          k_folds = k_folds,
-          n_repeats = n_repeats,
-          pred_type = selected_pred_type,
-          target_name=target
-        )
+    )
+    if(is_simple_method){
+      train_res <- do_cv(
+        train_data = train_data,
+        method = selected_method,
+        k_folds = k_folds,
+        n_repeats = n_repeats,
+        pred_type = selected_pred_type,
+        target_name=target
+      )
 
-        test_res <- eval_test_data(
-          test_data = test_data,
-          final_model = train_res$model,
-          method = selected_method
-        )
-      }else{
-        train_res <- train_general_model(
-          train_data = train_data,
-          k_folds = k_folds,
-          model_type = selected_method,
-          engine = engine,
-          grid_n = grid_n,
-          target_name = target
-        )
+      test_res <- eval_test_data(
+        test_data = test_data,
+        final_model = train_res$model,
+        method = selected_method
+      )
+    }else{
+      train_res <- train_general_model(
+        train_data = train_data,
+        k_folds = k_folds,
+        model_type = selected_method,
+        engine = engine,
+        grid_n = grid_n,
+        target_name = target
+      )
 
-        test_res <- eval_general_model(
-          test_data = test_data,
-          final_model = train_res
-        )
-      }
-
-      return(list(
-        train_res = train_res,
-        test_perf = test_res
-      ))
+      test_res <- eval_general_model(
+        test_data = test_data,
+        final_model = train_res
+      )
     }
-  ) %>% magrittr::set_names(targets)
+
+    return(list(
+      train_res = train_res,
+      test_perf = test_res
+    ))
+  }
+
+  if(n_cores>1){
+    res <- furrr::future_map(
+      .x=targets,
+      .options = furrr::furrr_options(seed = TRUE),
+      .f=work_helper
+    ) %>% magrittr::set_names(targets)
+  }else{
+    res <- purrr::map(
+      .x=targets,
+      .f=work_helper
+    ) %>% magrittr::set_names(targets)
+  }
 
   if(is_simple_method){
     signatures = purrr::map_chr(
