@@ -36,16 +36,20 @@ devtools::install_local("~/Downloads/CimpleG_0.0.1.XXXX.tar.gz")
 ```{r, eval = FALSE}
 library("CimpleG")
 
-train_d <- readRDS(file.path("data","mock_train.RDS"))
-test_d <- readRDS(file.path("data","mock_test.RDS"))
-train_target <- readRDS(file.path("data","mock_train_targets.RDS"))
-test_target <- readRDS(file.path("data","mock_test_targets.RDS"))
+data(train_data)
+data(train_targets)
+data(test_data)
+data(test_targets)
+
+# check the train_targets table to see
+# what other columns can be used as targets
+# colnames(train_targets)
 
 cimpleg_result <- CimpleG(
-  train_data = train_d,
-  train_targets = train_target,
-  test_data = test_d,
-  test_targets = test_target,
+  train_data = train_data,
+  train_targets = train_targets,
+  test_data = test_data,
+  test_targets = test_targets,
   targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS")
 )
 
