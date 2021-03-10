@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^test_data$
+^data-raw$
 ^devel$
 ^.*\.RData$
 ^Makefile$
