@@ -150,10 +150,6 @@ CimpleG <- function(
   assertthat::assert_that(all(targets %in% colnames(test_targets)))
   assertthat::are_equal(nrow(test_data), nrow(test_targets))
 
-  # Check parallel params
-  assertthat::assert_that(is.numeric(n_cores))
-  assertthat::assert_that(n_cores > 0)
-
   # Check method params
   selected_method <- match.arg(
     method,
