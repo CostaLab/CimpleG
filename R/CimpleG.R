@@ -167,8 +167,10 @@ CimpleG <- function(
   assertthat::assert_that(grid_n > 0)
 
   if(n_cores>1){
-    options(future.globals.maxSize=2000 * 1024 ^ 2)#4Gb
+    # options(future.globals.maxSize=2000 * 1024 ^ 2)
+    options(future.globals.maxSize=Inf)
     future::plan(future::multisession(),workers=n_cores)
+    on.exit(future::plan(future::sequential()))
   }else{
     # future::plan(future::sequential())
   }
