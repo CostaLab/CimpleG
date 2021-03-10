@@ -43,7 +43,7 @@ plot_deconvolution <- function(
     color_palette_df <- make_color_palette(sorted_classes)
   }
 
-  deconv_mat_long <- reshape2::melt(dec_res) %>%
+  deconv_mat_long <- reshape2::melt(deconv_mat) %>%
     magrittr::set_names(c("Classes","Samples","Value"))
 
   deconv_mat_long$class_colors <-
