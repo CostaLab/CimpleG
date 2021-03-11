@@ -65,4 +65,5 @@ Suggests:
     ggsci,
     ggsignif,
     grDevices
+Remotes: bioc::release/Biobase
 RoxygenNote: 7.1.1
