@@ -32,3 +32,6 @@ build_site:
 
 build_publish:
 	Rscript -e 'usethis::use_github_action("pkgdown")'
+
+githubactions_check:
+	Rscript -e 'usethis::use_github_actions()'
