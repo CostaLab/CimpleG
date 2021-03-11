@@ -7,6 +7,11 @@
 
 CimpleG, an R package to find (simple) CpG signatures.
 
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/tiagomaie/CimpleG/workflows/R-CMD-check/badge.svg)](https://github.com/tiagomaie/CimpleG/actions)
+<!-- badges: end -->
+
 ## Installation
 
 ``` r
