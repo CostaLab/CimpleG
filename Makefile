@@ -2,9 +2,6 @@
 install_package:
 	Rscript -e "devtools::install('.')"
 
-ignore_inbuild:
-	Rscript -e 'usethis::use_build_ignore(c("test_data","devel","update_version.sh"))'
-	
 check_package:
 	Rscript -e "devtools::check('.')"
 
@@ -36,5 +33,5 @@ build_publish:
 githubactions_check:
 	Rscript -e 'usethis::use_github_actions()'
 
-update_description_pkgs:
+update_pkg_setup:
 	Rscript setup_proj.R

@@ -2,7 +2,13 @@
 # setup_project
 usethis::proj_activate(".")
 
+# ignore
+usethis::use_build_ignore(c(
+  "test_data","devel","update_version.sh",
+  "setup_proj.R"
+))
 
+# use pkg
 usethis::use_package("tictoc")
 usethis::use_package("tidymodels", type="depends")
 usethis::use_package("rsample")
@@ -39,12 +45,12 @@ usethis::use_package("glmnet", "suggests")
 usethis::use_package("C50", "suggests")
 usethis::use_package("ranger", "suggests")
 usethis::use_package("nnet", "suggests")
-usethis::use_package("ComplexHeatmap", "suggests", min_version="2.6.2")
+# usethis::use_package("ComplexHeatmap", "suggests", min_version="2.6.2")
 usethis::use_package("ggplot2", "suggests")
 usethis::use_package("ggExtra", "suggests")
 usethis::use_package("ggrepel", "suggests")
 usethis::use_package("circlize", "suggests")
-usethis::use_package("EpiDISH", "suggests", min_version="2.6.0")
+# usethis::use_package("EpiDISH", "suggests", min_version="2.6.0")
 usethis::use_package("NMF", "suggests")
 usethis::use_package("RColorBrewer", "suggests")
 usethis::use_package("forcats", "suggests")
