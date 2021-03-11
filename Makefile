@@ -35,3 +35,6 @@ build_publish:
 
 githubactions_check:
 	Rscript -e 'usethis::use_github_actions()'
+
+update_description_pkgs:
+	Rscript setup_proj.R

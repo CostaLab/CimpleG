@@ -15,10 +15,10 @@ BugReports: https://github.com/tiagomaie/CimpleG/issues
 Encoding: UTF-8
 LazyData: true
 Depends:
-    R (>= 4.0)
+    R (>= 4.0),
+    tidymodels
 Imports:
     tictoc,
-    tidymodels,
     rsample,
     yardstick,
     caret,
@@ -53,12 +53,12 @@ Suggests:
     C50,
     ranger,
     nnet,
-    ComplexHeatmap,
+    ComplexHeatmap (>= 2.6.2),
     ggplot2,
     ggExtra,
     ggrepel,
     circlize,
-    EpiDISH,
+    EpiDISH (>= 2.6.0),
     NMF,
     RColorBrewer,
     forcats,
