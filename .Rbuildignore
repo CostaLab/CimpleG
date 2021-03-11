@@ -9,3 +9,7 @@
 ^README\.Rmd$
 ^update_version\.sh$
 ^.*\.png$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$

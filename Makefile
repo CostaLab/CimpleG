@@ -23,3 +23,12 @@ document_package:
 
 update_package_version:
 	bash update_version.sh
+
+use_pkgdown:
+	Rscript -e "usethis::use_pkgdown()"
+
+build_site:
+	Rscript -e "pkgdown::build_site()"
+
+build_publish:
+	Rscript -e 'usethis::use_github_action("pkgdown")'
