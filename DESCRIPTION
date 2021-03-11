@@ -2,7 +2,7 @@ Package: CimpleG
 Type: Package
 Title: CimpleG - Individual/Single CpG sites For Classification and Deconvolution
 Date: 2021-03-10
-Version: 0.0.1.9042
+Version: 0.0.1.9044
 Authors@R:
     person("Tiago"," A.F.V."," Maié",
         email="tiagomaie@hotmail.com",
@@ -33,7 +33,17 @@ Imports:
     assertthat,
     MLmetrics,
     PRROC,
-    devtools
+    devtools,
+    purrr,
+    recipes,
+    tune,
+    workflows,
+    tidyr,
+    stringr,
+    reshape2,
+    rlang,
+    scales,
+    tidyselect
 Suggests:
     future,
     furrr,
@@ -47,5 +57,14 @@ Suggests:
     ggplot2,
     ggExtra,
     ggrepel,
-    circlize
+    circlize,
+    EpiDISH,
+    NMF,
+    RColorBrewer,
+    forcats,
+    future.apply,
+    ggbeeswarm,
+    ggsci,
+    ggsignif,
+    grDevices
 RoxygenNote: 7.1.1

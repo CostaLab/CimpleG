@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 *.png
+devel
+test_data
+README.html

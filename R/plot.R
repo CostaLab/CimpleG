@@ -9,7 +9,26 @@
 #'  given the target, the difference in means between the target and others,
 #'  and the sum of variances within the target and others will be calculated.
 #'
-#'
+#' @param xcol Column with x-axis data
+#' @param ycol Column with y-axis data
+#' @param feature_id_col Column with the feature ID
+#' @param is_feature_selected_col NULL or column with TRUE/FALSE for features which should be highlighted as selected
+#' @param label_var1 Label of the target class
+#' @param label_var2 Label of the other classes
+#' @param target_vector if not NULL a vector target class assignment, see data
+#' @param mean_cutoff a numeric draw mean cutoff at given position
+#' @param var_cutoff a numeric draw variance cutoff at given position
+#' @param threshold_func TODO
+#' @param func_factor TODO
+#' @param feats_to_highlight TODO
+#' @param cpg_ranking_df TODO
+#' @param color_all_points TODO
+#' @param pltDensity TODO
+#' @param density_type TODO
+#' @param plot_dir TODO
+#' @param id_tag TODO
+#' @param file_tag TODO
+#' @param custom_mods TODO
 #'
 #'
 # plot diffmean sumvar function
@@ -75,9 +94,9 @@ diffmeans_sumvariance_plot <- function(
   points_color <- ifelse(!is.null(color_all_points),color_all_points,"black")
   lighten <- function(color, factor = 0.5) {
     if ((factor > 1) | (factor < 0)) stop("factor needs to be within [0,1]")
-    col <- col2rgb(color)
+    col <- grDevices::col2rgb(color)
     col <- col + (255 - col)*factor
-    col <- rgb(t(col), maxColorValue=255)
+    col <- grDevices::rgb(t(col), maxColorValue=255)
     col
   }
   light_points_color <- lighten(points_color,0.7)
@@ -87,10 +106,10 @@ diffmeans_sumvariance_plot <- function(
     plt_diffMeanSumVar <- ggplot2::ggplot(
       data,
       ggplot2::aes(
-        x=!!sym(xcol),
-        y=!!sym(ycol),
-        fill=!!sym(is_feature_selected_col),
-        color=!!sym(is_feature_selected_col)
+        x=!!ggplot2::sym(xcol),
+        y=!!ggplot2::sym(ycol),
+        fill=!!ggplot2::sym(is_feature_selected_col),
+        color=!!ggplot2::sym(is_feature_selected_col)
       )
     )
 
@@ -137,8 +156,8 @@ diffmeans_sumvariance_plot <- function(
       ggrepel::geom_label_repel(
         data = data[best_cpgs_df$.id,],
         ggplot2::aes(
-          x=!!sym(xcol),
-          y=!!sym(ycol),
+          x=!!ggplot2::sym(xcol),
+          y=!!ggplot2::sym(ycol),
           label=best_label
         ),
         fill="white",
@@ -159,8 +178,8 @@ diffmeans_sumvariance_plot <- function(
       ggrepel::geom_label_repel(
         data = data[feats_to_highlight,],
         ggplot2::aes(
-          x=!!sym(xcol),
-          y=!!sym(ycol),
+          x=!!ggplot2::sym(xcol),
+          y=!!ggplot2::sym(ycol),
           label=feats_to_highlight
         ),
         fill="white",
@@ -202,7 +221,7 @@ diffmeans_sumvariance_plot <- function(
         replacement = func_factor
       )
     )
-    label_ypos <- quantile(data$sumVariance)["75%"]
+    label_ypos <- stats::quantile(data$sumVariance)["75%"]
     label_xpos <- 0
 
 
@@ -227,7 +246,7 @@ diffmeans_sumvariance_plot <- function(
       )
 
       funlabel<-alt_funlabel
-      label_ypos <- (quantile(data[,ycol])["100%"]+quantile(data[,ycol])["75%"])/3
+      label_ypos <- (stats::quantile(data[,ycol])["100%"]+stats::quantile(data[,ycol])["75%"])/3
       label_xpos <- 0.
 
       plt_diffMeanSumVar <- plt_diffMeanSumVar +
@@ -295,8 +314,8 @@ diffmeans_sumvariance_plot <- function(
       ggrepel::geom_label_repel(
         data = data[feats_to_highlight,],
         ggplot2::aes(
-          x=!!sym(xcol),
-          y=!!sym(ycol),
+          x=!!ggplot2::sym(xcol),
+          y=!!ggplot2::sym(ycol),
           label=feats_to_highlight
         ),
         arrow = grid::arrow(
@@ -322,8 +341,8 @@ diffmeans_sumvariance_plot <- function(
         ggrepel::geom_label_repel(
           data = data[feats_to_highlight,],
           ggplot2::aes(
-            x=!!sym(xcol),
-            y=!!sym(ycol),
+            x=!!ggplot2::sym(xcol),
+            y=!!ggplot2::sym(ycol),
             label=feats_to_highlight
           ),
           arrow = grid::arrow(

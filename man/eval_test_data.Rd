@@ -6,6 +6,13 @@
 \usage{
 eval_test_data(test_data, final_model, method = "oner")
 }
+\arguments{
+\item{test_data}{Test data}
+
+\item{final_model}{Model to be tested}
+
+\item{method}{method used to train model}
+}
 \description{
 Evaluation of produced models on test data
 }

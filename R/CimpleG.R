@@ -64,6 +64,9 @@
 #'  in training for the stratified N-repeats K-fold cross-validation procedure.
 #'  Currently not in use.
 #'
+#' @param grid_n An integer specifying the number of hyperparameter combinations
+#'  to train for.
+#'
 #' @param run_parallel A boolean, if `FALSE`, the default, it will search
 #'  for predictors for multiple targets sequentially.
 #'  If `TRUE` it will search for predictors for multiple targets
@@ -75,17 +78,18 @@
 #' library("CimpleG")
 #'
 #' # read data
-#' train_d <- readRDS(file.path("data","mock_train.RDS"))
-#' test_d <- readRDS(file.path("data","mock_test.RDS"))
-#' train_target <- readRDS(file.path("data","mock_train_targets.RDS"))
-#' test_target <- readRDS(file.path("data","mock_test_targets.RDS"))
+#' data(train_data)
+#' data(train_targets)
+#' data(test_data)
+#' data(test_targets)
 #'
 #' # run CimpleG
 #' cimpleg_result <- CimpleG(
-#'   train_data = train_d,
-#'   train_targets = train_target,
-#'   test_data = test_d,
-#'   test_targets = test_target,
+#'   train_data = train_data,
+#'   train_targets = train_targets,
+#'   test_data = test_data,
+#'   test_targets = test_targets,
+#'   method = "parab_scale",
 #'   targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS")
 #' )
 #'

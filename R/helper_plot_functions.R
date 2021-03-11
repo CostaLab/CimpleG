@@ -29,13 +29,14 @@ save_different_plot_format <- function(
           save_f(f_path_fmt, width = width, height = height)
         }
         ComplexHeatmap::draw(plt)
-        dev.off()
+        grDevices::dev.off()
       }
     }
   }
 }
 
-
+#' Make color palette data frame
+#' @param classes Vector with classes for which to create a color palette
 #' @export
 make_color_palette <- function(classes){
   if(requireNamespace("ggsci",quietly = TRUE)){
@@ -46,12 +47,12 @@ make_color_palette <- function(classes){
   }else if(requireNamespace("RColorBrewer",quietly = TRUE)){
     color_palette_df <- data.frame(
       classes=classes,
-      class_color=colorRampPalette(RColorBrewer::brewer.pal(9,"Set1"))(length(classes))
+      class_color=grDevices::colorRampPalette(RColorBrewer::brewer.pal(9,"Set1"))(length(classes))
     )
   }else{
     color_palette_df <- data.frame(
       classes=classes,
-      class_color=colorRampPalette(rainbow(length(classes)+1))(length(classes))
+      class_color=grDevices::colorRampPalette(grDevices::rainbow(length(classes)+1))(length(classes))
     )
   }
   return(color_palette_df)

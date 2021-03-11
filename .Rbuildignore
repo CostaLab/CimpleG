@@ -7,3 +7,5 @@
 ^Makefile$
 ^update_version$
 ^README\.Rmd$
+^update_version\.sh$
+^.*\.png$

@@ -16,6 +16,21 @@ deconvolution(
   ...
 )
 }
+\arguments{
+\item{CimpleG_result}{Result from running CimpleG}
+
+\item{reference_data}{Data to be used as reference}
+
+\item{reference_targets}{Table with targets in `reference_data`}
+
+\item{targets}{Targets in `reference_targets` to be used}
+
+\item{new_data}{Data to deconvolve}
+
+\item{method}{Deconvolution method to be used}
+
+\item{...}{Other parameters to be used by the different deconvolution methods}
+}
 \description{
 Perform deconvolution using the results from CimpleG
 Calculate reference matrix given reference data and targets

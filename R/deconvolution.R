@@ -2,6 +2,13 @@
 #' Calculate reference matrix given reference data and targets
 #' Compute deconvolution on new data
 #'
+#' @param CimpleG_result Result from running CimpleG
+#' @param reference_data Data to be used as reference
+#' @param reference_targets Table with targets in `reference_data`
+#' @param targets Targets in `reference_targets` to be used
+#' @param new_data Data to deconvolve
+#' @param method Deconvolution method to be used
+#' @param ... Other parameters to be used by the different deconvolution methods
 #' @importFrom dplyr %>%
 #' @export
 deconvolution <- function(

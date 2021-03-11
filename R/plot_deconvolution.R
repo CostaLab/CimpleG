@@ -1,5 +1,22 @@
 #' Deconvolution plotting functions
-
+#' @param deconv_mat TODO
+#' @param name_tag TODO
+#' @param sorted_classes TODO
+#' @param sort_by_class_value TODO
+#' @param color_palette_df TODO
+#' @param facet_by_sample_group TODO
+#' @param group_split_chr TODO
+#' @param group_split_pos TODO
+#' @param facet_group_order TODO
+#' @param subtitle TODO
+#' @param plot_dir TODO
+#' @param time_stamp TODO
+#' @param hide_x_axis TODO
+#' @param size_x_axis TODO
+#' @param facet_x_space TODO
+#' @param do_boxplots TODO
+#' @param show_legend TODO
+#' @param signif TODO
 #' @importFrom dplyr %>%
 plot_deconvolution <- function(
   deconv_mat,  # Classes as rows, Samples as columns
@@ -269,7 +286,7 @@ plot_deconvolution_hm <- function(
     pattern=group_split_chr,
     simplify=TRUE)[,group_split_pos]
 
-  grpcol<-colorRampPalette(
+  grpcol<-grDevices::colorRampPalette(
     rev(
       RColorBrewer::brewer.pal(
         n=ifelse(length(unique(grps))<3,3,length(unique(grps))),
@@ -286,7 +303,7 @@ plot_deconvolution_hm <- function(
 
   hmcol<-circlize::colorRamp2(
     breaks=scales::rescale(1:256,to=c(0,1)),
-    colors=colorRampPalette(rev(RColorBrewer::brewer.pal(n=11, name="RdBu")))(256)
+    colors=grDevices::colorRampPalette(rev(RColorBrewer::brewer.pal(n=11, name="RdBu")))(256)
   )
 
   dec_hm <- ComplexHeatmap::Heatmap(

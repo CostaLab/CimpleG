@@ -37,6 +37,46 @@ Either a data.frame with `xcol`,`ycol` and `feature_id_col` or, if
 `target_vector` is not `NULL` a matrix with beta values from which,
 given the target, the difference in means between the target and others,
 and the sum of variances within the target and others will be calculated.}
+
+\item{xcol}{Column with x-axis data}
+
+\item{ycol}{Column with y-axis data}
+
+\item{feature_id_col}{Column with the feature ID}
+
+\item{is_feature_selected_col}{NULL or column with TRUE/FALSE for features which should be highlighted as selected}
+
+\item{label_var1}{Label of the target class}
+
+\item{label_var2}{Label of the other classes}
+
+\item{target_vector}{if not NULL a vector target class assignment, see data}
+
+\item{mean_cutoff}{a numeric draw mean cutoff at given position}
+
+\item{var_cutoff}{a numeric draw variance cutoff at given position}
+
+\item{threshold_func}{TODO}
+
+\item{func_factor}{TODO}
+
+\item{feats_to_highlight}{TODO}
+
+\item{cpg_ranking_df}{TODO}
+
+\item{color_all_points}{TODO}
+
+\item{pltDensity}{TODO}
+
+\item{density_type}{TODO}
+
+\item{plot_dir}{TODO}
+
+\item{id_tag}{TODO}
+
+\item{file_tag}{TODO}
+
+\item{custom_mods}{TODO}
 }
 \description{
 Represent CpGs in the difference in means, sum of variances space.

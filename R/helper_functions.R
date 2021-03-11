@@ -1,6 +1,6 @@
-#' Main function controlling k-fold CV training
-#'
-#'
+# Main function controlling k-fold CV training
+#
+#
 #' @importFrom dplyr %>%
 do_cv <- function(
   train_data,
@@ -73,8 +73,8 @@ do_cv <- function(
   # get metrics per fold and predictor
   train_summary <- f_data$results %>%
     dplyr::bind_rows() %>%
-    dplyr::mutate(truth = relevel(truth, "positive_class")) %>%
-    dplyr::mutate(prediction = relevel(prediction, "positive_class")) %>%
+    dplyr::mutate(truth = stats::relevel(truth, "positive_class")) %>%
+    dplyr::mutate(prediction = stats::relevel(prediction, "positive_class")) %>%
     dplyr::group_by(
       resample,
       predictor,
@@ -138,7 +138,9 @@ do_cv <- function(
 }
 
 #' Evaluation of produced models on test data
-#'
+#' @param test_data Test data
+#' @param final_model Model to be tested
+#' @param method method used to train model
 #' @importFrom dplyr %>%
 #' @export
 eval_test_data <- function(
@@ -148,7 +150,7 @@ eval_test_data <- function(
 ) {
   message("Evaluating test data...")
   # get performance on test data
-  test_data$target <- test_data$target %>% relevel("positive_class")
+  test_data$target <- test_data$target %>% stats::relevel("positive_class")
 
   predictor_name <- NULL
 
@@ -197,7 +199,7 @@ eval_test_data <- function(
   if (identical(method, "oner")) {
 
     pred_class <- predict(final_model,newdata = test_data, type = "class") %>%
-      relevel("positive_class")
+      stats::relevel("positive_class")
 
     pred_prob <- predict(final_model,newdata=test_data,type="prob") %>%
       as.data.frame %>% dplyr::pull(positive_class)
@@ -235,7 +237,7 @@ eval_general_model <- function(
 ){
   message("Evaluating test data...")
   # get performance on test data
-  test_data$target <- test_data$target %>% relevel("positive_class")
+  test_data$target <- test_data$target %>% stats::relevel("positive_class")
 
   test_pred <- predict(
     object = final_model,
@@ -271,8 +273,8 @@ eval_general_model <- function(
   return(res)
 }
 
-#' Train the final model after training
-#'
+# Train the final model after training
+#
 #' @importFrom dplyr %>%
 final_model <- function(
   train_data,
@@ -284,7 +286,7 @@ final_model <- function(
   if (method == "oner") {
     # OneR
     oner_predata <- OneR::optbin(
-      as.formula(paste0("target~", best_pred$predictor)),
+      stats::as.formula(paste0("target~", best_pred$predictor)),
       data = train_data, method = "logreg"
     )
     oner_mod <- OneR::OneR(oner_predata)
@@ -299,8 +301,8 @@ final_model <- function(
   ))
 }
 
-#' Training/Finding the best predictors/CpGs
-#'
+# Training/Finding the best predictors/CpGs
+#
 #' @importFrom dplyr %>%
 find_predictors <- function(
   split_train_set,
@@ -352,7 +354,7 @@ find_predictors <- function(
       # get PRAUC for hyper methylated cpgs
       hyperM_predictors <- train_set %>%
         dplyr::select(rownames(df_dMean_sVar[which(df_dMean_sVar$pred_type), ])) %>%
-        dplyr::summarise(dplyr::across(.cols=tidyselect:::where(is.numeric),.fns = function(x,truth){
+        dplyr::summarise(dplyr::across(.cols=tidyselect::vars_select_helpers$where(is.numeric),.fns = function(x,truth){
             prroc_prauc_vec(truth = truth, estimate = x)
           },
           truth = train_set$target
@@ -374,7 +376,7 @@ find_predictors <- function(
       # get PRAUC for hypo methylated cpgs
       hypoM_predictors <- train_set %>%
         dplyr::select(rownames(df_dMean_sVar[which(!df_dMean_sVar$pred_type), ])) %>%
-        dplyr::summarise(dplyr::across(.cols=tidyselect:::where(is.numeric),.fns = function(x,truth){
+        dplyr::summarise(dplyr::across(.cols=tidyselect::vars_select_helpers$where(is.numeric),.fns = function(x,truth){
             prroc_prauc_vec(truth = truth, estimate = 1 - x)
           },
           truth = train_set$target
@@ -640,7 +642,7 @@ train_general_model <- function(
 }
 
 
-#' Loop iterating through parabola selecting cpgs
+# Loop iterating through parabola selecting cpgs
 #' @return list
 parabola_iter_loop <- function(
   df_diffmean_sumvar,
@@ -681,18 +683,18 @@ parabola_iter_loop <- function(
 
 
 
-#' Feature selection function
+# Feature selection function
 #' @return bool vector
 select_features <- function(x, y, a) {
   return(y < (a * x)^2)
 }
 
-#' Depending on pred_type:
-#'   Returns TRUE if:
-#'     less than feat_threshold hyper CpGs have been selected
-#'     less than feat_threshold hypo CpGs have been selected
-#'   Returns FALSE if:
-#'     more than feat_threshold hyper and hypo CpGs have been selected
+# Depending on pred_type:
+#   Returns TRUE if:
+#     less than feat_threshold hyper CpGs have been selected
+#     less than feat_threshold hypo CpGs have been selected
+#   Returns FALSE if:
+#     more than feat_threshold hyper and hypo CpGs have been selected
 updt_selected_feats <- function(
   df_diffmean_sumvar,
   feat_threshold = 10,
@@ -723,8 +725,8 @@ updt_selected_feats <- function(
   return(updt_cond)
 }
 
-#' Fixes lower and upper boundaries (0,1) on OneR models
-#'
+# Fixes lower and upper boundaries (0,1) on OneR models
+#
 #' @return OneR object
 fix_oner_boundaries <- function(oner_mod){
   boundary_vals_l <- as.numeric(
@@ -736,13 +738,19 @@ fix_oner_boundaries <- function(oner_mod){
   boundary_vals_l[1] <- ifelse(boundary_vals_l[1] > 0, -0.001, boundary_vals_l[1])
   boundary_vals_h[2] <- ifelse(boundary_vals_h[2] < 1, 1.001, boundary_vals_h[2])
 
-  fixed_interval <- levels(OneR:::CUT(0, c(boundary_vals_l, boundary_vals_h)))
+  # fixed_interval <- levels(OneR:::CUT(0, c(boundary_vals_l, boundary_vals_h)))
+  fixed_interval <- noquote(
+    c(
+      paste0('"(',boundary_vals_l[1],",",boundary_vals_l[2],']"'),
+      paste0('"(',boundary_vals_h[1],",",boundary_vals_h[2],']"')
+    )
+  )
   names(oner_mod$rules) <- fixed_interval
   dimnames(oner_mod$cont_table)[[2]] <- fixed_interval
   return(oner_mod)
 }
 
-#' defining PRROC PRAUC
+# defining PRROC PRAUC
 prroc_prauc_vec <- function(
   truth, estimate, estimator = "binary", na_rm = TRUE, ...
 ) {
@@ -769,15 +777,13 @@ prroc_prauc_vec <- function(
   )
 }
 
-#' @export prroc_prauc
+#
 prroc_prauc <- function(data, ...) {
   UseMethod("prroc_prauc")
 }
 
 
-
-
-#' @export
+#
 prroc_prauc.data.frame <- function(
   data,
   truth,
@@ -800,13 +806,19 @@ prroc_prauc.data.frame <- function(
   )
 }
 
-#' timing func
+# timing func
 print_timings <- function(quiet = FALSE) {
   tictoc::toc(quiet = quiet)
 }
 
 
-make_train_test_split <- function(train_d,train_targets,targets,prop=0.75){
+#' @importFrom dplyr %>%
+make_train_test_split <- function(
+  train_d,
+  train_targets,
+  targets,
+  prop=0.75
+){
 
   if(is.null(names(targets))) names(targets) <- targets
 
@@ -814,7 +826,11 @@ make_train_test_split <- function(train_d,train_targets,targets,prop=0.75){
   target_strat <- purrr::map_dfr(
     .x = targets,
     .f = function(target) {
-      res <- ifelse(train_targets[, target] == 1, target, train_targets[, target])
+      res <- ifelse(
+        train_targets[, target] == 1,
+        target,
+        train_targets[, target]
+      )
       return(res)
     }, .id = "id"
   ) %>%
@@ -826,7 +842,10 @@ make_train_test_split <- function(train_d,train_targets,targets,prop=0.75){
 
 
   part_d <- rsample::initial_split(
-    data=train_d%>%dplyr::mutate(target_strat=target_strat%>%dplyr::pull(merged)),
+    data=train_d %>%
+      dplyr::mutate(target_strat=target_strat%>%
+      dplyr::pull(merged)
+    ),
     prop=prop,
     strata="target_strat"
   )
@@ -842,7 +861,7 @@ make_train_test_split <- function(train_d,train_targets,targets,prop=0.75){
       names_from = target_strat,
       values_from = tmp_value
     ) %>%
-    dplyr::select(id,dplyr::all_of(targets)) %>%
+    dplyr::select(id, dplyr::all_of(targets)) %>%
     dplyr::mutate_all(tidyr::replace_na, 0) %>%
     tibble::column_to_rownames("id")
 
@@ -855,7 +874,7 @@ make_train_test_split <- function(train_d,train_targets,targets,prop=0.75){
       names_from = target_strat,
       values_from = tmp_value
     ) %>%
-    dplyr::select(id,dplyr::all_of(targets)) %>%
+    dplyr::select(id, dplyr::all_of(targets)) %>%
     dplyr::mutate_all(tidyr::replace_na, 0) %>%
     tibble::column_to_rownames("id")
 
@@ -872,6 +891,9 @@ make_train_test_split <- function(train_d,train_targets,targets,prop=0.75){
   )
 }
 
+#' Compute diff mean sum var dataframe
+#' @param data Matrix with beta values that will be used to compute diffmeans sumvar data frame
+#' @param target_vector boolean vector defining which samples in data are part of the target class
 #' @export
 compute_diffmeans_sumvar <- function(data, target_vector) {
 
