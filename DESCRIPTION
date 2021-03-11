@@ -2,7 +2,7 @@ Package: CimpleG
 Type: Package
 Title: CimpleG - Individual/Single CpG sites For Classification and Deconvolution
 Date: 2021-03-11
-Version: 0.0.1.9045
+Version: 0.0.1.9051
 Authors@R:
     person("Tiago"," A.F.V."," Maié",
         email="tiagomaie@hotmail.com",
@@ -65,5 +65,8 @@ Suggests:
     ggsci,
     ggsignif,
     grDevices
-Remotes: bioc::release/Biobase
+Remotes:
+    bioc::release/Biobase,
+    bioc::release/ComplexHeatmap,
+    bioc::release/EpiDISH
 RoxygenNote: 7.1.1
