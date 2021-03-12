@@ -64,10 +64,7 @@ Suggests:
     ggbeeswarm,
     ggsci,
     ggsignif,
-    grDevices,
-    EpiDISH (>= 2.6.0),
-    Biobase (>= 2.50.0),
-    ComplexHeatmap (>= 2.6.2)
+    grDevices
 Remotes:
     bioc::release/EpiDISH,
     bioc::release/Biobase,
