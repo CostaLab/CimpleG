@@ -8,6 +8,9 @@ check_package:
 build_package:
 	Rscript -e "devtools::build('.')"
 
+test_package:
+	Rscript -e "devtools::test()"
+
 check_build:
 	Rscript -e "devtools::check('.')" -e "devtools::build('.')"
 
@@ -27,7 +30,7 @@ use_pkgdown:
 build_site:
 	Rscript -e "pkgdown::build_site()"
 
-build_publish:
+githubactions_site:
 	Rscript -e 'usethis::use_github_action("pkgdown")'
 
 githubactions_check:
