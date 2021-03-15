@@ -59,10 +59,10 @@ usethis::use_package("ggsci", "suggests")
 usethis::use_package("ggsignif", "suggests")
 usethis::use_package("grDevices", "suggests")
 
-# remotes
-usethis::use_dev_package("EpiDISH", "suggests", "bioc::release/EpiDISH")
-usethis::use_dev_package("Biobase", "suggests", "bioc::release/Biobase")
-usethis::use_dev_package("ComplexHeatmap", "suggests", "bioc::release/ComplexHeatmap")
+# remotes (this adds remotes but also suggests making it fail tests)
+# usethis::use_dev_package("EpiDISH", "suggests", "bioc::release/EpiDISH")
+# usethis::use_dev_package("Biobase", "suggests", "bioc::release/Biobase")
+# usethis::use_dev_package("ComplexHeatmap", "suggests", "bioc::release/ComplexHeatmap")
 
 usethis::use_testthat()
 usethis::use_test("CimpleG")
