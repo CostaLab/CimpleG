@@ -31,7 +31,44 @@
 #' @param custom_mods TODO
 #'
 #'
-# plot diffmean sumvar function
+#' @examples
+#' library("CimpleG")
+#'
+#' # read data
+#' data(train_data)
+#' data(train_targets)
+#'
+#' # make basic plot
+#' plt <- diffmeans_sumvariance_plot(
+#'   train_data,
+#'   target_vector = train_targets$CELL_TYPE_MSCORFIBRO == 1
+#' )
+#' print(plt)
+#'
+#' # make plot with parabola and colored features
+#' df_dmeansvar <- compute_diffmeans_sumvar(
+#'   train_data,
+#'   target_vector = train_targets$CELL_TYPE_MSCORFIBRO==1
+#' )
+#' parab_param <- .7
+#' df_dmeansvar <- df_dmeansvar %>% mutate(
+#'   is_selected=select_features(
+#'     x = diff_means,
+#'     y = sum_variance,
+#'     a = parab_param
+#'   )
+#' )
+#'
+#' plt <- diffmeans_sumvariance_plot(
+#'   df_dmeansvar,
+#'   label_var1="MSC",
+#'   color_all_points="red",
+#'   threshold_func=function(x,a) (a*x)^2,
+#'   is_feature_selected_col="is_selected",
+#'   func_factor=parab_param
+#' )
+#' print(plt)
+#' @export
 diffmeans_sumvariance_plot <- function(
   data,
   xcol="diff_means",
