@@ -30,7 +30,7 @@ do_cv <- function(
   # vfold_cv stratification not working properly, using caret instead
   cv_index = caret::createFolds(
     train_data$target,
-    k = 10,
+    k = k_folds,
     returnTrain = TRUE,
     list=TRUE
   )
@@ -41,7 +41,7 @@ do_cv <- function(
       function(x){setdiff(seq_len(nrow(train_data)),x)}
     ),
     method = 'cv',
-    number = 10
+    number = k_folds
   )
 
   f_data = rsample::caret2rsample(ctrl=tc,data = train_data)
