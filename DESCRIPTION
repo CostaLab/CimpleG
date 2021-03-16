@@ -2,14 +2,14 @@ Package: CimpleG
 Type: Package
 Title: CimpleG - Individual/Single CpG sites For Classification and Deconvolution
 Date: 2021-03-16
-Version: 0.0.1.9058
+Version: 0.0.1.9060
 Authors@R:
     person("Tiago"," A.F.V."," Maié",
         email="tiagomaie@hotmail.com",
         role=c("aut","cre"))
 Maintainer: Tiago Maié <tiagomaie@hotmail.com>
 Description: CimpleG is a simple package to find single-CpG based signatures for use in classification and deconvolution.
-License: GPL-2
+License: GPL (>= 3)
 URL: https://github.com/tiagomaie/CimpleG
 BugReports: https://github.com/tiagomaie/CimpleG/issues
 Encoding: UTF-8

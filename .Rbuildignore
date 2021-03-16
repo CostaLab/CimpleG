@@ -14,3 +14,4 @@
 ^pkgdown$
 ^\.github$
 ^setup_proj\.R$
+^LICENSE\.md$

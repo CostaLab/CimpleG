@@ -66,3 +66,4 @@ usethis::use_package("grDevices", "suggests")
 
 usethis::use_testthat()
 usethis::use_test("CimpleG")
+usethis::use_gpl_license()
