@@ -81,7 +81,7 @@ bottom right of this plot." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.9058</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.9060</span>
       </span>
     </div>
 
@@ -270,16 +270,14 @@ and the sum of variances within the target and others will be calculated.</p></t
   target_vector <span class='op'>=</span> <span class='va'>train_targets</span><span class='op'>$</span><span class='va'>CELL_TYPE_MSCORFIBRO</span><span class='op'>==</span><span class='fl'>1</span>
 <span class='op'>)</span>
 <span class='va'>parab_param</span> <span class='op'>&lt;-</span> <span class='fl'>.7</span>
-<span class='va'>df_dmeansvar</span> <span class='op'>&lt;-</span> <span class='va'>df_dmeansvar</span> <span class='op'>%&gt;%</span> <span class='fu'>mutate</span><span class='op'>(</span>
-  is_selected<span class='op'>=</span><span class='fu'>select_features</span><span class='op'>(</span>
-    x <span class='op'>=</span> <span class='va'>diff_means</span>,
-    y <span class='op'>=</span> <span class='va'>sum_variance</span>,
+<span class='va'>df_dmeansvar</span><span class='op'>$</span><span class='va'>is_selected</span> <span class='op'>&lt;-</span> <span class='fu'><a href='select_features.html'>select_features</a></span><span class='op'>(</span>
+    x <span class='op'>=</span> <span class='va'>df_dmeansvar</span><span class='op'>$</span><span class='va'>diff_means</span>,
+    y <span class='op'>=</span> <span class='va'>df_dmeansvar</span><span class='op'>$</span><span class='va'>sum_variance</span>,
     a <span class='op'>=</span> <span class='va'>parab_param</span>
-  <span class='op'>)</span>
 <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error in df_dmeansvar %&gt;% mutate(is_selected = select_features(x = diff_means,     y = sum_variance, a = parab_param)): could not find function "%&gt;%"</span></div><div class='input'>
+
 <span class='va'>plt</span> <span class='op'>&lt;-</span> <span class='fu'>diffmeans_sumvariance_plot</span><span class='op'>(</span>
-  <span class='va'>df_dmeansvar</span>,
+  data<span class='op'>=</span><span class='va'>df_dmeansvar</span>,
   label_var1<span class='op'>=</span><span class='st'>"MSC"</span>,
   color_all_points<span class='op'>=</span><span class='st'>"red"</span>,
   is_feature_selected_col<span class='op'>=</span><span class='st'>"is_selected"</span>,
@@ -287,7 +285,7 @@ and the sum of variances within the target and others will be calculated.</p></t
   threshold_func<span class='op'>=</span><span class='kw'>function</span><span class='op'>(</span><span class='va'>x</span>,<span class='va'>a</span><span class='op'>)</span> <span class='op'>(</span><span class='va'>a</span><span class='op'>*</span><span class='va'>x</span><span class='op'>)</span><span class='op'>^</span><span class='fl'>2</span>,
   func_factor<span class='op'>=</span><span class='va'>parab_param</span>
 <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='error'>Error: `%in%`(x = is_feature_selected_col, table = colnames(data)) is not TRUE or is_feature_selected_col is not NULL</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>plt</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 10 row(s) containing missing values (geom_path).</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 1 rows containing missing values (geom_label).</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 10 row(s) containing missing values (geom_path).</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 1 rows containing missing values (geom_label).</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 10 row(s) containing missing values (geom_path).</span></div><div class='output co'>#&gt; <span class='warning'>Warning: Removed 10 row(s) containing missing values (geom_path).</span></div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='op'>(</span><span class='va'>plt</span><span class='op'>)</span>
 </div><div class='img'><img src='diffmeans_sumvariance_plot-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
