@@ -108,6 +108,7 @@
 <span class="co"># colnames(train_targets)</span>
 
 <span class="co"># mini example with just 2 target signatures</span>
+<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
 <span class="va">cimpleg_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/CimpleG.html">CimpleG</a></span><span class="op">(</span>
   train_data <span class="op">=</span> <span class="va">train_data</span>,
   train_targets <span class="op">=</span> <span class="va">train_targets</span>,
@@ -117,10 +118,12 @@
   targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CELL_TYPE_MSCORFIBRO"</span>,<span class="st">"CELL_TYPE_NEURONS"</span><span class="op">)</span>
 <span class="op">)</span>
 
-<span class="va">cimpleg_result</span><span class="op">$</span><span class="va">results</span>
-
-<span class="co"># generated signatures</span>
-<span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span></code></pre></div>
+<span class="va">cimpleg_result</span><span class="op">$</span><span class="va">results</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># check generated signatures</span>
+<span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span>
+<span class="co">#&gt; CELL_TYPE_MSCORFIBRO    CELL_TYPE_NEURONS </span>
+<span class="co">#&gt;         "cg24192660"         "cg17008486"</span></code></pre></div>
 </div>
 <div id="diff-meansum-var-plots" class="section level2">
 <h2 class="hasAnchor">
@@ -128,18 +131,18 @@
 <div id="basic-plot" class="section level3">
 <h3 class="hasAnchor">
 <a href="#basic-plot" class="anchor"></a>basic plot</h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="va">train_data</span>,
   target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span><span class="op">==</span><span class="fl">1</span>
 <span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-4-1.png"><!-- --></p>
+<p><img src="reference/figures/README-unnamed-chunk-5-1.png"><!-- --></p>
 </div>
 <div id="adding-color-highlighting-selected-features" class="section level3">
 <h3 class="hasAnchor">
 <a href="#adding-color-highlighting-selected-features" class="anchor"></a>adding color, highlighting selected features</h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">df_dmeansvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_diffmeans_sumvar.html">compute_diffmeans_sumvar</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="va">train_data</span>,
   target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span><span class="op">==</span><span class="fl">1</span>
@@ -162,18 +165,18 @@
   func_factor <span class="op">=</span> <span class="va">parab_param</span>
 <span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-5-1.png"><!-- --></p>
+<p><img src="reference/figures/README-unnamed-chunk-6-1.png"><!-- --></p>
 </div>
 <div id="labeling-specific-features" class="section level3">
 <h3 class="hasAnchor">
 <a href="#labeling-specific-features" class="anchor"></a>labeling specific features</h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="va">df_dmeansvar</span>,
   feats_to_highlight <span class="op">=</span> <span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span>
 <span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-6-1.png"><!-- --></p>
+<p><img src="reference/figures/README-unnamed-chunk-7-1.png"><!-- --></p>
 </div>
 </div>
 <div id="deconvolution-plots" class="section level2">
@@ -182,7 +185,7 @@
 <div id="mini-example-with-just-2-signatures" class="section level3">
 <h3 class="hasAnchor">
 <a href="#mini-example-with-just-2-signatures" class="anchor"></a>mini example with just 2 signatures</h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">deconv_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/deconvolution.html">deconvolution</a></span><span class="op">(</span>
   CimpleG_result <span class="op">=</span> <span class="va">cimpleg_result</span>,
   reference_data <span class="op">=</span> <span class="va">train_data</span>,
@@ -201,7 +204,7 @@
   color_palette_df<span class="op">=</span><span class="va">col_palette</span>
 <span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">$</span><span class="va">deconv_plot</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-7-1.png"><!-- --></p>
+<p><img src="reference/figures/README-unnamed-chunk-8-1.png"><!-- --></p>
 </div>
 </div>
 </div>
