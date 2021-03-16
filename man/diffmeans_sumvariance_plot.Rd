@@ -104,16 +104,14 @@ df_dmeansvar <- compute_diffmeans_sumvar(
   target_vector = train_targets$CELL_TYPE_MSCORFIBRO==1
 )
 parab_param <- .7
-df_dmeansvar <- df_dmeansvar \%>\% mutate(
-  is_selected=select_features(
-    x = diff_means,
-    y = sum_variance,
+df_dmeansvar$is_selected <- select_features(
+    x = df_dmeansvar$diff_means,
+    y = df_dmeansvar$sum_variance,
     a = parab_param
-  )
 )
 
 plt <- diffmeans_sumvariance_plot(
-  df_dmeansvar,
+  data=df_dmeansvar,
   label_var1="MSC",
   color_all_points="red",
   is_feature_selected_col="is_selected",

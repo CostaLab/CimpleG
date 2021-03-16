@@ -683,7 +683,7 @@ parabola_iter_loop <- function(
 
 
 
-# Feature selection function used in the diffmeans, sumvariance space
+#' Feature selection function used in the diffmeans, sumvariance space
 #' @param x, difference in means value
 #' @param y, sum of variances value
 #' @param a, parabola parameter, scales how open/closed the parabola is, the higher the value, the more closed the parabola is.
