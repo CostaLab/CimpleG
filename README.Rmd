@@ -52,6 +52,7 @@ data(test_targets)
 # colnames(train_targets)
 
 # mini example with just 2 target signatures
+set.seed(42)
 cimpleg_result <- CimpleG(
   train_data = train_data,
   train_targets = train_targets,
@@ -62,8 +63,9 @@ cimpleg_result <- CimpleG(
 )
 
 cimpleg_result$results
-
-# generated signatures
+```
+```{r, eval = TRUE, echo = TRUE, message=FALSE, warning=FALSE}
+# check generated signatures
 cimpleg_result$signatures
 ```
 

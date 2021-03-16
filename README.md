@@ -42,6 +42,7 @@ data(test_targets)
 # colnames(train_targets)
 
 # mini example with just 2 target signatures
+set.seed(42)
 cimpleg_result <- CimpleG(
   train_data = train_data,
   train_targets = train_targets,
@@ -52,9 +53,13 @@ cimpleg_result <- CimpleG(
 )
 
 cimpleg_result$results
+```
 
-# generated signatures
+``` r
+# check generated signatures
 cimpleg_result$signatures
+#> CELL_TYPE_MSCORFIBRO    CELL_TYPE_NEURONS 
+#>         "cg24192660"         "cg17008486"
 ```
 
 ## Diff-mean/Sum-var plots
@@ -69,7 +74,7 @@ plt <- diffmeans_sumvariance_plot(
 print(plt)
 ```
 
-![](man/figures/README-unnamed-chunk-4-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-5-1.png)<!-- -->
 
 ### adding color, highlighting selected features
 
@@ -98,7 +103,7 @@ plt <- diffmeans_sumvariance_plot(
 print(plt)
 ```
 
-![](man/figures/README-unnamed-chunk-5-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-6-1.png)<!-- -->
 
 ### labeling specific features
 
@@ -110,7 +115,7 @@ plt <- diffmeans_sumvariance_plot(
 print(plt)
 ```
 
-![](man/figures/README-unnamed-chunk-6-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-7-1.png)<!-- -->
 
 ## Deconvolution plots
 
@@ -137,4 +142,4 @@ plt <- plot_deconvolution(
 print(plt$deconv_plot)
 ```
 
-![](man/figures/README-unnamed-chunk-7-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-8-1.png)<!-- -->
