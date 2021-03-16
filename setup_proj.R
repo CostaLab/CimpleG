@@ -58,6 +58,7 @@ usethis::use_package("ggbeeswarm", "suggests")
 usethis::use_package("ggsci", "suggests")
 usethis::use_package("ggsignif", "suggests")
 usethis::use_package("grDevices", "suggests")
+usethis::use_package("Cairo", "suggests")
 
 # remotes
 usethis::use_dev_package("EpiDISH", "suggests", "sjczheng/EpiDISH")
