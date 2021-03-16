@@ -20,7 +20,8 @@ load_all_package:
 
 document_package:
 	Rscript -e "devtools::document()"
-	Rscript -e "rmarkdown::render('README.Rmd',output_file='README.md')"
+	Rscript -e "devtools::build_readme()"
+#	Rscript -e "rmarkdown::render('README.Rmd',output_file='README.md')"
 
 update_version:
 	bash update_version.sh

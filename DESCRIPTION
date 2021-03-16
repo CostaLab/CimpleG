@@ -62,9 +62,10 @@ Suggests:
     ggbeeswarm,
     ggsci,
     ggsignif,
-    grDevices
+    grDevices,
+    EpiDISH (>= 2.6.0),
+    ComplexHeatmap (>= 2.6.2)
 Remotes:
-    bioc::release/EpiDISH,
-    bioc::release/Biobase,
-    bioc::release/ComplexHeatmap
+    sjczheng/EpiDISH,
+    jokergoo/ComplexHeatmap
 Config/testthat/edition: 3
