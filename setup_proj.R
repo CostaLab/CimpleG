@@ -58,11 +58,13 @@ usethis::use_package("ggbeeswarm", "suggests")
 usethis::use_package("ggsci", "suggests")
 usethis::use_package("ggsignif", "suggests")
 usethis::use_package("grDevices", "suggests")
-usethis::use_package("Cairo", "suggests")
+# usethis::use_package("Cairo", "suggests")
 
 # remotes
-usethis::use_dev_package("EpiDISH", "suggests", "sjczheng/EpiDISH")
-usethis::use_dev_package("ComplexHeatmap", "suggests", "jokergoo/ComplexHeatmap")
+# usethis::use_dev_package("EpiDISH", "suggests", "sjczheng/EpiDISH")
+# usethis::use_dev_package("ComplexHeatmap", "suggests", "jokergoo/ComplexHeatmap")
+# usethis::use_dev_package("Biobase", "suggests", "bioc::release/Biobase")
+# usethis::use_dev_package("ComplexHeatmap", "suggests", "bioc::release/ComplexHeatmap")
 
 usethis::use_testthat()
 usethis::use_test("CimpleG")
