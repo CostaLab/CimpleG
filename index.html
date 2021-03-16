@@ -81,18 +81,46 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Install directly from github:</span>
+<code class="sourceCode R"><span class="co"># Install directly from github (NOT YET):</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"tiagomaie/CimpleG"</span><span class="op">)</span>
 
 <span class="co"># Alternatively, install from a local source:</span>
 <span class="co">#  - ie navigating through your system</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html">file.choose</a></span><span class="op">(</span><span class="op">)</span>, repos<span class="op">=</span><span class="cn">NULL</span>, type<span class="op">=</span><span class="st">"source"</span><span class="op">)</span>
 <span class="co">#  - ie given a path to a local source</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"~/Downloads/CimpleG_0.0.1.XXXX.tar.gz"</span>, repos<span class="op">=</span><span class="cn">NULL</span>, type<span class="op">=</span><span class="st">"source"</span><span class="op">)</span>
+<span class="co"># or</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_local</a></span><span class="op">(</span><span class="st">"~/Downloads/CimpleG_0.0.1.XXXX.tar.gz"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="getting-started" class="section level2">
 <h2 class="hasAnchor">
 <a href="#getting-started" class="anchor"></a>Getting started</h2>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/tiagomaie/CimpleG">"CimpleG"</a></span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">train_data</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">train_targets</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">test_data</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">test_targets</span><span class="op">)</span>
+
+<span class="co"># check the train_targets table to see</span>
+<span class="co"># what other columns can be used as targets</span>
+<span class="co"># colnames(train_targets)</span>
+
+<span class="co"># mini example with just 2 target signatures</span>
+<span class="va">cimpleg_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/CimpleG.html">CimpleG</a></span><span class="op">(</span>
+  train_data <span class="op">=</span> <span class="va">train_data</span>,
+  train_targets <span class="op">=</span> <span class="va">train_targets</span>,
+  test_data <span class="op">=</span> <span class="va">test_data</span>,
+  test_targets <span class="op">=</span> <span class="va">test_targets</span>,
+  method<span class="op">=</span><span class="st">"parab_scale"</span>,
+  targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"CELL_TYPE_MSCORFIBRO"</span>,<span class="st">"CELL_TYPE_NEURONS"</span><span class="op">)</span>
+<span class="op">)</span>
+
+<span class="va">cimpleg_result</span><span class="op">$</span><span class="va">results</span>
+
+<span class="co"># generated signatures</span>
+<span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span></code></pre></div>
 </div>
 <div id="diff-meansum-var-plots" class="section level2">
 <h2 class="hasAnchor">
@@ -100,7 +128,7 @@
 <div id="basic-plot" class="section level3">
 <h3 class="hasAnchor">
 <a href="#basic-plot" class="anchor"></a>basic plot</h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="va">train_data</span>,
   target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span><span class="op">==</span><span class="fl">1</span>
@@ -111,7 +139,7 @@
 <div id="adding-color-highlighting-selected-features" class="section level3">
 <h3 class="hasAnchor">
 <a href="#adding-color-highlighting-selected-features" class="anchor"></a>adding color, highlighting selected features</h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">df_dmeansvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_diffmeans_sumvar.html">compute_diffmeans_sumvar</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="va">train_data</span>,
   target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span><span class="op">==</span><span class="fl">1</span>
@@ -139,7 +167,7 @@
 <div id="labeling-specific-features" class="section level3">
 <h3 class="hasAnchor">
 <a href="#labeling-specific-features" class="anchor"></a>labeling specific features</h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="va">df_dmeansvar</span>,
   feats_to_highlight <span class="op">=</span> <span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span>
@@ -154,7 +182,7 @@
 <div id="mini-example-with-just-2-signatures" class="section level3">
 <h3 class="hasAnchor">
 <a href="#mini-example-with-just-2-signatures" class="anchor"></a>mini example with just 2 signatures</h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">deconv_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/deconvolution.html">deconvolution</a></span><span class="op">(</span>
   CimpleG_result <span class="op">=</span> <span class="va">cimpleg_result</span>,
   reference_data <span class="op">=</span> <span class="va">train_data</span>,
