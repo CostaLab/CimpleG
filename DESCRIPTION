@@ -2,7 +2,7 @@ Package: CimpleG
 Type: Package
 Title: CimpleG - Individual/Single CpG sites For Classification and Deconvolution
 Date: 2021-03-16
-Version: 0.0.2
+Version: 0.0.2.9001
 Authors@R:
     person("Tiago","F.V. Maié",email="tiagomaie@hotmail.com",role=c("aut","cre"))
 Maintainer: Tiago Maié <tiagomaie@hotmail.com>
@@ -67,6 +67,7 @@ Suggests:
     ComplexHeatmap (>= 2.6.2),
     Cairo
 Remotes:
+    bioc::release/Biobase,
     sjczheng/EpiDISH,
     jokergoo/ComplexHeatmap
 Config/testthat/edition: 3
