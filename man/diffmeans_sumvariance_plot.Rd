@@ -98,7 +98,7 @@ plt <- diffmeans_sumvariance_plot(
 )
 print(plt)
 
-# make plot with parabola and colored features
+# make plot with parabola, colored and highlighted features
 df_dmeansvar <- compute_diffmeans_sumvar(
   train_data,
   target_vector = train_targets$CELL_TYPE_MSCORFIBRO==1
@@ -116,8 +116,9 @@ plt <- diffmeans_sumvariance_plot(
   df_dmeansvar,
   label_var1="MSC",
   color_all_points="red",
-  threshold_func=function(x,a) (a*x)^2,
   is_feature_selected_col="is_selected",
+  feats_to_highlight=c("cg24192660"),
+  threshold_func=function(x,a) (a*x)^2,
   func_factor=parab_param
 )
 print(plt)

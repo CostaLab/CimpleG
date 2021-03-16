@@ -45,7 +45,7 @@
 #' )
 #' print(plt)
 #'
-#' # make plot with parabola and colored features
+#' # make plot with parabola, colored and highlighted features
 #' df_dmeansvar <- compute_diffmeans_sumvar(
 #'   train_data,
 #'   target_vector = train_targets$CELL_TYPE_MSCORFIBRO==1
@@ -63,8 +63,9 @@
 #'   df_dmeansvar,
 #'   label_var1="MSC",
 #'   color_all_points="red",
-#'   threshold_func=function(x,a) (a*x)^2,
 #'   is_feature_selected_col="is_selected",
+#'   feats_to_highlight=c("cg24192660"),
+#'   threshold_func=function(x,a) (a*x)^2,
 #'   func_factor=parab_param
 #' )
 #' print(plt)
@@ -162,7 +163,7 @@ diffmeans_sumvariance_plot <- function(
   }else{
     plt_diffMeanSumVar <- ggplot2::ggplot(
       data,
-      ggplot2::aes(x=!!sym(xcol), y=!!sym(ycol))
+      ggplot2::aes(x=!!ggplot2::sym(xcol), y=!!ggplot2::sym(ycol))
     )
     if(!is.null(feats_to_highlight)){
       plt_diffMeanSumVar <- plt_diffMeanSumVar +
@@ -244,7 +245,7 @@ diffmeans_sumvariance_plot <- function(
     x=expression(bar(beta)[paste(cell)] - bar(beta)[paste(others)]),
     y=expression(var(beta[paste(cell)]) + var(beta[paste(others)])),
     title=paste0(label_var1," vs ",label_var2),
-    caption=unlist(ifelse(is.null(id_tag),waiver(),id_tag))
+    caption=unlist(ifelse(is.null(id_tag),ggplot2::waiver(),id_tag))
   )
   # FIXME control creation of simple_plot
   simple_plot = plt_diffMeanSumVar

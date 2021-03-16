@@ -18,6 +18,7 @@
 #' @param show_legend TODO
 #' @param signif TODO
 #' @importFrom dplyr %>%
+#' @export
 plot_deconvolution <- function(
   deconv_mat,  # Classes as rows, Samples as columns
   name_tag,
