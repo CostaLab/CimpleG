@@ -25,19 +25,21 @@ CimpleG, an R package to find (simple) CpG signatures.
 ## Installation
 
 ```{r, eval = FALSE}
-# Install directly from github:
+# Install directly from github (NOT YET):
 devtools::install_github("tiagomaie/CimpleG")
 
 # Alternatively, install from a local source:
 #  - ie navigating through your system
 install.packages(file.choose(), repos=NULL, type="source")
 #  - ie given a path to a local source
+install.packages("~/Downloads/CimpleG_0.0.1.XXXX.tar.gz", repos=NULL, type="source")
+# or
 devtools::install_local("~/Downloads/CimpleG_0.0.1.XXXX.tar.gz")
 ```
 
 ## Getting started
 
-```{r, eval = TRUE, echo = FALSE, results='hide', message=FALSE, warning=FALSE}
+```{r, eval = TRUE, echo = TRUE, results='hide', message=FALSE, warning=FALSE}
 library("CimpleG")
 
 data(train_data)
