@@ -42,7 +42,7 @@ make_color_palette <- function(classes){
   if(requireNamespace("ggsci",quietly = TRUE)){
     color_palette_df <- data.frame(
       classes=classes,
-      class_color=colorRampPalette(ggsci::pal_ucscgb()(26))(length(classes))
+      class_color=grDevices::colorRampPalette(ggsci::pal_ucscgb()(26))(length(classes))
     )
   }else if(requireNamespace("RColorBrewer",quietly = TRUE)){
     color_palette_df <- data.frame(

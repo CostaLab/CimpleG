@@ -563,12 +563,18 @@ train_general_model <- function(
     general_model <-
       # specify the model
       parsnip::boost_tree(
-        tree_depth = tune::tune(),
+        tree_depth = 10,
         trees = tune::tune(),
-        min_n = tune::tune(),
-        mtry = tune::tune()
+        min_n = 1,
+        learn_rate=0.1,
+        stop_iter = 3
       ) %>%
-      parsnip::set_engine("xgboost")
+      parsnip::set_engine(
+        "xgboost",
+        objective = "binary:logistic",
+        eval_metric="aucpr",
+        maximize=TRUE
+      )
   }
 
   if (model_type == "mlp") {
@@ -625,9 +631,7 @@ train_general_model <- function(
       resamples=f_data,
       grid=grid_n,
       metrics=yardstick::metric_set(
-        yardstick::pr_auc,
-        yardstick::roc_auc,
-        yardstick::accuracy
+        yardstick::pr_auc
       )
     )
 
