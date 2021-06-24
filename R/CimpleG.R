@@ -176,6 +176,9 @@ CimpleG <- function(
 
 
   work_helper <- function(target) {
+
+    start_time <- Sys.time()
+
     train_target_vec <- factor(ifelse(
       train_targets[, target] == 1,
       "positive_class",
@@ -189,12 +192,9 @@ CimpleG <- function(
 
     train_data$target <- train_target_vec
     test_data$target <- test_target_vec
-    message(
-      paste0(
-        "Training for target '",target,
-        "' with '",selected_method," is starting..."
-      )
-    )
+
+    # message(paste0("Training for target '",target,"' with '",selected_method," is starting..."))
+
     if(is_simple_method){
       train_res <- do_cv(
         train_data = train_data,
@@ -226,9 +226,12 @@ CimpleG <- function(
       )
     }
 
+    elapsed_time <- Sys.time() - start_time
+
     return(list(
       train_res = train_res,
-      test_perf = test_res
+      test_perf = test_res,
+      elapsed_time = elapsed_time
     ))
   }
 
