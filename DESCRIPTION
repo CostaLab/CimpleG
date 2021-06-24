@@ -46,7 +46,7 @@ Suggests:
     reshape2,
     stringr,
     testthat (>= 3.0.0),
-    xgboost,
+    xgboost (== 1.3.2.1),
     glmnet,
     C50,
     ranger,

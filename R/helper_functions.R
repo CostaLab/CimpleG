@@ -600,7 +600,7 @@ train_general_model <- function(
       parsnip::mlp(
         hidden_units = tune::tune(),
         penalty = tune::tune(),
-        epochs = tune::tune()
+        epochs = 20
       ) %>%
       parsnip::set_engine("nnet")
   }
