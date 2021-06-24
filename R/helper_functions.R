@@ -529,7 +529,11 @@ train_general_model <- function(
     f_data$splits[[i]]$id = tibble::tibble(id=sprintf("Fold%02d",i))
   }
 
-  cimpleg_recipe <- recipes::recipe(target~., data=train_data)
+  cimpleg_recipe <- recipes::recipe(
+    x=head(train_data,1),
+    vars=colnames(train_data),
+    roles=c(rep("predictor",ncol(train_data)-1),"outcome")
+  )
 
   if(model_type == "logistic_reg"){
     general_model <-
