@@ -75,7 +75,7 @@ for the given target data." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.9007</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.9008</span>
       </span>
     </div>
 
@@ -124,7 +124,7 @@ for the given target data.</p>
 
     <pre class="usage"><span class='fu'>CimpleG</span><span class='op'>(</span>
   <span class='va'>train_data</span>,
-  <span class='va'>train_targets</span>,
+  train_targets <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>targets</span>,
   test_data <span class='op'>=</span> <span class='cn'>NULL</span>,
   test_targets <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -259,9 +259,9 @@ this function.</p></td>
   method <span class='op'>=</span> <span class='st'>"parab_scale"</span>,
   targets <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"CELL_TYPE_MSCORFIBRO"</span>,<span class='st'>"CELL_TYPE_NEURONS"</span><span class='op'>)</span>
 <span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold01: 0.461 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold02: 0.259 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold03: 0.238 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold04: 0.233 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold05: 0.285 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold06: 0.226 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold07: 0.249 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold08: 0.277 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold09: 0.238 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold10: 0.252 sec elapsed
-#&gt; Training for target 'CELL_TYPE_MSCORFIBRO' with 'parab_scale(both)' has finished.: 6.078 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Training final model...</span></div><div class='output co'>#&gt; <span class='message'>Evaluating test data...</span></div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold01: 0.148 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold02: 0.148 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold03: 0.124 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold04: 0.129 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold05: 0.149 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold06: 0.143 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold07: 0.146 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold08: 0.131 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold09: 0.129 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold10: 0.142 sec elapsed
-#&gt; Training for target 'CELL_TYPE_NEURONS' with 'parab_scale(both)' has finished.: 1.409 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Training final model...</span></div><div class='output co'>#&gt; <span class='message'>Evaluating test data...</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold01: 0.528 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold02: 0.226 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold03: 0.301 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold04: 0.248 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold05: 0.243 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold06: 0.207 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold07: 0.26 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold08: 0.223 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold09: 0.245 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.9</span></div><div class='output co'>#&gt; Fold10: 0.239 sec elapsed
+#&gt; Training for target 'CELL_TYPE_MSCORFIBRO' with 'parab_scale(both)' has finished.: 5.927 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Training final model...</span></div><div class='output co'>#&gt; <span class='message'>Evaluating test data...</span></div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold01: 0.141 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold02: 0.137 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold03: 0.125 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold04: 0.176 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold05: 0.131 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold06: 0.199 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold07: 0.128 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold08: 0.13 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold09: 0.129 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Fold parabola parameter: 0.4</span></div><div class='output co'>#&gt; Fold10: 0.181 sec elapsed
+#&gt; Training for target 'CELL_TYPE_NEURONS' with 'parab_scale(both)' has finished.: 1.495 sec elapsed</div><div class='output co'>#&gt; <span class='message'>Training final model...</span></div><div class='output co'>#&gt; <span class='message'>Evaluating test data...</span></div><div class='input'>
 <span class='co'># check results</span>
 <span class='va'>cimpleg_result</span><span class='op'>$</span><span class='va'>results</span>
 </div><div class='output co'>#&gt; $CELL_TYPE_MSCORFIBRO
@@ -270,25 +270,25 @@ this function.</p></td>
 #&gt; [1] "cg24192660"
 #&gt; 
 #&gt; $CELL_TYPE_MSCORFIBRO$train_res$model
-#&gt; <span style='color: #949494;'># A tibble: 1 x 7</span>
-#&gt;   predictor  type  .metric mean_fold_performa…     n mean_parab_param diff_means
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
-#&gt; <span style='color: #BCBCBC;'>1</span> cg24192660 hyper pr_auc                0.907    10              0.9      0.691
+#&gt; <span style='color: #949494;'># A tibble: 1 × 7</span>
+#&gt;   predictor  type  .metric mean_fold_performance     n mean_parab_param diff_means
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span> cg24192660 hyper pr_auc                  0.907    10              0.9      0.691
 #&gt; 
 #&gt; $CELL_TYPE_MSCORFIBRO$train_res$train_summary
-#&gt; <span style='color: #949494;'># A tibble: 432 x 7</span>
-#&gt;    predictor  type  .metric mean_fold_perform…     n mean_parab_param diff_means
-#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
-#&gt; <span style='color: #BCBCBC;'> 1</span> cg24192660 hyper roc_auc              0.955    10              0.9      0.691
-#&gt; <span style='color: #BCBCBC;'> 2</span> cg24192660 hyper pr_auc               0.907    10              0.9      0.691
-#&gt; <span style='color: #BCBCBC;'> 3</span> cg03369247 hypo  roc_auc              0.861    10              0.9     -<span style='color: #BB0000;'>0.607</span>
-#&gt; <span style='color: #BCBCBC;'> 4</span> cg11029367 hypo  roc_auc              0.853    10              0.9     -<span style='color: #BB0000;'>0.625</span>
-#&gt; <span style='color: #BCBCBC;'> 5</span> cg03369247 hypo  pr_auc               0.827    10              0.9     -<span style='color: #BB0000;'>0.607</span>
-#&gt; <span style='color: #BCBCBC;'> 6</span> cg14021880 hypo  roc_auc              0.817    10              0.9     -<span style='color: #BB0000;'>0.573</span>
-#&gt; <span style='color: #BCBCBC;'> 7</span> cg06932535 hypo  roc_auc              0.799    10              0.9     -<span style='color: #BB0000;'>0.600</span>
-#&gt; <span style='color: #BCBCBC;'> 8</span> cg14021880 hypo  pr_auc               0.793    10              0.9     -<span style='color: #BB0000;'>0.573</span>
-#&gt; <span style='color: #BCBCBC;'> 9</span> cg16427420 hypo  roc_auc              0.787    10              0.9     -<span style='color: #BB0000;'>0.587</span>
-#&gt; <span style='color: #BCBCBC;'>10</span> cg04232282 hypo  roc_auc              0.748    10              0.9     -<span style='color: #BB0000;'>0.558</span>
+#&gt; <span style='color: #949494;'># A tibble: 432 × 7</span>
+#&gt;    predictor  type  .metric mean_fold_performance     n mean_parab_param diff_means
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 1</span> cg24192660 hyper roc_auc                 0.955    10              0.9      0.691
+#&gt; <span style='color: #BCBCBC;'> 2</span> cg24192660 hyper pr_auc                  0.907    10              0.9      0.691
+#&gt; <span style='color: #BCBCBC;'> 3</span> cg03369247 hypo  roc_auc                 0.861    10              0.9     -<span style='color: #BB0000;'>0.607</span>
+#&gt; <span style='color: #BCBCBC;'> 4</span> cg11029367 hypo  roc_auc                 0.853    10              0.9     -<span style='color: #BB0000;'>0.625</span>
+#&gt; <span style='color: #BCBCBC;'> 5</span> cg03369247 hypo  pr_auc                  0.827    10              0.9     -<span style='color: #BB0000;'>0.607</span>
+#&gt; <span style='color: #BCBCBC;'> 6</span> cg14021880 hypo  roc_auc                 0.817    10              0.9     -<span style='color: #BB0000;'>0.573</span>
+#&gt; <span style='color: #BCBCBC;'> 7</span> cg06932535 hypo  roc_auc                 0.799    10              0.9     -<span style='color: #BB0000;'>0.600</span>
+#&gt; <span style='color: #BCBCBC;'> 8</span> cg14021880 hypo  pr_auc                  0.793    10              0.9     -<span style='color: #BB0000;'>0.573</span>
+#&gt; <span style='color: #BCBCBC;'> 9</span> cg16427420 hypo  roc_auc                 0.787    10              0.9     -<span style='color: #BB0000;'>0.587</span>
+#&gt; <span style='color: #BCBCBC;'>10</span> cg04232282 hypo  roc_auc                 0.748    10              0.9     -<span style='color: #BB0000;'>0.558</span>
 #&gt; <span style='color: #949494;'># … with 422 more rows</span>
 #&gt; 
 #&gt; 
@@ -297,7 +297,7 @@ this function.</p></td>
 #&gt; 1 parab_scale cg24192660 0.7823529 0.704 0.6378487
 #&gt; 
 #&gt; $CELL_TYPE_MSCORFIBRO$elapsed_time
-#&gt; Time difference of 9.566632 secs
+#&gt; Time difference of 9.37746 secs
 #&gt; 
 #&gt; 
 #&gt; $CELL_TYPE_NEURONS
@@ -306,25 +306,25 @@ this function.</p></td>
 #&gt; [1] "cg17008486"
 #&gt; 
 #&gt; $CELL_TYPE_NEURONS$train_res$model
-#&gt; <span style='color: #949494;'># A tibble: 1 x 7</span>
-#&gt;   predictor  type  .metric mean_fold_performa…     n mean_parab_param diff_means
-#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                 <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
-#&gt; <span style='color: #BCBCBC;'>1</span> cg17008486 hypo  pr_auc                0.942    10              0.4     -<span style='color: #BB0000;'>0.779</span>
+#&gt; <span style='color: #949494;'># A tibble: 1 × 7</span>
+#&gt;   predictor  type  .metric mean_fold_performance     n mean_parab_param diff_means
+#&gt;   <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
+#&gt; <span style='color: #BCBCBC;'>1</span> cg17008486 hypo  pr_auc                  0.942    10              0.4     -<span style='color: #BB0000;'>0.779</span>
 #&gt; 
 #&gt; $CELL_TYPE_NEURONS$train_res$train_summary
-#&gt; <span style='color: #949494;'># A tibble: 168 x 7</span>
-#&gt;    predictor  type  .metric mean_fold_perform…     n mean_parab_param diff_means
-#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
-#&gt; <span style='color: #BCBCBC;'> 1</span> cg17008486 hypo  roc_auc              0.997    10              0.4     -<span style='color: #BB0000;'>0.779</span>
-#&gt; <span style='color: #BCBCBC;'> 2</span> cg17008486 hypo  pr_auc               0.942    10              0.4     -<span style='color: #BB0000;'>0.779</span>
-#&gt; <span style='color: #BCBCBC;'> 3</span> cg09146232 hypo  roc_auc              0.922    10              0.4     -<span style='color: #BB0000;'>0.733</span>
-#&gt; <span style='color: #BCBCBC;'> 4</span> cg14356362 hypo  roc_auc              0.821    10              0.4     -<span style='color: #BB0000;'>0.642</span>
-#&gt; <span style='color: #BCBCBC;'> 5</span> cg14356362 hypo  pr_auc               0.805    10              0.4     -<span style='color: #BB0000;'>0.642</span>
-#&gt; <span style='color: #BCBCBC;'> 6</span> cg13618776 hyper roc_auc              0.804    10              0.4      0.630
-#&gt; <span style='color: #BCBCBC;'> 7</span> cg08390172 hyper roc_auc              0.779    10              0.4      0.644
-#&gt; <span style='color: #BCBCBC;'> 8</span> cg13618776 hyper pr_auc               0.773    10              0.4      0.630
-#&gt; <span style='color: #BCBCBC;'> 9</span> cg13700051 hypo  pr_auc               0.741    10              0.4     -<span style='color: #BB0000;'>0.579</span>
-#&gt; <span style='color: #BCBCBC;'>10</span> cg13700051 hypo  roc_auc              0.741    10              0.4     -<span style='color: #BB0000;'>0.579</span>
+#&gt; <span style='color: #949494;'># A tibble: 168 × 7</span>
+#&gt;    predictor  type  .metric mean_fold_performance     n mean_parab_param diff_means
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;chr&gt;</span>                   <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span> <span style='color: #949494; font-style: italic;'>&lt;int&gt;</span>            <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>      <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 1</span> cg17008486 hypo  roc_auc                 0.997    10              0.4     -<span style='color: #BB0000;'>0.779</span>
+#&gt; <span style='color: #BCBCBC;'> 2</span> cg17008486 hypo  pr_auc                  0.942    10              0.4     -<span style='color: #BB0000;'>0.779</span>
+#&gt; <span style='color: #BCBCBC;'> 3</span> cg09146232 hypo  roc_auc                 0.922    10              0.4     -<span style='color: #BB0000;'>0.733</span>
+#&gt; <span style='color: #BCBCBC;'> 4</span> cg14356362 hypo  roc_auc                 0.821    10              0.4     -<span style='color: #BB0000;'>0.642</span>
+#&gt; <span style='color: #BCBCBC;'> 5</span> cg14356362 hypo  pr_auc                  0.805    10              0.4     -<span style='color: #BB0000;'>0.642</span>
+#&gt; <span style='color: #BCBCBC;'> 6</span> cg13618776 hyper roc_auc                 0.804    10              0.4      0.630
+#&gt; <span style='color: #BCBCBC;'> 7</span> cg08390172 hyper roc_auc                 0.779    10              0.4      0.644
+#&gt; <span style='color: #BCBCBC;'> 8</span> cg13618776 hyper pr_auc                  0.773    10              0.4      0.630
+#&gt; <span style='color: #BCBCBC;'> 9</span> cg13700051 hypo  pr_auc                  0.741    10              0.4     -<span style='color: #BB0000;'>0.579</span>
+#&gt; <span style='color: #BCBCBC;'>10</span> cg13700051 hypo  roc_auc                 0.741    10              0.4     -<span style='color: #BB0000;'>0.579</span>
 #&gt; <span style='color: #949494;'># … with 158 more rows</span>
 #&gt; 
 #&gt; 
@@ -333,7 +333,7 @@ this function.</p></td>
 #&gt; 1 parab_scale cg17008486 0.9411765 0.6875 0.7239611
 #&gt; 
 #&gt; $CELL_TYPE_NEURONS$elapsed_time
-#&gt; Time difference of 2.68481 secs
+#&gt; Time difference of 2.907063 secs
 #&gt; 
 #&gt; </div><div class='input'>
 </div></pre>
