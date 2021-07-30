@@ -11,8 +11,10 @@ do_cv <- function(
   target_name
 ) {
   assertthat::assert_that("target" %in% colnames(train_data))
+  assertthat::assert_that(is.factor(train_data[,"target"]))
 
   rv_tbl <- table(train_data[, "target"])
+
 
   if (k_folds > rv_tbl[which.min(rv_tbl)]) {
     k_folds <- rv_tbl[which.min(rv_tbl)]
@@ -31,9 +33,11 @@ do_cv <- function(
   cv_index = caret::createFolds(
     train_data$target,
     k = k_folds,
-    returnTrain = TRUE,
+    # if returnTrain=TRUE when k=1, returns nothing
+    returnTrain = ifelse(k_folds < 2, FALSE, TRUE),
     list=TRUE
   )
+
   tc <- caret::trainControl(
     index = cv_index,
     indexOut = purrr::map(
@@ -316,7 +320,7 @@ find_predictors <- function(
 ) {
 
   tictoc::tic(split_train_set$id %>% unlist())
-
+  
   train_set <- rsample::analysis(split_train_set)
 
   tru_v <- train_set$target == p_class
@@ -353,23 +357,28 @@ find_predictors <- function(
     if(any(df_dMean_sVar$pred_type)){
       # get PRAUC for hyper methylated cpgs
       hyperM_predictors <- train_set %>%
-        dplyr::select(rownames(df_dMean_sVar[which(df_dMean_sVar$pred_type), ])) %>%
-        dplyr::summarise(dplyr::across(.cols=tidyselect::vars_select_helpers$where(is.numeric),.fns = function(x,truth){
+        dplyr::select(
+          rownames(df_dMean_sVar[which(df_dMean_sVar$pred_type), ])
+        ) %>%
+        dplyr::summarise(dplyr::across(
+            .cols = tidyselect::vars_select_helpers$where(is.numeric),
+            .fns = function(x,truth){
             prroc_prauc_vec(truth = truth, estimate = x)
           },
           truth = train_set$target
-        )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id")%>%
-        magrittr::set_colnames(c(".id", "AUPR"))%>%
+        )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id") %>%
+        magrittr::set_colnames(c(".id", "AUPR")) %>%
         # attach mean diff, will be used to scale AUPR
         dplyr::mutate(pred_type = "hyper") %>%
         dplyr::mutate(diff_means = df_dMean_sVar[.id, ]$diff_means) %>%
         dplyr::mutate(sum_variance = df_dMean_sVar[.id, ]$sum_variance)
-        if(scale_scores){
+
+      if(scale_scores){
           hyperM_predictors$DiffScaledAUPR <- scales::rescale(
             abs(hyperM_predictors$diff_means),
             to=c(0,1)
           ) * hyperM_predictors$AUPR
-        }
+      }
 
     }
     if(any(!df_dMean_sVar$pred_type)){
@@ -463,7 +472,6 @@ find_predictors <- function(
     oner_mod <- fix_oner_boundaries(oner_mod)
 
     holdout_res <- rsample::assessment(split_train_set)
-    # print(table(holdout_res$target))
     lvls <- levels(holdout_res$target)
 
     oner_pred <- factor(predict(oner_mod, holdout_res, type = "class"), levels = lvls)
@@ -530,7 +538,7 @@ train_general_model <- function(
   }
 
   cimpleg_recipe <- recipes::recipe(
-    x=head(train_data,1),
+    x=head(train_data,0),
     vars=colnames(train_data),
     roles=c(rep("predictor",ncol(train_data)-1),"outcome")
   )
@@ -666,10 +674,12 @@ parabola_iter_loop <- function(
     y = df_diffmean_sumvar$sum_variance,
     a = init_fs
   )
-
+  
   # Find features in feature space (diff_means,sum_variance)
   i_iter <- 0
-  while (updt_selected_feats(df_diffmean_sumvar, min_feat_search,pred_type) & i_iter < 100) {
+  while (
+    updt_selected_feats(df_diffmean_sumvar, min_feat_search,pred_type) & i_iter < 100
+  ){
     df_diffmean_sumvar$select_feature <- select_features(
       x = df_diffmean_sumvar$diff_means,
       y = df_diffmean_sumvar$sum_variance,
@@ -679,6 +689,7 @@ parabola_iter_loop <- function(
     init_fs <- init_fs + step_increment
     i_iter <- i_iter + 1
   }
+  if(!i_iter<100) stop("Could not find signatures.")
   message(paste0("Fold parabola parameter: ", final_param))
 
   df_diffmean_sumvar <- df_diffmean_sumvar[which(df_diffmean_sumvar$select_feature), ]
@@ -833,8 +844,21 @@ make_train_test_split <- function(
 ){
 
   if(is.null(names(targets))) names(targets) <- targets
-
-  # FIXME this is really ugly...
+  
+  assertthat::assert_that(
+    all(rowSums(train_targets[targets]) < 2),
+    msg=paste0(
+      "When performing the train-test split, we take into account all given targets and assume each sample belongs ",
+      "to a single one of them.\n",
+      "This does not seem to be the case for sample(s) ",
+      paste0(which(rowSums(train_targets[targets]) > 1),collapse=", "),".\n",
+      "Either fix the samples class for the given target or try to train for each of the targets independently."
+    )
+  )
+  
+  # creating a single column with all the targets available so that we can
+  # do a stratified split
+  # FIXME this is really ugly... only works if samples only belong to a single target
   target_strat <- purrr::map_dfr(
     .x = targets,
     .f = function(target) {
@@ -851,15 +875,37 @@ make_train_test_split <- function(
     dplyr::mutate(merged = gsub("^[_]+", "", merged)) %>%
     dplyr::mutate(merged = gsub("[_]+$", "", merged)) %>%
     dplyr::mutate(merged = ifelse(merged == "", 0, merged))
+  # > merged
+  # A
+  # 0
+  # 0
+  # B
+  # A
+  # ...
+  assertthat::assert_that(
+    min(table(target_strat$merged)) > 1,
+    msg = paste0(
+      "Number of samples for one of the target classes (",
+      names(which.min(table(target_strat$merged))),
+      ") needs to be bigger than 1.\n",
+      "Either add samples to this class or remove it from the targets."
+    )
+  )
 
+  # this should ensure a training and testing data have samples
+  # even for targets with a small number of samples
+  min_pool <- min(
+    min(table(target_strat$merged))/sum(table(target_strat$merged)),
+    0.1
+  )
 
   part_d <- rsample::initial_split(
-    data=train_d %>%
-      dplyr::mutate(target_strat=target_strat%>%
-      dplyr::pull(merged)
-    ),
-    prop=prop,
-    strata="target_strat"
+    data = train_d %>%
+      as.data.frame %>%
+      dplyr::mutate(target_strat = target_strat %>% dplyr::pull(merged)),
+    prop = prop,
+    strata = "target_strat",
+    pool = min_pool
   )
 
   tmp_train <- rsample::training(part_d)
@@ -877,6 +923,10 @@ make_train_test_split <- function(
     dplyr::mutate_all(tidyr::replace_na, 0) %>%
     tibble::column_to_rownames("id")
 
+  # this is just so that if all samples were assigned to the training dataset,
+  # for a given target, we can still add this target to the testing data
+  # to avoid problems of trying to search for the target later on.
+  pseudo_targets <- sapply(targets, function(x) x <- NA_real_)
 
   new_test_targets <- tmp_test %>%
     tibble::rownames_to_column("id") %>%
@@ -886,6 +936,8 @@ make_train_test_split <- function(
       names_from = target_strat,
       values_from = tmp_value
     ) %>%
+    # add col with the missing target names if theres any
+    tibble::add_column(!!!pseudo_targets[setdiff(names(targets), names(.))]) %>%
     dplyr::select(id, dplyr::all_of(targets)) %>%
     dplyr::mutate_all(tidyr::replace_na, 0) %>%
     tibble::column_to_rownames("id")
@@ -912,13 +964,38 @@ compute_diffmeans_sumvar <- function(data, target_vector) {
   data <- as.matrix(data)
 
   id <- colnames(data)
-
   diff_means <-
-    colMeans(data[target_vector, ]) - colMeans(data[!target_vector, ])
+    colMeans(data[target_vector,,drop=FALSE]) - colMeans(data[!target_vector,,drop=FALSE])
 
-  sum_variance <- {
-    matrixStats::colVars(data[target_vector, ]) +
-      matrixStats::colVars(data[!target_vector, ])
+  #sum_variance <- {
+  #  matrixStats::colVars(data[target_vector, ,drop=FALSE]) +
+  #    matrixStats::colVars(data[!target_vector, ,drop=FALSE])
+  #}
+  sum_variance <- if(min(table(target_vector)) > 1){
+    matrixStats::colVars(data, rows = target_vector) +
+      matrixStats::colVars(data, rows = !target_vector)
+  }else if(as.logical(names(which.min(table(target_vector)))) && max(table(target_vector)) > 1){
+    # if the target class is min and the non-target class is more than 1
+    warning(paste0(
+      "Too few samples to properly calculate variance.\n",
+      " Please consider adding more target samples to your dataset."
+    ))
+    # only looking at the variance of the "others" class
+    (0 + matrixStats::colVars(data, rows = !target_vector))
+  }else if(!as.logical(names(which.min(table(target_vector)))) && max(table(target_vector)) > 1){
+    # if the non-target class is min and the target class is more than 1
+    warning(paste0(
+      "Too few samples to properly calculate variance.\n",
+      " Please consider adding more non target samples to your dataset."
+    ))
+    # only looking at the variance of the "others" class
+    (0 + matrixStats::colVars(data, rows = target_vector))
+  } else {
+    # both classes, target and non-target only have a single sample
+    stop(paste0(
+      "There are too few samples to calculate variance.\n",
+      " Please add more samples to your target and non-target class.")
+    )
   }
 
   df_diffmean_sumvar <- data.frame(

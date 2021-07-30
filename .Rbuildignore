@@ -15,3 +15,5 @@
 ^\.github$
 ^setup_proj\.R$
 ^LICENSE\.md$
+^README\.html$
+^temp_test\.R$

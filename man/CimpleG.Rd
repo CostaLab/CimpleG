@@ -7,7 +7,7 @@ for the given target data.}
 \usage{
 CimpleG(
   train_data,
-  train_targets,
+  train_targets = NULL,
   targets,
   test_data = NULL,
   test_targets = NULL,

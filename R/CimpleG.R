@@ -100,7 +100,7 @@
 #' @export
 CimpleG <- function(
   train_data,
-  train_targets,
+  train_targets=NULL,
   targets,
   test_data=NULL,
   test_targets=NULL,
@@ -116,44 +116,62 @@ CimpleG <- function(
     "rand_forest",
     "null_model"
   ),
-  pred_type = c("both","hypo","hyper"),
-  engine=c("glmnet","xgboost","nnet","ranger"),
+  pred_type = c("both", "hypo", "hyper"),
+  engine=c("glmnet", "xgboost", "nnet", "ranger"),
   k_folds = 10,
   grid_n=10,
   n_repeats = 1,
   run_parallel=FALSE
 ) {
-  # TODO make some diagnostic plots
 
-  if(is.null(test_data) | is.null(test_targets)){
-    message("'test_data' or 'test_targets' is NULL.")
-    message("'train_data' will be partioned to create 'test_data'.")
+  if(inherits(train_data, "SummarizedExperiment")){
+    prep_train <- prep_data(train_data,targets)
+    train_data <- prep_train$beta_mat
+    train_targets <- prep_train$df_targets
+    rm(prep_train)
 
-    split_data <- make_train_test_split(
-      train_d=train_data,
-      train_targets=train_targets,
-      targets=targets
+    if(!is.null(test_data) && inherits(test_data, "SummarizedExperiment")){
+      prep_test <- prep_data(test_data,targets)
+      test_data <- prep_test$beta_mat
+      test_targets <- prep_test$df_targets
+      rm(prep_test)
+    }
+  }
+  
+  # Check train data
+  assertthat::assert_that(length(targets) > 0)
+  assertthat::assert_that(all(targets %in% colnames(train_targets)))
+  assertthat::assert_that(
+    assertthat::are_equal(nrow(train_data), nrow(train_targets))
+  )
+
+  if(nrow(train_data) > ncol(train_data)){
+    warning(
+      paste0(
+        "There are more samples (", nrow(train_data), ")",
+        " than features (", ncol(train_data), ").", "\n",
+        "This might be a sign that you forgot to transpose your train_data."
+      )
     )
-    train_data <- split_data$train_data
-    train_targets <- split_data$train_targets
-    test_data <- split_data$test_data
-    test_targets <- split_data$test_targets
-    rm(split_data)
   }
 
-  # Check train data
-  assertthat::assert_that(all(targets %in% colnames(train_targets)))
-  assertthat::are_equal(nrow(train_data), nrow(train_targets))
+  # Make sure samples for the given target exist for training (!=0)
+  purrr::walk(targets, function(target){
+    samples_in_target <- sum(as.integer(train_targets[, target]))
+    assertthat::assert_that(
+      samples_in_target > 0,
+      msg = paste0(
+        "Target class: '", target, "' has 0 samples to train for.", "\n",
+        "Make sure samples for the given target exist for training"
+      )
+    )
+    return(NULL)
+  })
 
   # Check cv params
   assertthat::assert_that(is.numeric(k_folds))
   assertthat::assert_that(k_folds > 0)
   assertthat::assert_that(is.numeric(n_repeats))
-
-  # Check test data
-  assertthat::assert_that(all(targets %in% colnames(test_targets)))
-  assertthat::are_equal(nrow(test_data), nrow(test_targets))
-
   # Check method params
   selected_method <- match.arg(
     method,
@@ -165,11 +183,36 @@ CimpleG <- function(
       "null_model"
     )
   )
-  selected_pred_type <- match.arg(pred_type, choices = c("both","hypo","hyper"))
+  selected_pred_type <- match.arg(
+    pred_type, choices = c("both", "hypo", "hyper")
+  )
   assertthat::assert_that(grid_n > 0)
 
+  if(is.null(test_data) | is.null(test_targets)){
+    message("'test_data' or 'test_targets' is NULL.")
+    message("'train_data' will be partioned to create 'test_data'.")
+    
+    split_data <- make_train_test_split(
+      train_d = train_data,
+      train_targets = train_targets,
+      targets = targets
+    )
+    train_data <- split_data$train_data
+    train_targets <- split_data$train_targets
+    test_data <- split_data$test_data
+    test_targets <- split_data$test_targets
+    rm(split_data)
+  }
 
-  is_simple_method <- selected_method %in% c("adhoc", "parab", "parab_scale", "oner")
+  # Check test data
+  assertthat::assert_that(all(targets %in% colnames(test_targets)))
+  assertthat::assert_that(
+    assertthat::are_equal(nrow(test_data), nrow(test_targets))
+  )
+
+  is_simple_method <- selected_method %in% c(
+    "adhoc", "parab", "parab_scale", "oner"
+  )
 
   train_data <- as.data.frame(train_data)
   test_data <- as.data.frame(test_data)
@@ -193,8 +236,6 @@ CimpleG <- function(
     train_data$target <- train_target_vec
     test_data$target <- test_target_vec
 
-    # message(paste0("Training for target '",target,"' with '",selected_method," is starting..."))
-
     if(is_simple_method){
       train_res <- do_cv(
         train_data = train_data,
@@ -202,7 +243,7 @@ CimpleG <- function(
         k_folds = k_folds,
         n_repeats = n_repeats,
         pred_type = selected_pred_type,
-        target_name=target
+        target_name = target
       )
 
       test_res <- eval_test_data(
@@ -243,23 +284,99 @@ CimpleG <- function(
     ) %>% magrittr::set_names(targets)
   }else{
     res <- purrr::map(
-      .x=targets,
-      .f=work_helper
+      .x = targets,
+      .f = work_helper
     ) %>% magrittr::set_names(targets)
   }
 
   if(is_simple_method){
-    signatures = purrr::map_chr(
+    signatures <- purrr::map_chr(
       res,
       function(cg_res){
         cg_res$train_res$CpG
       }
     )
-    final_res <- list(signatures=signatures,results=res)
+    final_res <- list(signatures = signatures, results = res)
   }else{
-    final_res <- list(results=res)
+    final_res <- list(results = res)
   }
 
   class(final_res) <- "CimpleG"
   return(final_res)
+}
+
+prep_data <- function(data, targets){
+
+  if(
+    class(data) %in% 
+      c("MethylSet", "GenomicMethylSet", "RGChannelSet", "GenomicRatioSet")
+  ){
+    
+    beta_mat <- minfi::getBeta(data)
+    df_targets <- minfi::pData(data)
+
+  }else if(is(data) %in% "SummarizedExperiment"){
+    
+    assertthat::assert_that(
+      tolower(SummarizedExperiment::assayNames(data)) %in% "beta"
+    )
+
+    # samples as columns
+    beta_mat  <- SummarizedExperiment::assays(data)[
+      which(tolower(SummarizedExperiment::assayNames(data)) == "beta")
+    ][[1]]
+    df_targets <- SummarizedExperiment::colData(data)
+  }else{
+    stop(
+      paste0("Class of data provided ('",class(data),"'), is not supported.")
+    )
+  }
+
+  # make samples as rows
+  beta_mat <- t(beta_mat)
+
+  # make DataFrame into data.frame
+  df_targets <- as.data.frame(df_targets)
+
+  assertthat::assert_that(all(targets %in% colnames(df_targets)))
+  
+  # check which cols don't have their values as 0 or 1
+  # these will be the ones to edit
+  # cols_to edit is a named vector
+  cols_to_edit <- which(sapply(
+    df_targets[targets],
+    function(dcols){!all(dcols %in% c(0,1))}
+  ))
+  
+  # make cols to edit factor
+  df_targets[names(cols_to_edit)] <- lapply(
+    df_targets[names(cols_to_edit)],factor
+  )
+
+  # find in each col to edit (targets that are not 0/1) which of the values
+  # is in a smaller proportion, these values will become 1
+  # fetch_col will be a named vector where the values are the minority "class"
+  # and the names are the name of the corresponding column
+  fetch_col <- sapply(
+    df_targets[names(cols_to_edit)],
+    function(x){levels(x)[which.min(tabulate(x))]}
+  )
+  
+  # make cols one-hot encoded
+  df_targets <- as.data.frame(
+    mltools::one_hot(
+      dt=data.table::as.data.table(df_targets),
+      cols=names(cols_to_edit),
+      dropCols=FALSE
+    )
+  )
+  # for each col that needs to be edited, fetch it and the corresponding name
+  # created by one_hot
+  df_targets[,names(fetch_col)] <- lapply(
+    names(fetch_col),
+    function(x){df_targets[,paste0(x,"_",fetch_col[x])]}
+  )
+
+
+  return(list(beta_mat = beta_mat, df_targets = df_targets))
 }

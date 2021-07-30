@@ -7,7 +7,9 @@ usethis::use_build_ignore(c(
   "test_data",
   "devel",
   "update_version.sh",
-  "setup_proj.R"
+  "setup_proj.R",
+  "README.html",
+  "temp_test.R"
 ))
 
 # use pkg
@@ -58,6 +60,10 @@ usethis::use_package("ggbeeswarm", "suggests")
 usethis::use_package("ggsci", "suggests")
 usethis::use_package("ggsignif", "suggests")
 usethis::use_package("grDevices", "suggests")
+usethis::use_package("data.table", "suggests")
+usethis::use_package("minfi", "suggests")
+usethis::use_package("mltools", "suggests")
+usethis::use_package("SummarizedExperiment", "suggests")
 # usethis::use_package("Cairo", "suggests")
 
 # remotes

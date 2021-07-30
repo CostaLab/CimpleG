@@ -1,4 +1,6 @@
 
+pkg_pipeline: update_version check_package document_package build_package install_package
+
 install_package:
 	Rscript -e "devtools::install('.')"
 
