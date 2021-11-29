@@ -9,7 +9,8 @@ usethis::use_build_ignore(c(
   "update_version.sh",
   "setup_proj.R",
   "README.html",
-  "temp_test.R"
+  "temp_test.R",
+  "init.r"
 ))
 
 # use pkg
@@ -36,6 +37,9 @@ usethis::use_package("tidyr")
 usethis::use_package("rlang")
 usethis::use_package("scales")
 usethis::use_package("tidyselect")
+usethis::use_package("butcher")
+usethis::use_package("grDevices")
+
 
 # suggested
 usethis::use_package("stringr", "suggests")
@@ -59,11 +63,12 @@ usethis::use_package("future.apply", "suggests")
 usethis::use_package("ggbeeswarm", "suggests")
 usethis::use_package("ggsci", "suggests")
 usethis::use_package("ggsignif", "suggests")
-usethis::use_package("grDevices", "suggests")
 usethis::use_package("data.table", "suggests")
 usethis::use_package("minfi", "suggests")
 usethis::use_package("mltools", "suggests")
 usethis::use_package("SummarizedExperiment", "suggests")
+usethis::use_package("archive", "suggests")
+usethis::use_package("Rfast","suggests")
 # usethis::use_package("Cairo", "suggests")
 
 # remotes
@@ -71,6 +76,15 @@ usethis::use_package("SummarizedExperiment", "suggests")
 # usethis::use_dev_package("ComplexHeatmap", "suggests", "jokergoo/ComplexHeatmap")
 # usethis::use_dev_package("Biobase", "suggests", "bioc::release/Biobase")
 # usethis::use_dev_package("ComplexHeatmap", "suggests", "bioc::release/ComplexHeatmap")
+
+# import from
+usethis::use_package_doc()
+usethis::use_import_from("grDevices", c("colorRampPalette", "dev.off", "pdf", "png"))
+usethis::use_import_from("methods", "is")
+usethis::use_import_from("stats", "predict")
+usethis::use_import_from("utils", "head")
+usethis::use_import_from("rlang", "abort")
+usethis::use_import_from("dplyr", "%>%")
 
 usethis::use_testthat()
 usethis::use_test("CimpleG")

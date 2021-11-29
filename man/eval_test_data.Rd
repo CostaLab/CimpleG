@@ -4,14 +4,16 @@
 \alias{eval_test_data}
 \title{Evaluation of produced models on test data}
 \usage{
-eval_test_data(test_data, final_model, method = "oner")
+eval_test_data(test_data, final_model, method = "oner", verbose = 1)
 }
 \arguments{
-\item{test_data}{Test data}
+\item{test_data}{Test data.}
 
-\item{final_model}{Model to be tested}
+\item{final_model}{Model to be tested.}
 
-\item{method}{method used to train model}
+\item{method}{Method used to train model.}
+
+\item{verbose}{How verbose the logs should be.}
 }
 \description{
 Evaluation of produced models on test data

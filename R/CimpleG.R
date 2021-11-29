@@ -1,3 +1,5 @@
+#' Find simple CpG (CimpleG) sigatures.
+#'
 #' Train a classification model using (CpGs) as features
 #' for the given target data.
 #'
@@ -43,7 +45,7 @@
 #'  model/algorithm to be used for training.
 #'  These are divided in two main groups.
 #'  * The simple models (classifiers that use a single feature),
-#'  `parab_scale` (default), `adhoc`, `parab` or `oner`;
+#'  `CimpleG` (default), `brute_force`, `CimpleG_unscaled` or `oner`;
 #'  * the complex models (classifiers that use several features),
 #'  `logistic_reg`, `decision_tree`, `boost_tree`, `mlp` or `rand_forest`.
 #'
@@ -74,6 +76,19 @@
 #'  in computational time. You need to set up `future::plan()` before running
 #'  this function.
 #'
+#' @param save_dir If defined it will save the resulting model to the given directory.
+#'  Default is \code{NULL}.
+#'
+#' @param save_format Only used if \code{save_dir} is not \code{NULL}.
+#'  One of "zstd", "lz4", "gzip", "bzip2","xz", "nocomp".
+#'  \code{zstd} is the best option, fast compression and loading times, low space usage.
+#'
+#' @param verbose How verbose you want CimpleG to be while it is running.
+#'  At 0, no message is displayed, at 3 every message is displayed.
+#'  Default is \code{1}.
+#'
+#' @return A CimpleG object with the results per target class.
+#'
 #' @examples
 #' library("CimpleG")
 #'
@@ -89,25 +104,24 @@
 #'   train_targets = train_targets,
 #'   test_data = test_data,
 #'   test_targets = test_targets,
-#'   method = "parab_scale",
+#'   method = "CimpleG",
 #'   targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS")
 #' )
 #'
 #' # check results
 #' cimpleg_result$results
 #'
-#' @importFrom dplyr %>%
 #' @export
 CimpleG <- function(
   train_data,
-  train_targets=NULL,
+  train_targets = NULL,
   targets,
-  test_data=NULL,
-  test_targets=NULL,
+  test_data = NULL,
+  test_targets = NULL,
   method = c(
-    "parab_scale",
-    "adhoc",
-    "parab",
+    "CimpleG",
+    "brute_force",
+    "CimpleG_unscaled",
     "oner",
     "logistic_reg",
     "decision_tree",
@@ -117,11 +131,14 @@ CimpleG <- function(
     "null_model"
   ),
   pred_type = c("both", "hypo", "hyper"),
-  engine=c("glmnet", "xgboost", "nnet", "ranger"),
+  engine = c("glmnet", "xgboost", "nnet", "ranger"),
   k_folds = 10,
-  grid_n=10,
+  grid_n = 10,
   n_repeats = 1,
-  run_parallel=FALSE
+  run_parallel = FALSE,
+  save_dir = NULL,
+  save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
+  verbose=1
 ) {
 
   if(inherits(train_data, "SummarizedExperiment")){
@@ -177,7 +194,7 @@ CimpleG <- function(
     method,
     choices = c(
       # simple models
-      "adhoc", "parab", "parab_scale", "oner",
+      "CimpleG", "CimpleG_unscaled", "brute_force", "oner",
       # complex models
       "logistic_reg", "decision_tree", "boost_tree", "mlp", "rand_forest",
       "null_model"
@@ -189,9 +206,11 @@ CimpleG <- function(
   assertthat::assert_that(grid_n > 0)
 
   if(is.null(test_data) | is.null(test_targets)){
-    message("'test_data' or 'test_targets' is NULL.")
-    message("'train_data' will be partioned to create 'test_data'.")
-    
+    if(verbose>=2){
+      message("'test_data' or 'test_targets' is NULL.") 
+      message("'train_data' will be partioned to create 'test_data'.")
+    }
+
     split_data <- make_train_test_split(
       train_d = train_data,
       train_targets = train_targets,
@@ -211,7 +230,7 @@ CimpleG <- function(
   )
 
   is_simple_method <- selected_method %in% c(
-    "adhoc", "parab", "parab_scale", "oner"
+    "CimpleG", "brute_force", "CimpleG_unscaled", "oner"
   )
 
   train_data <- as.data.frame(train_data)
@@ -236,6 +255,14 @@ CimpleG <- function(
     train_data$target <- train_target_vec
     test_data$target <- test_target_vec
 
+    rv_tbl <- table(train_data[, "target"])
+
+    if (k_folds > rv_tbl[which.min(rv_tbl)]) {
+      k_folds <- rv_tbl[which.min(rv_tbl)]
+      warning(paste0("Too few samples for set K in cross-validation for target ",target_name))
+      warning(paste0("K folds reset to k=", k_folds))
+    }
+
     if(is_simple_method){
       train_res <- do_cv(
         train_data = train_data,
@@ -243,13 +270,15 @@ CimpleG <- function(
         k_folds = k_folds,
         n_repeats = n_repeats,
         pred_type = selected_pred_type,
-        target_name = target
+        target_name = target,
+        verbose = verbose
       )
 
       test_res <- eval_test_data(
         test_data = test_data,
         final_model = train_res$model,
-        method = selected_method
+        method = selected_method,
+        verbose = verbose
       )
     }else{
       train_res <- train_general_model(
@@ -258,12 +287,14 @@ CimpleG <- function(
         model_type = selected_method,
         engine = engine,
         grid_n = grid_n,
-        target_name = target
+        target_name = target,
+        verbose = verbose
       )
 
       test_res <- eval_general_model(
         test_data = test_data,
-        final_model = train_res
+        final_model = train_res,
+        verbose = verbose
       )
     }
 
@@ -302,33 +333,57 @@ CimpleG <- function(
   }
 
   class(final_res) <- "CimpleG"
+
+  if(!is.null(save_dir)){
+
+    target_name <- ifelse(length(targets) > 1, "multitargets", targets)
+    model_name <- method
+    time_tag <- format(Sys.time(), "%Y%m%d-%H%M%S")
+    f_name <- paste0(
+      "CimpleG_results_",
+      "target-", target_name,"_",
+      "model-", model_name,"_",
+      "t-", time_tag
+    )
+
+    save_object(
+      object = final_res,
+      file_name = file.path(save_dir, f_name),
+      file_format = save_format
+    )
+  }
+
   return(final_res)
 }
 
 prep_data <- function(data, targets){
 
-  if(
-    class(data) %in% 
-      c("MethylSet", "GenomicMethylSet", "RGChannelSet", "GenomicRatioSet")
-  ){
-    
+  is_minfi_class <- 
+    class(data) %in% c("MethylSet", "GenomicMethylSet", "RGChannelSet", "GenomicRatioSet")
+
+  is_sumexp_class <- is(data) %in% "SummarizedExperiment"
+
+  if(is_minfi_class & requireNamespace("minfi", quietly = TRUE)){
+
     beta_mat <- minfi::getBeta(data)
     df_targets <- minfi::pData(data)
 
-  }else if(is(data) %in% "SummarizedExperiment"){
-    
-    assertthat::assert_that(
-      tolower(SummarizedExperiment::assayNames(data)) %in% "beta"
-    )
+  }else if(is_sumexp_class & requireNamespace("SummarizedExperiment", quietly = TRUE)){
+
+    is_beta_in_assays <- tolower(SummarizedExperiment::assayNames(data)) == "beta"
+
+    assertthat::assert_that(any(is_beta_in_assays))
 
     # samples as columns
-    beta_mat  <- SummarizedExperiment::assays(data)[
-      which(tolower(SummarizedExperiment::assayNames(data)) == "beta")
-    ][[1]]
+    beta_mat  <- SummarizedExperiment::assays(data)[which(is_beta_in_assays)][[1]]
     df_targets <- SummarizedExperiment::colData(data)
   }else{
-    stop(
-      paste0("Class of data provided ('",class(data),"'), is not supported.")
+    abort(
+      paste0(
+        "Class of data provided ('",class(data),"'), is not supported.\n",
+        "Please provide a SummarizedExperiment object or a ",
+        "simple matrix/data frame with your data."
+      )
     )
   }
 
@@ -347,7 +402,7 @@ prep_data <- function(data, targets){
     df_targets[targets],
     function(dcols){!all(dcols %in% c(0,1))}
   ))
-  
+
   # make cols to edit factor
   df_targets[names(cols_to_edit)] <- lapply(
     df_targets[names(cols_to_edit)],factor
@@ -361,7 +416,7 @@ prep_data <- function(data, targets){
     df_targets[names(cols_to_edit)],
     function(x){levels(x)[which.min(tabulate(x))]}
   )
-  
+
   # make cols one-hot encoded
   df_targets <- as.data.frame(
     mltools::one_hot(
@@ -376,7 +431,6 @@ prep_data <- function(data, targets){
     names(fetch_col),
     function(x){df_targets[,paste0(x,"_",fetch_col[x])]}
   )
-
 
   return(list(beta_mat = beta_mat, df_targets = df_targets))
 }

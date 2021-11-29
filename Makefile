@@ -1,5 +1,5 @@
 
-pkg_pipeline: update_version check_package document_package build_package install_package
+pkg_pipeline: update_setup update_version check_package document_package build_package install_package
 
 install_package:
 	Rscript -e "devtools::install('.')"
@@ -11,7 +11,7 @@ build_package:
 	Rscript -e "devtools::build('.')"
 
 test_package:
-	Rscript -e "devtools::test()"
+	Rscript --max-ppsize=500000 -e "devtools::test()"
 
 check_build:
 	Rscript -e "devtools::check(error_on='error')" 

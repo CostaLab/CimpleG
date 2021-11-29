@@ -1,28 +1,18 @@
 # Main function controlling k-fold CV training
-#
-#
-#' @importFrom dplyr %>%
 do_cv <- function(
   train_data,
   k_folds = 10,
   n_repeats = 1, #FIXME not in use atm
-  method = c("parab", "parab_scale", "adhoc", "oner"),
+  method = c("CimpleG", "CimpleG_unscaled", "brute_force", "oner"),
   pred_type = c("both","hypo","hyper"),
-  target_name
+  target_name,
+  verbose=1
 ) {
   assertthat::assert_that("target" %in% colnames(train_data))
   assertthat::assert_that(is.factor(train_data[,"target"]))
 
-  rv_tbl <- table(train_data[, "target"])
 
-
-  if (k_folds > rv_tbl[which.min(rv_tbl)]) {
-    k_folds <- rv_tbl[which.min(rv_tbl)]
-    message(paste0("Too few samples for set K in cross-validation"))
-    message(paste0("K folds reset to k=", k_folds))
-  }
-
-  tictoc::tic(paste0("Training for target '",target_name,"' with '",method,"(",pred_type,")' has finished."))
+  tictoc::tic(paste0("Training for target '",target_name,"' with '",method,"' has finished."))
   # f_data <- rsample::vfold_cv(
   #   train_data,
   #   v = k_folds,
@@ -59,10 +49,11 @@ do_cv <- function(
     .x = f_data$splits,
     .f = find_predictors,
     method = method,
-    scale_scores = any(grepl("parab_scale", method, fixed = TRUE)),
-    pred_type=pred_type
+    scale_scores = any(grepl("CimpleG", method, fixed = TRUE)),
+    pred_type = pred_type,
+    verbose = verbose
   )
-  print_timings()
+  print_timings(verbose<1)
 
   # FIXME pproc not working
   prroc_prauc <- yardstick::new_prob_metric(prroc_prauc, "maximize")
@@ -93,7 +84,7 @@ do_cv <- function(
     ) %>%
     dplyr::group_by(predictor, type, .metric)
 
-  if(any(grepl("parab",method))){
+  if(any(grepl("CimpleG",method))){
     train_summary <- train_summary %>%
       dplyr::summarise(
         mean_fold_performance = mean(.estimate,na.rm=TRUE),
@@ -102,7 +93,7 @@ do_cv <- function(
         diff_means = mean(diff_means),
         .groups = "drop"
       )
-      if(any(grepl("parab_scale",method))){
+      if(!any(grepl("CimpleG_unscaled",method))){
         # here is where we do all the scaling
         train_summary <- train_summary %>%
           dplyr::mutate(
@@ -136,34 +127,40 @@ do_cv <- function(
   # dplyr::select(predictor,type)
   # dplyr::pull(predictor)
 
-  fmod <- final_model(train_data, best_pred, train_summary=train_summary, method = method)
+  fmod <- final_model(train_data, best_pred, train_summary=train_summary, method = method, verbose = verbose)
 
   return(fmod)
 }
 
 #' Evaluation of produced models on test data
-#' @param test_data Test data
-#' @param final_model Model to be tested
-#' @param method method used to train model
-#' @importFrom dplyr %>%
+#' @param test_data Test data.
+#' @param final_model Model to be tested.
+#' @param method Method used to train model.
+#' @param verbose How verbose the logs should be.
 #' @export
 eval_test_data <- function(
   test_data,
   final_model,
-  method = "oner"
+  method = "oner",
+  verbose = 1
 ) {
-  message("Evaluating test data...")
+  if(verbose>=2){ message("Evaluating test data...") }
+
   # get performance on test data
   test_data$target <- test_data$target %>% stats::relevel("positive_class")
 
   predictor_name <- NULL
 
-  if (identical(method, "adhoc") | identical(method, "parab") | identical(method, "parab_scale")) {
+  is_simple_model <-
+    identical(method, "brute_force") |
+    identical(method, "CimpleG_unscaled") |
+    identical(method, "CimpleG")
+
+  if (is_simple_model) {
 
     new_data_vec <- test_data %>% dplyr::pull(final_model$predictor)
 
     if(final_model$type == "hypo"){
-
       new_data_vec <- 1 - new_data_vec
     }
 
@@ -202,11 +199,12 @@ eval_test_data <- function(
 
   if (identical(method, "oner")) {
 
-    pred_class <- predict(final_model,newdata = test_data, type = "class") %>%
+    pred_class <- predict(final_model, newdata = test_data, type = "class") %>%
       stats::relevel("positive_class")
 
-    pred_prob <- predict(final_model,newdata=test_data,type="prob") %>%
-      as.data.frame %>% dplyr::pull(positive_class)
+    pred_prob <- predict(final_model, newdata = test_data, type = "prob") %>%
+      as.data.frame %>%
+      dplyr::pull(positive_class)
 
     acc_perf <- yardstick::accuracy_vec(
       truth = test_data$target,
@@ -237,9 +235,11 @@ eval_test_data <- function(
 #' @importFrom dplyr %>%
 eval_general_model <- function(
   test_data,
-  final_model
+  final_model,
+  verbose = 1
 ){
-  message("Evaluating test data...")
+  if(verbose>=2){ message("Evaluating test data...") }
+
   # get performance on test data
   test_data$target <- test_data$target %>% stats::relevel("positive_class")
 
@@ -247,13 +247,16 @@ eval_general_model <- function(
     object = final_model,
     new_data = test_data,
     type = "class"
-  ) %>% dplyr::pull(.pred_class)
+  ) %>%
+  dplyr::pull(.pred_class)
 
   test_pred_prob <- predict(
     object = final_model,
     new_data = test_data,
     type = "prob"
-   ) %>% as.data.frame %>% dplyr::pull(.pred_positive_class)
+   ) %>%
+  as.data.frame %>%
+  dplyr::pull(.pred_positive_class)
 
   acc_perf <- yardstick::accuracy_vec(
     truth=test_data$target,
@@ -284,9 +287,10 @@ final_model <- function(
   train_data,
   best_pred,
   train_summary,
-  method = "oner"
+  method = "oner",
+  verbose=1
 ) {
-  message("Training final model...")
+  if(verbose>=3){ message("Getting final model...") }
   if (method == "oner") {
     # OneR
     oner_predata <- OneR::optbin(
@@ -316,11 +320,12 @@ find_predictors <- function(
   p_class = "positive_class",
   method,
   scale_scores=FALSE,
-  pred_type=c("both","hypo","hyper")
+  pred_type=c("both","hypo","hyper"),
+  verbose=1
 ) {
 
   tictoc::tic(split_train_set$id %>% unlist())
-  
+
   train_set <- rsample::analysis(split_train_set)
 
   tru_v <- train_set$target == p_class
@@ -336,16 +341,17 @@ find_predictors <- function(
   }
 
 
-  if (method == "adhoc" | grepl("parab",method)) {
+  if (method == "brute_force" | grepl("CimpleG",method)) {
 
-    if (grepl("parab",method)) {
+    if (grepl("CimpleG",method)) {
 
       parab_res <- parabola_iter_loop(
         df_diffmean_sumvar=df_dMean_sVar,
         init_step=init_step,
         step_increment=step_increment,
         min_feat_search=min_feat_search,
-        pred_type=pred_type
+        pred_type=pred_type,
+        verbose=verbose
       )
       df_dMean_sVar <- parab_res$df_diffmean_sumvar
 
@@ -358,7 +364,7 @@ find_predictors <- function(
       # get PRAUC for hyper methylated cpgs
       hyperM_predictors <- train_set %>%
         dplyr::select(
-          rownames(df_dMean_sVar[which(df_dMean_sVar$pred_type), ])
+          df_dMean_sVar[which(df_dMean_sVar$pred_type), "id"]
         ) %>%
         dplyr::summarise(dplyr::across(
             .cols = tidyselect::vars_select_helpers$where(is.numeric),
@@ -370,22 +376,27 @@ find_predictors <- function(
         magrittr::set_colnames(c(".id", "AUPR")) %>%
         # attach mean diff, will be used to scale AUPR
         dplyr::mutate(pred_type = "hyper") %>%
-        dplyr::mutate(diff_means = df_dMean_sVar[.id, ]$diff_means) %>%
-        dplyr::mutate(sum_variance = df_dMean_sVar[.id, ]$sum_variance)
+        dplyr::left_join(
+          df_dMean_sVar[,c("id","diff_means","sum_variance")],
+          by=c(".id"="id")
+        )
+
 
       if(scale_scores){
-          hyperM_predictors$DiffScaledAUPR <- scales::rescale(
-            abs(hyperM_predictors$diff_means),
-            to=c(0,1)
-          ) * hyperM_predictors$AUPR
+        hyperM_predictors$DiffScaledAUPR <- scales::rescale(
+          abs(hyperM_predictors$diff_means),
+          to=c(0,1)
+        ) * hyperM_predictors$AUPR
       }
 
     }
     if(any(!df_dMean_sVar$pred_type)){
       # get PRAUC for hypo methylated cpgs
       hypoM_predictors <- train_set %>%
-        dplyr::select(rownames(df_dMean_sVar[which(!df_dMean_sVar$pred_type), ])) %>%
-        dplyr::summarise(dplyr::across(.cols=tidyselect::vars_select_helpers$where(is.numeric),.fns = function(x,truth){
+        dplyr::select(df_dMean_sVar[which(!df_dMean_sVar$pred_type), "id"]) %>%
+        dplyr::summarise(dplyr::across(
+            .cols=tidyselect::vars_select_helpers$where(is.numeric),
+            .fns = function(x,truth){
             prroc_prauc_vec(truth = truth, estimate = 1 - x)
           },
           truth = train_set$target
@@ -393,14 +404,17 @@ find_predictors <- function(
         magrittr::set_colnames(c(".id", "AUPR"))%>%
         # attach mean diff, will be used to scale AUPR
         dplyr::mutate(pred_type = "hypo") %>%
-        dplyr::mutate(diff_means = df_dMean_sVar[.id, ]$diff_means) %>%
-        dplyr::mutate(sum_variance = df_dMean_sVar[.id, ]$sum_variance)
-        if(scale_scores){
-          hypoM_predictors$DiffScaledAUPR <- scales::rescale(
-            abs(hypoM_predictors$diff_means),
-            to=c(0,1)
-          ) * hypoM_predictors$AUPR
-        }
+        dplyr::left_join(
+          df_dMean_sVar[,c("id","diff_means","sum_variance")],
+          by=c(".id"="id")
+        )
+
+      if(scale_scores){
+        hypoM_predictors$DiffScaledAUPR <- scales::rescale(
+          abs(hypoM_predictors$diff_means),
+          to=c(0,1)
+        ) * hypoM_predictors$AUPR
+      }
 
     }
 
@@ -453,17 +467,12 @@ find_predictors <- function(
     res_df <- apply_res %>%
       dplyr::mutate(resample = split_train_set$id %>% unlist())
 
-    if (grepl("parab",method)) {
+    if (grepl("CimpleG",method)) {
       res_df <- res_df %>%
         dplyr::mutate(parab_param = parab_res$parabola_param)
-
-      print_timings()
-      return(res_df)
     }
-
-    print_timings()
-    return(res_df)
   }
+
   if(method=="oner"){
     # oneRule model
     # Using OneRule model
@@ -487,9 +496,10 @@ find_predictors <- function(
       correct = oner_pred == holdout_res$target,
       positive_prob = pred_prob
     )
-    print_timings()
-    return(res_df)
   }
+
+  print_timings(verbose<2)
+  return(res_df)
 }
 
 
@@ -499,16 +509,9 @@ train_general_model <- function(
   model_type,
   engine,
   grid_n = 10,
-  target_name
+  target_name,
+  verbose = 1
 ){
-
-  target_tbl <- table(train_data$target)
-
-  if (k_folds > target_tbl[which.min(target_tbl)]) {
-    k_folds <- target_tbl[which.min(target_tbl)]
-    message(paste0("Too few samples for set K in cross-validation"))
-    message(paste0("K folds reset to k=", k_folds))
-  }
 
   tictoc::tic(paste("Training for target '",target_name,"' with ",model_type," has finished."))
   # making stratified folds, rsample doesnt seem to work properly
@@ -648,12 +651,11 @@ train_general_model <- function(
     )
 
   cimpleg_final_model <- cimpleg_workflow %>%
-    tune::finalize_workflow(
-      tune::select_best(cimpleg_res,metric = "pr_auc")
-    ) %>%
-    parsnip::fit(data = train_data)
+    tune::finalize_workflow(tune::select_best(cimpleg_res, metric = "pr_auc")) %>%
+    parsnip::fit(data = train_data) %>%
+    butcher::butcher()
 
-  print_timings()
+  print_timings(verbose<1)
   return(cimpleg_final_model)
 }
 
@@ -665,7 +667,8 @@ parabola_iter_loop <- function(
   init_step,
   step_increment,
   min_feat_search,
-  pred_type
+  pred_type,
+  verbose=1
 ){
   init_fs <- init_step
   final_param <- init_fs
@@ -674,7 +677,7 @@ parabola_iter_loop <- function(
     y = df_diffmean_sumvar$sum_variance,
     a = init_fs
   )
-  
+
   # Find features in feature space (diff_means,sum_variance)
   i_iter <- 0
   while (
@@ -689,8 +692,8 @@ parabola_iter_loop <- function(
     init_fs <- init_fs + step_increment
     i_iter <- i_iter + 1
   }
-  if(!i_iter<100) stop("Could not find signatures.")
-  message(paste0("Fold parabola parameter: ", final_param))
+  if(!i_iter<100) abort("Could not find signatures.")
+  if(verbose>=3){ message("Fold parabola parameter: ", final_param) }
 
   df_diffmean_sumvar <- df_diffmean_sumvar[which(df_diffmean_sumvar$select_feature), ]
 
@@ -725,7 +728,7 @@ updt_selected_feats <- function(
 ) {
   expected_cols <- c("select_feature", "diff_means", "sum_variance","pred_type")
   if (!all(expected_cols %in% colnames(df_diffmean_sumvar))) {
-    stop("Something went wrong when creating the diff_means sum_variance data.frame!")
+    abort("Something went wrong when creating the diff_means sum_variance data.frame!")
   }
   if(pred_type=="hyper" | pred_type=="both"){
     updt_hyper <- length(
@@ -961,16 +964,21 @@ make_train_test_split <- function(
 #' @export
 compute_diffmeans_sumvar <- function(data, target_vector) {
 
-  data <- as.matrix(data)
+  if(is.data.frame(data)){
+    if(requireNamespace("Rfast", quietly = TRUE)){
+      data <- Rfast::data.frame.to_matrix(data, col.names=TRUE, row.names=TRUE)
+    }else{
+      data <- as.matrix(data)
+    }
+  }else if(!is.matrix(data)){
+    abort("`data` must be a matrix or a data frame")
+  }
 
   id <- colnames(data)
-  diff_means <-
-    colMeans(data[target_vector,,drop=FALSE]) - colMeans(data[!target_vector,,drop=FALSE])
 
-  #sum_variance <- {
-  #  matrixStats::colVars(data[target_vector, ,drop=FALSE]) +
-  #    matrixStats::colVars(data[!target_vector, ,drop=FALSE])
-  #}
+  diff_means <-
+    matrixStats::colMeans2(data, rows=target_vector) - matrixStats::colMeans2(data, rows=!target_vector)
+
   sum_variance <- if(min(table(target_vector)) > 1){
     matrixStats::colVars(data, rows = target_vector) +
       matrixStats::colVars(data, rows = !target_vector)
@@ -992,7 +1000,7 @@ compute_diffmeans_sumvar <- function(data, target_vector) {
     (0 + matrixStats::colVars(data, rows = target_vector))
   } else {
     # both classes, target and non-target only have a single sample
-    stop(paste0(
+    abort(paste0(
       "There are too few samples to calculate variance.\n",
       " Please add more samples to your target and non-target class.")
     )

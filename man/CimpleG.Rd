@@ -2,8 +2,7 @@
 % Please edit documentation in R/CimpleG.R
 \name{CimpleG}
 \alias{CimpleG}
-\title{Train a classification model using (CpGs) as features
-for the given target data.}
+\title{Find simple CpG (CimpleG) sigatures.}
 \usage{
 CimpleG(
   train_data,
@@ -11,14 +10,17 @@ CimpleG(
   targets,
   test_data = NULL,
   test_targets = NULL,
-  method = c("parab_scale", "adhoc", "parab", "oner", "logistic_reg", "decision_tree",
-    "boost_tree", "mlp", "rand_forest", "null_model"),
+  method = c("CimpleG", "brute_force", "CimpleG_unscaled", "oner", "logistic_reg",
+    "decision_tree", "boost_tree", "mlp", "rand_forest", "null_model"),
   pred_type = c("both", "hypo", "hyper"),
   engine = c("glmnet", "xgboost", "nnet", "ranger"),
   k_folds = 10,
   grid_n = 10,
   n_repeats = 1,
-  run_parallel = FALSE
+  run_parallel = FALSE,
+  save_dir = NULL,
+  save_format = c("zstd", "lz4", "gzip", "bzip2", "xz", "nocomp"),
+  verbose = 1
 )
 }
 \arguments{
@@ -64,7 +66,7 @@ samples from `train_data` and `train_targets`.}
 model/algorithm to be used for training.
 These are divided in two main groups.
 * The simple models (classifiers that use a single feature),
-`parab_scale` (default), `adhoc`, `parab` or `oner`;
+`CimpleG` (default), `brute_force`, `CimpleG_unscaled` or `oner`;
 * the complex models (classifiers that use several features),
 `logistic_reg`, `decision_tree`, `boost_tree`, `mlp` or `rand_forest`.}
 
@@ -94,6 +96,20 @@ If `TRUE` it will search for predictors for multiple targets
 at the same time (parallel processing) in order to save
 in computational time. You need to set up `future::plan()` before running
 this function.}
+
+\item{save_dir}{If defined it will save the resulting model to the given directory.
+Default is \code{NULL}.}
+
+\item{save_format}{Only used if \code{save_dir} is not \code{NULL}.
+One of "zstd", "lz4", "gzip", "bzip2","xz", "nocomp".
+\code{zstd} is the best option, fast compression and loading times, low space usage.}
+
+\item{verbose}{How verbose you want CimpleG to be while it is running.
+At 0, no message is displayed, at 3 every message is displayed.
+Default is \code{1}.}
+}
+\value{
+A CimpleG object with the results per target class.
 }
 \description{
 Train a classification model using (CpGs) as features
@@ -114,7 +130,7 @@ cimpleg_result <- CimpleG(
   train_targets = train_targets,
   test_data = test_data,
   test_targets = test_targets,
-  method = "parab_scale",
+  method = "CimpleG",
   targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS")
 )
 

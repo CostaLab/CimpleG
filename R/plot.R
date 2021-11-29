@@ -107,9 +107,13 @@ diffmeans_sumvariance_plot <- function(
   }
   assertthat::assert_that(feature_id_col%in%colnames(data))
 
-  assertthat::assert_that(typeof(label_var1) == 'character' && typeof(label_var2) == 'character')
+  assertthat::assert_that(
+    typeof(label_var1) == 'character' && typeof(label_var2) == 'character'
+  )
   # NULL or else
-  assertthat::assert_that(is_feature_selected_col %in% colnames(data) || is.null(is_feature_selected_col))
+  assertthat::assert_that(
+    is_feature_selected_col %in% colnames(data) || is.null(is_feature_selected_col)
+  )
   assertthat::assert_that(typeof(mean_cutoff) == 'double' || is.null(mean_cutoff))
   assertthat::assert_that(typeof(var_cutoff) == 'double' || is.null(var_cutoff))
   assertthat::assert_that(typeof(func_factor) == 'double' || is.null(func_factor))
@@ -494,6 +498,216 @@ diffmeans_sumvariance_plot <- function(
   )
   return(plt_diffMeanSumVar)
 }
+
+
+#' Represent CpGs in the difference in means, sum of variances space.
+#' This plot is often used to select CpGs that would be good classifiers.
+#' These CpGs are often located on the bottom left and
+#' bottom right of this plot.
+#'
+#' @param data Data to create dmsv plot (difference in means, sum of variances plot).
+#'  Either a data.frame with `x_var`,`y_var` and `id_var` or, if
+#'  `target_vector` is not `NULL` a matrix with beta values from which,
+#'  given the target, the difference in means between the target and others,
+#'  and the sum of variances within the target and others will be calculated.
+#' @param target_vector if not NULL a boolean vector with target class assignment, see data
+#' @param x_var Name of the column with x-axis data (difference of means).
+#' @param y_var Name of the column with y-axis data (sum of variances).
+#' @param id_var Name of the column with the feature/CpG ID.
+#' @param highlight_var (Optional) Name of the column with the highlighted features.
+#'  Values in this column should be boolean (\code{TRUE} for selected,
+#'  \code{FALSE} for not selected).
+#' @param display_var (Optional) Name of the column with the features that should be displayed
+#'  in the plot as a label. Values in this column should be boolean
+#'  (\code{TRUE} for feature that should be displayed,
+#'  \code{FALSE} for feature that should not be displayed).
+#' @param label_var1 Label of the target class. Default is \code{"Target"}.
+#' @param label_var2 Label of the other classes. Default is \code{"Others"}.
+#' @param point_color Color of the features/CpGs in the plot. Default is \code{"black"}.
+#'  If features are highlighted, non-highlighted features will have a lighter color.
+#' @param subtitle Subtitle to be displayed in the plot. Default is \code{NULL}.
+#'
+#' @return a \code{ggplot2} object with the dmsv plot.
+#'
+#' @examples
+#' library("CimpleG")
+#'
+#' # load CimpleG example data
+#' data(train_data)
+#' data(train_targets)
+#'
+#' # make basic plot straight from the data
+#' plt <- dmsv_plot(
+#'   data = train_data,
+#'   target_vector = train_targets$CELL_TYPE_MSCORFIBRO == 1
+#' )
+#' print(plt)
+#'
+#' # make plot with highlighted features
+#' # first create a diffmeans sumvar data frame from the data
+#' df_dmeansvar <- compute_diffmeans_sumvar(
+#'   train_data,
+#'   target_vector = train_targets$CELL_TYPE_MSCORFIBRO==1
+#' )
+#' # adding a column to this data frame \code{hl_col} with random CpGs
+#' # selected (as TRUE) or not (as FALSE).
+#' df_dmeansvar$hl_col <- sample(c(TRUE,FALSE),nrow(df_dmeansvar),replace=TRUE,prob=c(0.1,0.9))
+#'
+#' plt <- dmsv_plot(
+#'   data=df_dmeansvar,
+#'   highlight_var="hl_col",
+#'   label_var1="MSC",
+#'   point_color="red",
+#'   subtitle="method: CimpleG"
+#' )
+#' print(plt)
+#' @export
+dmsv_plot <- function(
+  data,
+  target_vector=NULL,
+  x_var="diff_means",
+  y_var="sum_variance",
+  id_var="id",
+  highlight_var="highlight_features",
+  display_var="display_features",
+  label_var1="Target",
+  label_var2="Others",
+  point_color="black",
+  subtitle=NULL
+){
+  assertthat::assert_that(
+    typeof(label_var1) == "character" &&
+      typeof(label_var2) == "character"
+  )
+
+  if(is.matrix(data)){
+    plt <- dmsv_plot.matrix(
+      data=data,target_vector=target_vector,
+      highlight_vector=highlight_var,
+      display_vector=display_var,
+      label_var1=label_var1,label_var2=label_var2,
+      point_color=point_color,subtitle=subtitle
+    )
+  }else{
+    plt <- dmsv_plot.data.frame(
+      data=data,x_var=x_var,y_var=y_var,
+      id_var=id_var,highlight_var=highlight_var,display_var=display_var,
+      label_var1=label_var1,label_var2=label_var2,
+      point_color=point_color,subtitle=subtitle
+    )
+  }
+  return(plt)
+}
+
+
+dmsv_plot.matrix <- function(
+  data,
+  target_vector=NULL,
+  highlight_vector=NULL,
+  display_vector=NULL,
+  label_var1="Target",
+  label_var2="Others",
+  point_color="black",
+  subtitle=NULL
+){
+
+  assertthat::assert_that(is.matrix(data))
+  assertthat::assert_that(!is.null(target_vector))
+  assertthat::assert_that(is.logical(target_vector))
+
+  data <- compute_diffmeans_sumvar(data,target_vector=target_vector)
+
+  if(!is.null(highlight_vector)){
+    assertthat::assert_that(typeof(highlight_vector) == "character")
+    data <- data %>% dplyr::mutate(highlight_features = id %in% highlight_vector)
+  }
+  if(!is.null(display_vector)){
+    assertthat::assert_that(typeof(display_vector) == "character")
+    data <- data %>% dplyr::mutate(display_features = id %in% display_vector)
+  }
+
+  plt <- dmsv_plot_base(data=data,point_color=point_color,subtitle=subtitle)
+
+  return(plt)
+}
+
+
+dmsv_plot.data.frame <- function(
+  data,x_var=NULL,y_var=NULL,
+  id_var=NULL,highlight_var=NULL,display_var=NULL,
+  label_var1="Target",
+  label_var2="Others",
+  point_color="black",
+  subtitle=NULL
+){
+
+  plt <- dmsv_plot_base(
+    data=data,
+    x_var=x_var,y_var=y_var,
+    id_var=id_var,highlight_var=highlight_var,display_var=display_var,
+    label_var1=label_var1,label_var2=label_var2,point_color=point_color,
+    subtitle=subtitle
+  )
+
+  return(plt)
+}
+
+
+dmsv_plot_base <- function(
+  data,
+  x_var="diff_means",
+  y_var="sum_variance",
+  id_var="id",
+  highlight_var="highlight_features",
+  display_var="display_features",
+  label_var1="Target",
+  label_var2="Others",
+  point_color="black",
+  subtitle=NULL
+){
+
+
+  lighten <- function(color, factor = 0.5) {
+    if ((factor > 1) | (factor < 0))
+      stop("factor needs to be within [0,1]")
+    col <- grDevices::col2rgb(color)
+    col <- col + (255 - col) * factor
+    col <- grDevices::rgb(t(col), maxColorValue = 255)
+    col
+  }
+  light_points_color <- lighten(point_color, 0.7)
+
+  ymaxlim <- ifelse(max(data[, y_var]) < 0.4, 0.4, max(data[,y_var]))
+
+  dmsv_plt <-
+    ggplot2::ggplot(
+      data,
+      ggplot2::aes(
+        x = !!ggplot2::sym(x_var),
+        y = !!ggplot2::sym(y_var),
+        fill = !!ggplot2::sym(highlight_var),
+        color = !!ggplot2::sym(highlight_var),
+      )
+    ) +
+    ggplot2::geom_point(alpha=0.8,color=light_points_color) +
+    ggplot2::geom_point(data=function(x){x[x[,highlight_var],]},size=2,color=point_color) +
+    ggplot2::labs(
+      x = expression(bar(beta)["cell"] - bar(beta)["others"]),
+      y = expression(var(beta["cell"]) + var(beta["others"])),
+      title = paste0(label_var1, " vs ", label_var2),
+      subtitle=unlist(ifelse(is.null(subtitle),ggplot2::waiver(),subtitle))
+    ) +
+    ggplot2::xlim(c(-1, 1)) + ggplot2::ylim(c(0, ymaxlim)) +
+    ggplot2::theme_classic(base_size=18) +
+    ggplot2::theme(
+      legend.position="none"#,
+      #text=ggplot2::element_text(family="arial")
+    )
+  return(dmsv_plt)
+}
+
+
+
 
 
 
