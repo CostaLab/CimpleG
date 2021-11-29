@@ -68,13 +68,18 @@ Suggests:
     ggsci,
     ggsignif,
     data.table,
-    minfi,
+    minfi (>= 1.38.0),
     mltools,
-    SummarizedExperiment,
+    SummarizedExperiment (>= 1.22.0),
     archive,
-    Rfast
-Remotes:
+    Rfast,
+    EpiDISH (>= 2.8.0),
+    ComplexHeatmap (>= 2.8.0),
+    Biobase (>= 2.52.0)
+Remotes: 
     bioc::release/Biobase,
     bioc::release/EpiDISH,
-    bioc::release/ComplexHeatmap
+    bioc::release/ComplexHeatmap,
+    bioc::release/minfi,
+    bioc::release/SummarizedExperiment
 Config/testthat/edition: 3

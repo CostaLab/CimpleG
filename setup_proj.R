@@ -64,21 +64,19 @@ usethis::use_package("ggbeeswarm", "suggests")
 usethis::use_package("ggsci", "suggests")
 usethis::use_package("ggsignif", "suggests")
 usethis::use_package("data.table", "suggests")
-usethis::use_package("minfi", "suggests")
+usethis::use_dev_package("minfi", "suggests", remote="bioc::release/minfi")
+# usethis::use_package("minfi", "suggests", remote="https://git.bioconductor.org/packages/minfi")
 usethis::use_package("mltools", "suggests")
-usethis::use_package("SummarizedExperiment", "suggests")
+usethis::use_dev_package("SummarizedExperiment", "suggests", remote="bioc::release/SummarizedExperiment")
+# usethis::use_package("SummarizedExperiment", "suggests", remote="https://git.bioconductor.org/packages/SummarizedExperiment")
 usethis::use_package("archive", "suggests")
 usethis::use_package("Rfast","suggests")
 # usethis::use_package("Cairo", "suggests")
 
 # remotes
-# usethis::use_dev_package("EpiDISH", "suggests", "sjczheng/EpiDISH")
-# usethis::use_dev_package("ComplexHeatmap", "suggests", "jokergoo/ComplexHeatmap")
-# usethis::use_dev_package("Biobase", "suggests", "bioc::release/Biobase")
-# usethis::use_dev_package("ComplexHeatmap", "suggests", "bioc::release/ComplexHeatmap")
-usethis::use_git_remote(name = "minfi", url = "https://git.bioconductor.org/packages/minfi")
-usethis::use_git_remote(name = "SummarizedExperiment", url = "https://git.bioconductor.org/packages/SummarizedExperiment")
-
+ usethis::use_dev_package("EpiDISH", "suggests", "bioc::release/EpiDISH")
+ usethis::use_dev_package("ComplexHeatmap", "suggests", "bioc::release/ComplexHeatmap")
+ usethis::use_dev_package("Biobase", "suggests", "bioc::release/Biobase")
 
 # import from
 usethis::use_package_doc()
