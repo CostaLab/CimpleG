@@ -2,7 +2,7 @@
 % Please edit documentation in R/CimpleG.R
 \name{CimpleG}
 \alias{CimpleG}
-\title{Find simple CpG (CimpleG) sigatures.}
+\title{Find simple CpG (CimpleG) signatures.}
 \usage{
 CimpleG(
   train_data,

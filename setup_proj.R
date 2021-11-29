@@ -76,6 +76,9 @@ usethis::use_package("Rfast","suggests")
 # usethis::use_dev_package("ComplexHeatmap", "suggests", "jokergoo/ComplexHeatmap")
 # usethis::use_dev_package("Biobase", "suggests", "bioc::release/Biobase")
 # usethis::use_dev_package("ComplexHeatmap", "suggests", "bioc::release/ComplexHeatmap")
+usethis::use_git_remote(name = "minfi", url = "https://git.bioconductor.org/packages/minfi")
+usethis::use_git_remote(name = "SummarizedExperiment", url = "https://git.bioconductor.org/packages/SummarizedExperiment")
+
 
 # import from
 usethis::use_package_doc()
