@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.9008</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.9009</span>
       </span>
     </div>
 
@@ -117,22 +117,26 @@
     <p>Evaluation of produced models on test data</p>
     </div>
 
-    <pre class="usage"><span class='fu'>eval_test_data</span><span class='op'>(</span><span class='va'>test_data</span>, <span class='va'>final_model</span>, method <span class='op'>=</span> <span class='st'>"oner"</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>eval_test_data</span><span class='op'>(</span><span class='va'>test_data</span>, <span class='va'>final_model</span>, method <span class='op'>=</span> <span class='st'>"oner"</span>, verbose <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>test_data</th>
-      <td><p>Test data</p></td>
+      <td><p>Test data.</p></td>
     </tr>
     <tr>
       <th>final_model</th>
-      <td><p>Model to be tested</p></td>
+      <td><p>Model to be tested.</p></td>
     </tr>
     <tr>
       <th>method</th>
-      <td><p>method used to train model</p></td>
+      <td><p>Method used to train model.</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>How verbose the logs should be.</p></td>
     </tr>
     </table>
 
