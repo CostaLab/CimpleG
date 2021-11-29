@@ -1,4 +1,4 @@
-#' Find simple CpG (CimpleG) sigatures.
+#' Find simple CpG (CimpleG) signatures.
 #'
 #' Train a classification model using (CpGs) as features
 #' for the given target data.
