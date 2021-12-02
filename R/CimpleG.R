@@ -259,7 +259,7 @@ CimpleG <- function(
 
     if (k_folds > rv_tbl[which.min(rv_tbl)]) {
       k_folds <- rv_tbl[which.min(rv_tbl)]
-      warning(paste0("Too few samples for set K in cross-validation for target ",target_name))
+      warning(paste0("Too few samples for set K in cross-validation for target ",target))
       warning(paste0("K folds reset to k=", k_folds))
     }
 
