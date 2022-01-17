@@ -2,25 +2,24 @@
 do_cv <- function(
   train_data,
   k_folds = 10,
-  n_repeats = 1, #FIXME not in use atm
-  method = c("CimpleG", "CimpleG_unscaled", "brute_force", "oner"),
+  method = c("CimpleG_parab", "CimpleG_unscaled", "brute_force", "oner"),
   pred_type = c("both","hypo","hyper"),
   target_name,
   verbose=1
 ) {
+
   assertthat::assert_that("target" %in% colnames(train_data))
-  assertthat::assert_that(is.factor(train_data[,"target"]))
+  assertthat::assert_that(is.factor(train_data[, "target"]))
 
 
   tictoc::tic(paste0("Training for target '",target_name,"' with '",method,"' has finished."))
   # f_data <- rsample::vfold_cv(
   #   train_data,
   #   v = k_folds,
-  #   repeats = n_repeats,
   #   strata = "target"
   # )
   # vfold_cv stratification not working properly, using caret instead
-  cv_index = caret::createFolds(
+  cv_index <- caret::createFolds(
     train_data$target,
     k = k_folds,
     # if returnTrain=TRUE when k=1, returns nothing
@@ -32,24 +31,24 @@ do_cv <- function(
     index = cv_index,
     indexOut = purrr::map(
       cv_index,
-      function(x){setdiff(seq_len(nrow(train_data)),x)}
+      function(x){setdiff(seq_len(nrow(train_data)), x)}
     ),
-    method = 'cv',
+    method = "cv",
     number = k_folds
   )
 
-  f_data = rsample::caret2rsample(ctrl=tc,data = train_data)
+  f_data <- rsample::caret2rsample(ctrl = tc, data = train_data)
 
   # adding split id within the splits
   for(i in seq_len(length(f_data$splits))){
-    f_data$splits[[i]]$id = tibble::tibble(id=sprintf("Fold%02d",i))
+    f_data$splits[[i]]$id <- tibble::tibble(id = sprintf("Fold%02d", i))
   }
 
   f_data$results <- purrr::map(
     .x = f_data$splits,
     .f = find_predictors,
     method = method,
-    scale_scores = any(grepl("CimpleG", method, fixed = TRUE)),
+    scale_scores = any(grepl("CimpleG_parab", method, fixed = TRUE)),
     pred_type = pred_type,
     verbose = verbose
   )
@@ -151,52 +150,6 @@ eval_test_data <- function(
 
   predictor_name <- NULL
 
-  is_simple_model <-
-    identical(method, "brute_force") |
-    identical(method, "CimpleG_unscaled") |
-    identical(method, "CimpleG")
-
-  if (is_simple_model) {
-
-    new_data_vec <- test_data %>% dplyr::pull(final_model$predictor)
-
-    if(final_model$type == "hypo"){
-      new_data_vec <- 1 - new_data_vec
-    }
-
-    pred_class <- factor(
-      ifelse(
-        new_data_vec > 0.5,
-        "positive_class",
-        "negative_class"
-      ),
-      levels = levels(test_data$target)
-    )
-    # TODO alternatively for a better binning option we could use
-    # OneR::bin(
-    #   new_data_vec,
-    #   nbins=2,
-    #   labels=c("negative_class","positive_class")
-    # )
-
-    acc_perf <- yardstick::accuracy_vec(
-      truth = test_data$target,
-      estimate = pred_class
-    )
-
-    f1_perf <- yardstick::f_meas_vec(
-      truth = test_data$target,
-      estimate = pred_class
-    )
-
-    aupr_perf <- yardstick::pr_auc_vec(
-      truth = test_data$target,
-      estimate = new_data_vec
-    )
-
-    predictor_name <- final_model$predictor
-  }
-
   if (identical(method, "oner")) {
 
     pred_class <- predict(final_model, newdata = test_data, type = "class") %>%
@@ -206,21 +159,41 @@ eval_test_data <- function(
       as.data.frame %>%
       dplyr::pull(positive_class)
 
-    acc_perf <- yardstick::accuracy_vec(
-      truth = test_data$target,
-      estimate = pred_class
-    )
-    f1_perf <- yardstick::f_meas_vec(
-      truth = test_data$target,
-      estimate = pred_class
-    )
-    aupr_perf <- yardstick::pr_auc_vec(
-      truth = test_data$target,
-      estimate = pred_prob
-    )
-
     predictor_name <- final_model$feature
+  }else{
+
+    pred_prob <- test_data %>% dplyr::pull(final_model$predictor)
+
+    if(final_model$type == "hypo"){
+      pred_prob <- 1 - pred_prob
+    }
+
+    pred_class <- factor(
+      ifelse(
+        pred_prob > 0.5,
+        "positive_class",
+        "negative_class"
+      ),
+      levels = levels(test_data$target)
+    )
+    predictor_name <- final_model$predictor
   }
+
+
+  acc_perf <- yardstick::accuracy_vec(
+    truth = test_data$target,
+    estimate = pred_class
+  )
+
+  f1_perf <- yardstick::f_meas_vec(
+    truth = test_data$target,
+    estimate = pred_class
+  )
+
+  aupr_perf <- yardstick::pr_auc_vec(
+    truth = test_data$target,
+    estimate = pred_prob
+  )
 
   res <- data.frame(
     method = method,
@@ -232,7 +205,141 @@ eval_test_data <- function(
   return(res)
 }
 
-#' @importFrom dplyr %>%
+
+eval_test <- function(
+  test_data,
+  train_results,
+  verbose=1
+){
+
+  target <- pred_type <- id <- stat_origin <- NULL
+
+  if(verbose>=2) message("Evaluating test data...")
+
+  # get performance on test data
+  test_data$target <- test_data$target %>% stats::relevel("positive_class")
+
+  hyper_aupr <- test_data[,
+    lapply(X = .SD, true_v = target, FUN = function(x, true_v){
+      prroc_prauc_vec(estimate = x, truth = true_v)
+    }),
+    .SDcols = train_results[pred_type == TRUE, id]]
+
+  hypo_aupr <- test_data[,
+    lapply(X = .SD, true_v = target, FUN = function(x, true_v){
+      prroc_prauc_vec(estimate = 1 - x, truth = true_v)
+    }),
+    .SDcols = train_results[pred_type == FALSE, id]]
+
+  if(length(hyper_aupr) == 0){
+    hyper_aupr <- data.table::data.table(
+      id = character(), test_aupr = double(), key = "id"
+    )
+  }else{
+    hyper_aupr <- data.table::transpose(hyper_aupr, keep.names = "id")
+    data.table::setnames(hyper_aupr, "V1", "test_aupr")
+  }
+  if(length(hypo_aupr) == 0){
+    hypo_aupr <- data.table::data.table(
+      id = character(), test_aupr = double(), key = "id"
+    )
+  }else{
+    hypo_aupr <- data.table::transpose(hypo_aupr, keep.names = "id")
+    data.table::setnames(hypo_aupr, "V1", "test_aupr")
+  }
+
+  dt_dmsv <- merge(train_results, rbind(hypo_aupr, hyper_aupr), by = "id")
+  data.table::setnames(dt_dmsv, "mean_aupr", "validation_mean_aupr")
+  dt_dmsv[, stat_origin := NULL]
+  data.table::setkeyv(dt_dmsv, "train_rank")
+
+  return(dt_dmsv)
+}
+
+
+predict.CimpleG <- function(
+  object,
+  new_data,
+  meth=c("hypo","hyper")
+){
+
+  # due to NSE notes in R CMD check
+  prediction_optimal <- prediction_default <- optimal_bins <- .metric <- NULL
+
+  # assume object is cpg or CimpleG obj
+  assertthat::assert_that(is.character(object) | "CimpleG" %in% is(object))
+  if(!is.character(object)){
+    abort("TODO: implement")
+  }
+
+  if(!data.table::is.data.table(new_data)) data.table::setDT(new_data)
+
+  assertthat::assert_that(object %in% colnames(new_data))
+
+  # assume last col is target
+  target_name <- names(new_data)[ncol(new_data)]
+
+  get_cols <- c(object,target_name)
+  #   target_vec <- new_data[,ncol(new_data),with=FALSE]
+  #   predictor_vec <- new_data[,object,with=FALSE]
+
+  #   tbl_pred_target <- new_data[,..get_cols]
+  tbl_pred_target <- new_data[,.SD,.SDcols=get_cols]
+
+  if(meth=="hypo"){
+    tbl_pred_target[,(object):= 1 - .SD, .SDcols=object]
+  }
+
+  # Class prediction with optimal binning from information gain
+  tbl_pred_target[, prediction_optimal:= OneR::optbin(.SD, method="infogain")[[1]], ]
+  levels(tbl_pred_target$prediction_optimal) <- c("X0","X1")
+  tbl_pred_target$prediction_optimal <- stats::relevel(tbl_pred_target$prediction_optimal,"X1")
+  tbl_pred_target[, optimal_bins:= OneR::optbin(.SD, method="infogain")[[1]], ]
+
+  # Default class prediction, hypermethylated if over 0.5, hypomethylated otherwise
+  tbl_pred_target[, prediction_default := factor(ifelse(.SD >= 0.5, "X1", "X0"),levels=c("X1","X0")),.SDcols=object]
+
+  # method that we use in training is: prroc_prauc_vec(estimate = 1 - x, truth = true_v)
+  class_prob_metrics <- yardstick::metric_set(
+    yardstick::pr_auc,
+    yardstick::roc_auc,
+    yardstick::accuracy,
+    yardstick::f_meas
+  )
+
+  opt_metrics <- yardstick::metric_set(
+    yardstick::accuracy,
+    yardstick::f_meas
+  )
+
+  res <- class_prob_metrics(
+    data = tbl_pred_target,
+    truth = !! rlang::enquo(target_name),
+    object, ## prob
+    estimate = prediction_default, ## class
+    estimator = "binary"
+  )[,c(".metric",".estimate")]
+  res_opt <- opt_metrics(
+    data = tbl_pred_target,
+    truth = !! rlang::enquo(target_name),
+    estimate = prediction_optimal, ## class
+    estimator = "binary"
+  )[,c(".metric",".estimate")]
+
+  #   res_opt[.metric=="accuracy",.metric:="accuracy_opt"]
+  #   res_opt[.metric=="f_meas",.metric:="f_meas_opt"]
+  res_opt <- res_opt %>% dplyr::mutate(.metric = base::replace(.metric,.metric=="accuracy","accuracy_optimal"))
+  res_opt <- res_opt %>% dplyr::mutate(.metric = base::replace(.metric,.metric=="f_meas","f_optimal"))
+  res <- rbind(res,res_opt)
+  res <- res[order(res$.metric),]
+
+  data.table::setnames(tbl_pred_target,object,paste0("prob.",object))
+  #   col_order <- c(paste0("prob.",object),"prediction","target")
+
+  return(list(results=res,table=tbl_pred_target[]))
+}
+
+
 eval_general_model <- function(
   test_data,
   final_model,
@@ -281,8 +388,6 @@ eval_general_model <- function(
 }
 
 # Train the final model after training
-#
-#' @importFrom dplyr %>%
 final_model <- function(
   train_data,
   best_pred,
@@ -309,9 +414,229 @@ final_model <- function(
   ))
 }
 
+
+cv_loop <- function(
+  train_data,
+  target_name,
+  k_folds = 10,
+  pred_type = c("both","hypo","hyper"),
+  param_p=param_p,
+  q_threshold=q_threshold,
+  verbose=1
+){
+
+  # due to NSE notes in R CMD check
+  cpg_score <- id <- stat_origin <- mean_aupr <- target <- train_rank <- NULL
+  diff_means <- fold_presence <- NULL
+
+  # new do_cv
+  assertthat::assert_that("target" %in% colnames(train_data))
+  assertthat::assert_that(is.factor(train_data[,target]))
+
+  # Only printed when finished
+  tictoc::tic(paste0("Training for target '",target_name,"' with 'CimpleG' has finished."))
+
+  cv_index <- caret::createFolds(
+    train_data$target,
+    k = k_folds,
+    # if returnTrain=TRUE when k=1, returns nothing
+    returnTrain = ifelse(k_folds < 2, FALSE, TRUE),
+    list=TRUE
+  )
+
+  tc <- caret::trainControl(
+    index = cv_index,
+    indexOut = purrr::map(
+      cv_index,
+      function(x){setdiff(seq_len(nrow(train_data)),x)}
+    ),
+    method = 'cv',
+    number = k_folds
+  )
+
+  f_data <- rsample::caret2rsample(ctrl=tc,data = train_data)
+
+  # adding split id within the splits
+  for(i in seq_len(length(f_data$splits))){
+    f_data$splits[[i]]$id <- tibble::tibble(id=sprintf("Fold%02d",i))
+  }
+
+  f_data$results <- purrr::map(
+    .x = f_data$splits,
+    .f = find_best_predictors,
+    p_type = pred_type,
+    param_p=param_p,
+    q_threshold=q_threshold,
+    verbose = verbose
+  )
+
+  # process results from training splits
+  train_summary <- f_data$results %>%
+    data.table::rbindlist() %>%
+    data.table::melt(
+      measure.vars=c("train_aupr","validation_aupr"),
+      variable.name="stat_origin",
+      value.name="aupr"
+    )
+
+  # compute mean aupr and number of times a predictor was in a fold
+  train_summary <- train_summary[,
+    .(
+      mean_aupr=sapply(.SD,mean),
+      fold_presence=.N
+    ),
+    .SDcols=c("aupr"),
+    by=.(id,stat_origin)
+  ]
+
+  data.table::setkeyv(train_summary,"id")
+
+  dt_dmsv <- compute_diffmeans_sumvar(
+    data=train_data[,.SD,.SDcols=unique(train_summary$id)],
+    target_vector = train_data$target == "positive_class"
+  )
+
+  data.table::setkeyv(dt_dmsv,"id")
+
+  train_results <- train_summary[dt_dmsv]
+  train_results <- train_results[stat_origin=="validation_aupr"]
+  # calculating score (aupr * rescaled abs(diff means) * rescaled fold presence)
+  train_results[,cpg_score := mean_aupr * scales::rescale(abs(diff_means),to=c(0.0001,1))*scales::rescale(fold_presence,to=c(0.0001,1))]
+  data.table::setkeyv(train_results,"cpg_score")
+  data.table::setorder(train_results,-cpg_score,-mean_aupr)
+
+  train_results[, train_rank := .I ]
+
+  print_timings(verbose<1)
+
+  return(list(
+      fold_id=rsample::tidy(f_data),
+      train_summary=train_summary,
+      dt_dmsv=dt_dmsv,
+      train_results=train_results
+  ))
+}
+
+# TODO: rsample calls take a lot of time, perhaps I should improve it in the future
+find_best_predictors <- function(
+  split_train_set,
+  param_p,
+  q_threshold=0.01,
+  p_class = "positive_class",
+  p_type=c("both","hypo","hyper"),
+  verbose=1
+){
+
+  # due to NSE notes in R CMD check
+  target <- id <- resample <- pred_type <- validation_aupr <- train_aupr <- NULL
+
+  tictoc::tic(split_train_set$id %>% unlist())
+
+  # Train data
+  train_set <- data.table::copy(rsample::analysis(split_train_set))
+  # Truth labels
+  tru_v <- train_set$target == p_class
+
+  # Compute delta sigma space (diffmeans, sumvars)
+  dt_dmsv <- compute_diffmeans_sumvar(
+    #     data=train_set[,-ncol(train_set)],
+    data = train_set[, -ncol(train_set), with=FALSE],
+    target_vector = tru_v
+  )
+
+  # If we only search for one type of probe, we can discard the rest
+  dt_dmsv <- dt_dmsv[
+    p_type == "both" |
+    (pred_type == TRUE & p_type == "hyper") |
+    (pred_type == FALSE & p_type == "hypo"),
+  ]
+
+  # Get relevant features
+  dt_dmsv <- get_relevant_features(
+    dt_diffmean_sumvar = dt_dmsv,
+    param_p = param_p,
+    q_threshold = q_threshold
+  )
+
+  # Metrics on train data
+  hyper_aupr <- train_set[,
+    lapply(X = .SD, true_v = target, FUN = function(x, true_v) {
+      prroc_prauc_vec(estimate = x, truth = true_v)
+    }),
+    .SDcols = dt_dmsv[pred_type == TRUE, id]]
+
+  hypo_aupr <- train_set[,
+    lapply(X = .SD, true_v = target, FUN = function(x, true_v) {
+      prroc_prauc_vec(estimate = 1 - x, truth = true_v)
+    }),
+    .SDcols = dt_dmsv[pred_type == FALSE, id]]
+
+  if(length(hyper_aupr) == 0){
+    hyper_aupr <- data.table::data.table(
+      id = character(),train_aupr = double(),key = "id"
+    )
+  }else{
+    hyper_aupr <- data.table::transpose(hyper_aupr, keep.names="id")
+    data.table::setnames(hyper_aupr, "V1", "train_aupr")
+  }
+  if(length(hypo_aupr) == 0){
+    hypo_aupr <- data.table::data.table(
+      id = character(), train_aupr = double(), key = "id"
+    )
+  }else{
+    hypo_aupr <- data.table::transpose(hypo_aupr, keep.names = "id")
+    data.table::setnames(hypo_aupr, "V1", "train_aupr")
+  }
+
+  dt_dmsv <- merge(dt_dmsv, rbind(hypo_aupr, hyper_aupr), by = "id")
+  data.table::setkeyv(dt_dmsv, "train_aupr")
+  data.table::setorder(dt_dmsv, -train_aupr)
+
+  # Validation data
+  holdout_set <- rsample::assessment(split_train_set)
+
+  # Metrics on validation data
+  hyper_aupr <- holdout_set[,
+    lapply(X = .SD, true_v = target, FUN = function(x, true_v) {
+      prroc_prauc_vec(estimate = x, truth = true_v)
+    }),
+    .SDcols = dt_dmsv[pred_type == TRUE, id]]
+
+  hypo_aupr <- holdout_set[,
+    lapply(X = .SD, true_v = target, FUN = function(x, true_v) {
+      prroc_prauc_vec(estimate = 1 - x, truth = true_v)
+    }),
+    .SDcols = dt_dmsv[pred_type == FALSE, id]]
+
+  if(length(hyper_aupr) == 0){
+    hyper_aupr <- data.table::data.table(
+      id = character(), validation_aupr = double(), key = "id"
+    )
+  }else{
+    hyper_aupr <- data.table::transpose(hyper_aupr, keep.names = "id")
+    data.table::setnames(hyper_aupr, "V1", "validation_aupr")
+  }
+  if(length(hypo_aupr) == 0){
+    hypo_aupr <- data.table::data.table(
+      id = character(), validation_aupr = double(), key = "id"
+    )
+  }else{
+    hypo_aupr <- data.table::transpose(hypo_aupr, keep.names = "id")
+    data.table::setnames(hypo_aupr, "V1", "validation_aupr")
+  }
+
+  dt_dmsv <- merge(dt_dmsv, rbind(hypo_aupr, hyper_aupr), by = "id")
+  data.table::setkeyv(dt_dmsv, "validation_aupr")
+  data.table::setorder(dt_dmsv, -validation_aupr)
+
+  dt_dmsv[, resample := split_train_set$id %>% unlist()]
+
+  print_timings(verbose < 2)
+
+  return(dt_dmsv)
+}
+
 # Training/Finding the best predictors/CpGs
-#
-#' @importFrom dplyr %>%
 find_predictors <- function(
   split_train_set,
   init_step = 0.1,
@@ -330,16 +655,17 @@ find_predictors <- function(
 
   tru_v <- train_set$target == p_class
 
-  df_dMean_sVar <- compute_diffmeans_sumvar(
+  dt_dMean_sVar <- compute_diffmeans_sumvar(
     data=train_set[,-ncol(train_set)],
     target_vector = tru_v
   )
 
   if(pred_type!="both"){
-    if(pred_type=="hypo") df_dMean_sVar <- df_dMean_sVar %>% dplyr::filter(!pred_type)
-    if(pred_type=="hyper") df_dMean_sVar <- df_dMean_sVar %>% dplyr::filter(pred_type)
+    if(pred_type=="hypo") dt_dMean_sVar <- dt_dMean_sVar[pred_type==FALSE]
+    if(pred_type=="hyper") dt_dMean_sVar <- dt_dMean_sVar[pred_type==TRUE]
   }
 
+  df_dMean_sVar <- as.data.frame(dt_dMean_sVar)
 
   if (method == "brute_force" | grepl("CimpleG",method)) {
 
@@ -409,6 +735,7 @@ find_predictors <- function(
           by=c(".id"="id")
         )
 
+    # scale AUPR by absolute mean difference between conditions/classes
       if(scale_scores){
         hypoM_predictors$DiffScaledAUPR <- scales::rescale(
           abs(hypoM_predictors$diff_means),
@@ -418,7 +745,6 @@ find_predictors <- function(
 
     }
 
-    # scale AUPR by absolute mean difference between conditions/classes
     meth_predictors <- rbind(
       hyperM_predictors,
       hypoM_predictors
@@ -476,7 +802,7 @@ find_predictors <- function(
   if(method=="oner"){
     # oneRule model
     # Using OneRule model
-    oner_predata <- OneR::optbin(target ~ ., data = train_set, method = "naive")
+    oner_predata <- OneR::optbin(target ~ ., data = train_set, method = "infogain")
     oner_mod <- OneR::OneR(oner_predata)
     oner_mod <- fix_oner_boundaries(oner_mod)
 
@@ -661,7 +987,8 @@ train_general_model <- function(
 
 
 # Loop iterating through parabola selecting cpgs
-#' @return list
+#
+# @return list
 parabola_iter_loop <- function(
   df_diffmean_sumvar,
   init_step,
@@ -704,6 +1031,20 @@ parabola_iter_loop <- function(
 }
 
 
+get_relevant_features <- function(
+  dt_diffmean_sumvar,
+  param_p,
+  q_threshold=0.01
+){
+  # TODO: compare efficiency of the 2 lines below
+  dt_diffmean_sumvar[, var_a := compute_ax(diff_means,sum_variance,param_p)]
+  #   data.table::set(dt_diffmean_sumvar, j="var_a",value=compute_ax(dt_diffmean_sumvar$diff_means,dt_diffmean_sumvar$sum_variance,param_p))
+
+  data.table::setkeyv(dt_diffmean_sumvar, "var_a")
+  dt_diffmean_sumvar <- dt_diffmean_sumvar[var_a < stats::quantile(var_a, q_threshold)]
+  return(dt_diffmean_sumvar)
+}
+
 
 #' Feature selection function used in the diffmeans, sumvariance space
 #' @param x, difference in means value
@@ -714,6 +1055,17 @@ parabola_iter_loop <- function(
 select_features <- function(x, y, a) {
   return(y < (a * x)^2)
 }
+
+
+#' Feature selection function used in the sigma delta space
+#' @param dm, delta (difference in mean values)
+#' @param sv, sigma (sum of variance values)
+#' @param p, even number, the greater 'p' is the more importance will be given to delta
+#' @export
+compute_ax <- function(dm, sv, p){
+  return(sv / (dm ** p) )
+}
+
 
 # Depending on pred_type:
 #   Returns TRUE if:
@@ -753,7 +1105,7 @@ updt_selected_feats <- function(
 
 # Fixes lower and upper boundaries (0,1) on OneR models
 #
-#' @return OneR object
+# @return OneR object
 fix_oner_boundaries <- function(oner_mod){
   boundary_vals_l <- as.numeric(
     strsplit(x = gsub("\\(|\\]", "", (names(oner_mod$rules)[1])), ",", fixed = TRUE)[[1]]
@@ -838,7 +1190,6 @@ print_timings <- function(quiet = FALSE) {
 }
 
 
-#' @importFrom dplyr %>%
 make_train_test_split <- function(
   train_d,
   train_targets,
@@ -1006,13 +1357,90 @@ compute_diffmeans_sumvar <- function(data, target_vector) {
     )
   }
 
-  df_diffmean_sumvar <- data.frame(
+  dt_diffmean_sumvar <- data.table::data.table(
     "id" = id,
     "diff_means" = diff_means,
-    "sum_variance" = sum_variance
+    "sum_variance" = sum_variance,
+    "pred_type" = (diff_means >= 0)
   )
 
-  df_diffmean_sumvar$pred_type <- df_diffmean_sumvar$diff_means >= 0
-
-  return(df_diffmean_sumvar)
+  return(dt_diffmean_sumvar)
 }
+
+
+download_geo_gsm_idat = function(
+  gse_gsm_table,
+  data_dir="ncbi_geo_data",
+  show_warnings=FALSE,
+  run_parallel=FALSE
+){
+
+  assertthat::assert_that(
+    is.data.frame(gse_gsm_table) ||
+    tibble::is_tibble(gse_gsm_table) ||
+    data.table::is.data.table(gse_gsm_table)
+  )
+  assertthat::assert_that("GSE" %in% toupper(colnames(gse_gsm_table)))
+  assertthat::assert_that("GSM" %in% toupper(colnames(gse_gsm_table)))
+
+  gse_gsm_table <- gse_gsm_table %>%
+    dplyr::select(matches("GSE"),matches("GSM"))
+
+  colnames(gse_gsm_table) <- c("GSE","GSM")
+
+  gse_gsm_table <- gse_gsm_table %>%
+    dplyr::mutate(GSE = trimws(GSE)) %>%
+    dplyr::mutate(GSM = trimws(GSM))
+
+  gse_gsm_table %>%
+    dplyr::pull(GSE) %>%
+    unique %>%
+    file.path(data_dir,.) %>%
+    purrr::map_chr(.f=dir.create,recursive = TRUE,showWarnings=FALSE)
+
+  targets = gse_gsm_table %>%
+    dplyr::select(GSE,GSM) %>%
+    split(f=seq(nrow(.)))
+
+  work_helper = function(target){
+    res = tryCatch(
+      expr={
+        GEOquery::getGEOSuppFiles(
+          target$GSM,
+          makeDirectory = TRUE,
+          baseDir = file.path(data_dir,target$GSE),
+          filter_regex="idat.gz$"
+        )
+      },
+      error = function(cond) {
+        message("failed to dw")
+        message("Error message:")
+        message(cond)
+      },
+      warning = function(cond) {
+        message("Warning message:")
+        message(cond)
+      }
+    )
+    if (is.null(res)) warning(paste0(target$GSM, " download result was NULL."), call. = TRUE)
+    return(res)
+  }
+
+  if(run_parallel){
+    requireNamespace("future", quietly = FALSE)
+    requireNamespace("future.apply", quietly = FALSE)
+    res <- future.apply::future_lapply(
+      X = targets,
+      FUN = work_helper,
+      future.seed = TRUE
+    )
+  }else{
+    res <- purrr::map(
+      .x=targets,
+      .f=work_helper
+    )
+  }
+  return(res)
+}
+
+

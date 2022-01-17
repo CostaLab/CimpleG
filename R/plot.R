@@ -99,6 +99,8 @@ diffmeans_sumvariance_plot <- function(
     data <- compute_diffmeans_sumvar(data,target_vector = target_vector)
   }
 
+  data <- as.data.frame(data)
+
   assertthat::assert_that(xcol%in%colnames(data))
   assertthat::assert_that(ycol%in%colnames(data))
 
@@ -561,6 +563,7 @@ diffmeans_sumvariance_plot <- function(
 #'   subtitle="method: CimpleG"
 #' )
 #' print(plt)
+#'
 #' @export
 dmsv_plot <- function(
   data,
@@ -615,7 +618,7 @@ dmsv_plot.matrix <- function(
   assertthat::assert_that(!is.null(target_vector))
   assertthat::assert_that(is.logical(target_vector))
 
-  data <- compute_diffmeans_sumvar(data,target_vector=target_vector)
+  data <- as.data.frame(compute_diffmeans_sumvar(data,target_vector=target_vector))
 
   if(!is.null(highlight_vector)){
     assertthat::assert_that(typeof(highlight_vector) == "character")
@@ -642,7 +645,7 @@ dmsv_plot.data.frame <- function(
 ){
 
   plt <- dmsv_plot_base(
-    data=data,
+    data=as.data.frame(data),
     x_var=x_var,y_var=y_var,
     id_var=id_var,highlight_var=highlight_var,display_var=display_var,
     label_var1=label_var1,label_var2=label_var2,point_color=point_color,

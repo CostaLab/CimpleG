@@ -10,13 +10,15 @@ CimpleG(
   targets,
   test_data = NULL,
   test_targets = NULL,
-  method = c("CimpleG", "brute_force", "CimpleG_unscaled", "oner", "logistic_reg",
-    "decision_tree", "boost_tree", "mlp", "rand_forest", "null_model"),
+  method = c("CimpleG", "CimpleG_parab", "CimpleG_unscaled", "brute_force", "oner",
+    "logistic_reg", "decision_tree", "boost_tree", "mlp", "rand_forest", "null_model"),
   pred_type = c("both", "hypo", "hyper"),
   engine = c("glmnet", "xgboost", "nnet", "ranger"),
   k_folds = 10,
   grid_n = 10,
-  n_repeats = 1,
+  param_p = 4,
+  quantile_threshold = 0.01,
+  train_only = FALSE,
   run_parallel = FALSE,
   save_dir = NULL,
   save_format = c("zstd", "lz4", "gzip", "bzip2", "xz", "nocomp"),
@@ -86,9 +88,14 @@ in training for the stratified K-fold cross-validation procedure.}
 \item{grid_n}{An integer specifying the number of hyperparameter combinations
 to train for.}
 
-\item{n_repeats}{An integer specifying the number of repeats (N) to be used
-in training for the stratified N-repeats K-fold cross-validation procedure.
-Currently not in use.}
+\item{param_p}{An even number in `sigma / (delta^param_p)`. Tunes how much weight will be
+given to delta when doing feature selection. Default is \code{4}.}
+
+\item{quantile_threshold}{A number between 0 and 1.
+Determines how many features will be kept. Default is \code{0.001}.}
+
+\item{train_only}{A boolean, if TRUE, CimpleG will only train (find predictors)
+but not test them against a test dataset.}
 
 \item{run_parallel}{A boolean, if `FALSE`, the default, it will search
 for predictors for multiple targets sequentially.

@@ -37,7 +37,9 @@ githubactions_check:
 	Rscript -e 'usethis::use_github_actions()'
 
 codetoolscheck:
-	Rscript -e "library(CimpleG)" -e "codetools::checkUsagePackage('CimpleG')"
+	Rscript -e "library(CimpleG)" \
+		-e "codetools::checkUsagePackage('CimpleG')" \
+		-e "codetools::findGlobals('CimpleG', merge=FALSE)"
 
 update_setup:
 	Rscript setup_proj.R

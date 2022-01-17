@@ -39,6 +39,7 @@ usethis::use_package("scales")
 usethis::use_package("tidyselect")
 usethis::use_package("butcher")
 usethis::use_package("grDevices")
+usethis::use_package("data.table")
 
 
 # suggested
@@ -63,7 +64,6 @@ usethis::use_package("future.apply", "suggests")
 usethis::use_package("ggbeeswarm", "suggests")
 usethis::use_package("ggsci", "suggests")
 usethis::use_package("ggsignif", "suggests")
-usethis::use_package("data.table", "suggests")
 usethis::use_dev_package("minfi", "suggests", remote="bioc::release/minfi")
 # usethis::use_package("minfi", "suggests", remote="https://git.bioconductor.org/packages/minfi")
 usethis::use_package("mltools", "suggests")
@@ -71,6 +71,7 @@ usethis::use_dev_package("SummarizedExperiment", "suggests", remote="bioc::relea
 # usethis::use_package("SummarizedExperiment", "suggests", remote="https://git.bioconductor.org/packages/SummarizedExperiment")
 usethis::use_package("archive", "suggests")
 usethis::use_package("Rfast","suggests")
+usethis::use_package("GEOquery","suggests")
 # usethis::use_package("Cairo", "suggests")
 
 # remotes
@@ -86,6 +87,8 @@ usethis::use_import_from("stats", "predict")
 usethis::use_import_from("utils", "head")
 usethis::use_import_from("rlang", "abort")
 usethis::use_import_from("dplyr", "%>%")
+usethis::use_import_from("rlang", ".data")
+usethis::use_data_table()
 
 usethis::use_testthat()
 usethis::use_test("CimpleG")

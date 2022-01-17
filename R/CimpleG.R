@@ -55,16 +55,21 @@
 #'  If `hypo`, only hypomethylated predictors will be considered.
 #'  If `hyper`, only hypermethylated predictors will be considered.
 #'
+#' @param param_p An even number in `sigma / (delta^param_p)`. Tunes how much weight will be
+#'  given to delta when doing feature selection. Default is \code{4}.
+#'
+#' @param quantile_threshold A number between 0 and 1.
+#'  Determines how many features will be kept. Default is \code{0.001}.
+#'
+#' @param train_only A boolean, if TRUE, CimpleG will only train (find predictors)
+#'  but not test them against a test dataset.
+#'
 #' @param engine A string specifying the
 #'  machine learning engine behind `method`. Only used for complex models.
 #'  Currently not in use.
 #'
 #' @param k_folds An integer specifying the number of folds (K) to be used
 #'  in training for the stratified K-fold cross-validation procedure.
-#'
-#' @param n_repeats An integer specifying the number of repeats (N) to be used
-#'  in training for the stratified N-repeats K-fold cross-validation procedure.
-#'  Currently not in use.
 #'
 #' @param grid_n An integer specifying the number of hyperparameter combinations
 #'  to train for.
@@ -120,8 +125,9 @@ CimpleG <- function(
   test_targets = NULL,
   method = c(
     "CimpleG",
-    "brute_force",
+    "CimpleG_parab",
     "CimpleG_unscaled",
+    "brute_force",
     "oner",
     "logistic_reg",
     "decision_tree",
@@ -134,12 +140,19 @@ CimpleG <- function(
   engine = c("glmnet", "xgboost", "nnet", "ranger"),
   k_folds = 10,
   grid_n = 10,
-  n_repeats = 1,
+  param_p = 4,
+  quantile_threshold = 0.01,
+  train_only = FALSE,
   run_parallel = FALSE,
   save_dir = NULL,
   save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
   verbose=1
 ) {
+
+  start_o_time <- Sys.time()
+
+  # due to NSE notes in R CMD check
+  id <- train_rank <- NULL
 
   if(inherits(train_data, "SummarizedExperiment")){
     prep_train <- prep_data(train_data,targets)
@@ -147,7 +160,7 @@ CimpleG <- function(
     train_targets <- prep_train$df_targets
     rm(prep_train)
 
-    if(!is.null(test_data) && inherits(test_data, "SummarizedExperiment")){
+    if(!is.null(test_data) && inherits(test_data, "SummarizedExperiment") && !train_only){
       prep_test <- prep_data(test_data,targets)
       test_data <- prep_test$beta_mat
       test_targets <- prep_test$df_targets
@@ -161,13 +174,18 @@ CimpleG <- function(
   assertthat::assert_that(
     assertthat::are_equal(nrow(train_data), nrow(train_targets))
   )
+  assertthat::assert_that(
+    is.data.frame(train_targets) |
+    is.matrix(train_targets) |
+    data.table::is.data.table(train_targets)
+  )
 
   if(nrow(train_data) > ncol(train_data)){
     warning(
       paste0(
         "There are more samples (", nrow(train_data), ")",
         " than features (", ncol(train_data), ").", "\n",
-        "This might be a sign that you forgot to transpose your train_data."
+        "This might be a sign that you forgot to transpose your data."
       )
     )
   }
@@ -188,26 +206,33 @@ CimpleG <- function(
   # Check cv params
   assertthat::assert_that(is.numeric(k_folds))
   assertthat::assert_that(k_folds > 0)
-  assertthat::assert_that(is.numeric(n_repeats))
   # Check method params
   selected_method <- match.arg(
     method,
     choices = c(
       # simple models
-      "CimpleG", "CimpleG_unscaled", "brute_force", "oner",
+      "CimpleG", "CimpleG_parab", "CimpleG_unscaled", "brute_force", "oner",
       # complex models
       "logistic_reg", "decision_tree", "boost_tree", "mlp", "rand_forest",
       "null_model"
     )
   )
+
+  assertthat::assert_that(is.numeric(param_p))
+  assertthat::assert_that(is.numeric(quantile_threshold))
+  assertthat::assert_that(param_p > 0)
+  assertthat::assert_that(param_p %% 2 == 0, msg="param_p is not an even number.")
+  assertthat::assert_that(quantile_threshold > 0 && quantile_threshold < 1)
+
   selected_pred_type <- match.arg(
     pred_type, choices = c("both", "hypo", "hyper")
   )
   assertthat::assert_that(grid_n > 0)
 
-  if(is.null(test_data) | is.null(test_targets)){
+  if((is.null(test_data) | is.null(test_targets)) & !train_only){
     if(verbose>=2){
-      message("'test_data' or 'test_targets' is NULL.") 
+      message("'test_data' or 'test_targets' is NULL.")
+      message("'train_only' is set to FALSE.")
       message("'train_data' will be partioned to create 'test_data'.")
     }
 
@@ -223,19 +248,41 @@ CimpleG <- function(
     rm(split_data)
   }
 
+  # TODO: make a better implementation of train_only, so many "ifs" is just ugly
   # Check test data
-  assertthat::assert_that(all(targets %in% colnames(test_targets)))
-  assertthat::assert_that(
-    assertthat::are_equal(nrow(test_data), nrow(test_targets))
-  )
+  if(!train_only){
+    assertthat::assert_that(all(targets %in% colnames(test_targets)))
+    assertthat::assert_that(
+      assertthat::are_equal(nrow(test_data), nrow(test_targets))
+    )
+  }
 
+  #TODO: make the "new" method the main one!
   is_simple_method <- selected_method %in% c(
-    "CimpleG", "brute_force", "CimpleG_unscaled", "oner"
+    "CimpleG_parab","brute_force", "CimpleG_unscaled", "oner"
   )
+  is_cimpleg <- selected_method %in% "CimpleG"
 
-  train_data <- as.data.frame(train_data)
-  test_data <- as.data.frame(test_data)
-
+  if(is_cimpleg){
+    # TODO: ensure other methods can run off of data.table so that I can remove is_cimpleg
+    if(is.matrix(train_data)){
+      train_data <- as.data.frame(train_data)
+      data.table::setDT(train_data)
+    }else if(is.data.frame(train_data)){
+      data.table::setDT(train_data)
+    }
+    if(!train_only){
+      if(is.matrix(test_data)){
+        test_data <- as.data.frame(test_data)
+        data.table::setDT(test_data)
+      }else if(is.data.frame(test_data)){
+        data.table::setDT(test_data)
+      }
+    }
+  }else{
+    train_data <- as.data.frame(train_data)
+    if(!train_only) test_data <- as.data.frame(test_data)
+  }
 
   work_helper <- function(target) {
 
@@ -246,14 +293,21 @@ CimpleG <- function(
       "positive_class",
       "negative_class"
     ), levels = c("positive_class", "negative_class"))
-    test_target_vec <- factor(ifelse(
-      test_targets[, target] == 1,
-      "positive_class",
-      "negative_class"
-    ), levels = c("positive_class", "negative_class"))
+    if(!train_only){
+      test_target_vec <- factor(ifelse(
+          test_targets[, target] == 1,
+          "positive_class",
+          "negative_class"
+          ), levels = c("positive_class", "negative_class"))
+    }
 
-    train_data$target <- train_target_vec
-    test_data$target <- test_target_vec
+    if(is_cimpleg){
+      train_data[,target := train_target_vec]
+      if(!train_only) test_data[,target := test_target_vec]
+    }else{
+      train_data$target <- train_target_vec
+      if(!train_only) test_data$target <- test_target_vec
+    }
 
     rv_tbl <- table(train_data[, "target"])
 
@@ -263,23 +317,42 @@ CimpleG <- function(
       warning(paste0("K folds reset to k=", k_folds))
     }
 
+    test_res <- NULL
+
     if(is_simple_method){
       train_res <- do_cv(
         train_data = train_data,
         method = selected_method,
         k_folds = k_folds,
-        n_repeats = n_repeats,
         pred_type = selected_pred_type,
         target_name = target,
         verbose = verbose
       )
-
-      test_res <- eval_test_data(
-        test_data = test_data,
-        final_model = train_res$model,
-        method = selected_method,
+      if(!train_only){
+        test_res <- eval_test_data(
+          test_data = test_data,
+          final_model = train_res$model,
+          method = selected_method,
+          verbose = verbose
+        )
+      }
+    }else if(is_cimpleg){
+      train_res <- cv_loop(
+        train_data = train_data,
+        target_name = target,
+        k_folds = k_folds,
+        pred_type = selected_pred_type,
+        param_p = param_p,
+        q_threshold = quantile_threshold,
         verbose = verbose
       )
+
+      if(!train_only){
+        test_res <- eval_test(
+          test_data = test_data,
+          train_results = train_res$train_results
+        )
+      }
     }else{
       train_res <- train_general_model(
         train_data = train_data,
@@ -291,12 +364,15 @@ CimpleG <- function(
         verbose = verbose
       )
 
-      test_res <- eval_general_model(
-        test_data = test_data,
-        final_model = train_res,
-        verbose = verbose
-      )
+      if(!train_only){
+        test_res <- eval_general_model(
+          test_data = test_data,
+          final_model = train_res,
+          verbose = verbose
+        )
+      }
     }
+
 
     elapsed_time <- Sys.time() - start_time
 
@@ -320,6 +396,8 @@ CimpleG <- function(
     ) %>% magrittr::set_names(targets)
   }
 
+  o_time <- Sys.time() - start_o_time
+
   if(is_simple_method){
     signatures <- purrr::map_chr(
       res,
@@ -327,9 +405,17 @@ CimpleG <- function(
         cg_res$train_res$CpG
       }
     )
-    final_res <- list(signatures = signatures, results = res)
+    final_res <- list(signatures = signatures, results = res, overall_time = o_time)
+  }else if(is_cimpleg){
+    signatures <- purrr::map_chr(
+      res,
+      function(cg_res){
+        cg_res$train_res$train_results[train_rank == 1, id]
+      }
+    )
+    final_res <- list(signatures = signatures, results = res, overall_time = o_time)
   }else{
-    final_res <- list(results = res)
+    final_res <- list(results = res, overall_time = o_time)
   }
 
   class(final_res) <- "CimpleG"
@@ -434,3 +520,4 @@ prep_data <- function(data, targets){
 
   return(list(beta_mat = beta_mat, df_targets = df_targets))
 }
+

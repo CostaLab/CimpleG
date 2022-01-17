@@ -1,8 +1,8 @@
 Package: CimpleG
 Type: Package
 Title: CimpleG - Individual/Single CpG sites For Classification and Deconvolution
-Date: 2021-11-29
-Version: 0.0.2.9012
+Date: 2022-01-17
+Version: 0.0.2.9015
 Authors@R:
     person("Tiago","F.V. Maié",email="tiagomaie@hotmail.com",role=c("aut","cre"))
 Maintainer: Tiago Maié <tiagomaie@hotmail.com>
@@ -43,7 +43,8 @@ Imports:
     methods,
     stats,
     utils,
-    butcher
+    butcher,
+    data.table
 Suggests:
     PMCMRplus,
     furrr,
@@ -67,15 +68,15 @@ Suggests:
     ggbeeswarm,
     ggsci,
     ggsignif,
-    data.table,
-    minfi (>= 1.38.0),
+    minfi (>= 1.40.0),
     mltools,
-    SummarizedExperiment (>= 1.22.0),
+    SummarizedExperiment (>= 1.24.0),
     archive,
     Rfast,
-    EpiDISH (>= 2.8.0),
-    ComplexHeatmap (>= 2.8.0),
-    Biobase (>= 2.52.0)
+    EpiDISH (>= 2.10.0),
+    ComplexHeatmap (>= 2.10.0),
+    Biobase (>= 2.54.0),
+    GEOquery
 Remotes: 
     bioc::release/Biobase,
     bioc::release/EpiDISH,
