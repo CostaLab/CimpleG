@@ -904,11 +904,14 @@ train_general_model <- function(
     general_model <-
       # specify the model
       parsnip::boost_tree(
-        tree_depth = 10,
+        tree_depth = 6,
         trees = tune::tune(),
+        learn_rate=0.3,
+        mtry = 100L,
         min_n = 1,
-        learn_rate=0.1,
-        stop_iter = 3
+        loss_reduction=0.0,
+        sample_size=1.0,
+        stop_iter = Inf
       ) %>%
       parsnip::set_engine(
         "xgboost",
@@ -967,6 +970,7 @@ train_general_model <- function(
     workflows::add_model(general_model)
 
   # Training model
+  # defining tuning grid
   cimpleg_res <- cimpleg_workflow %>%
     tune::tune_grid(
       resamples=f_data,
@@ -975,13 +979,28 @@ train_general_model <- function(
         yardstick::pr_auc
       )
     )
-
+  # model fitting
   cimpleg_final_model <- cimpleg_workflow %>%
     tune::finalize_workflow(tune::select_best(cimpleg_res, metric = "pr_auc")) %>%
-    parsnip::fit(data = train_data) %>%
-    butcher::butcher()
+    parsnip::fit(data = train_data) 
 
-  print_timings(verbose<1)
+  # butcher model to axe unnecessary components
+  if(model_type != "boost_tree"){
+    cimpleg_final_model <- cimpleg_final_model %>%
+      butcher::butcher(
+        #  verbose < 1
+      )
+  }else{
+    # xgboost calls fail when axe_ctrl is executed
+    cimpleg_final_model <- cimpleg_final_model %>%
+      butcher::axe_call() %>%
+      #       butcher::axe_ctrl() %>%
+      butcher::axe_env() %>%
+      butcher::axe_fitted()
+  }
+
+
+  print_timings(verbose < 1)
   return(cimpleg_final_model)
 }
 
