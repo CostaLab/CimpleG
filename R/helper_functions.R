@@ -884,13 +884,19 @@ train_general_model <- function(
   if(model_type == "decision_tree"){
     general_model <-
       # specify the model
-      parsnip::decision_tree(
+      #       parsnip::decision_tree(
         # TODO for c50 only one parameter is tuned
         #cost_complexity=tune::tune(),
         #tree_depth=tune::tune(),
-        min_n=tune::tune()
+        #         min_n=tune::tune()
+        #       ) %>%
+        #       parsnip::set_engine("C5.0")
+      parsnip::decision_tree(
+        cost_complexity=tune::tune(),
+        tree_depth=tune::tune(),
+        min_n=2
       ) %>%
-      parsnip::set_engine("C5.0")
+      parsnip::set_engine("rpart")
   }
   if(model_type == "null_model"){
     #FIXME crashes
@@ -907,7 +913,7 @@ train_general_model <- function(
         tree_depth = 6,
         trees = tune::tune(),
         learn_rate=0.3,
-        mtry = 100L,
+        mtry = 100L, # max number of feats used
         min_n = 1,
         loss_reduction=0.0,
         sample_size=1.0,
@@ -939,14 +945,25 @@ train_general_model <- function(
     #FIXME need to use bake later?
     # filtered_te <- recipes::bake(filter_obj, test_data)
 
+    #     general_model <-
+    #       parsnip::mlp(
+    #         hidden_units = tune::tune(),
+    #         penalty = tune::tune(),
+    #         epochs = 20,
+    #         activation = "softmax"
+    #       ) %>%
+    #       parsnip::set_engine("keras")
     general_model <-
       # specify the model
       parsnip::mlp(
         hidden_units = tune::tune(),
         penalty = tune::tune(),
-        epochs = 20
+        epochs = 100
       ) %>%
-      parsnip::set_engine("nnet")
+      parsnip::set_engine(
+        "nnet",
+        MaxNWts=1000000
+      )
   }
 
   if (model_type == "rand_forest") {
@@ -954,8 +971,8 @@ train_general_model <- function(
       # specify the model
       parsnip::rand_forest(
         trees = tune::tune(),
-        min_n = tune::tune(),
-        mtry = tune::tune()
+        min_n = 10,
+        mtry = floor(sqrt(ncol(train_data)))
       ) %>%
       parsnip::set_engine("ranger")
   }
