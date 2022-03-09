@@ -931,12 +931,15 @@ train_general_model <- function(
 
     #FIXME Doing filtering should be an option
     #FIXME Maximum number of weights should be an option
-    #FIXME "MaxNWts"
 
     corr_filter <- cimpleg_recipe %>%
       recipes::step_nzv(recipes::all_predictors()) %>%
-      recipes::step_corr(recipes::all_predictors(),threshold = .5) %>%
-      recipes::step_lincomb(recipes::all_predictors())
+      recipes::step_lincomb(recipes::all_predictors()) %>%
+      recipes::step_corr(
+        recipes::all_predictors(),
+        threshold = .5,
+        method = "spearman"
+      )
 
     cimpleg_recipe <- recipes::prep(
       corr_filter, training = train_data
