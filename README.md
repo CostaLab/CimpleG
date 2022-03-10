@@ -15,16 +15,16 @@ CimpleG, an R package to find (simple) CpG signatures.
 ## Installation
 
 ``` r
-# Install directly from github (NOT YET):
-devtools::install_github("tiagomaie/CimpleG")
+# Install directly from github:
+devtools::install_github("costalab/CimpleG")
 
 # Alternatively, install from a local source:
 #  - ie navigating through your system
 install.packages(file.choose(), repos=NULL, type="source")
 #  - ie given a path to a local source
-install.packages("~/Downloads/CimpleG_0.0.1.XXXX.tar.gz", repos=NULL, type="source")
+install.packages("~/Downloads/CimpleG_0.0.2.XXXX.tar.gz", repos=NULL, type="source")
 # or
-devtools::install_local("~/Downloads/CimpleG_0.0.1.XXXX.tar.gz")
+devtools::install_local("~/Downloads/CimpleG_0.0.2.XXXX.tar.gz")
 ```
 
 ## Getting started
@@ -62,7 +62,7 @@ cimpleg_result$signatures
 #>         "cg24192660"         "cg17008486"
 ```
 
-## Diff-mean/Sum-var plots
+## Difference of means vs Sum of variances (dmsv) plots
 
 ### basic plot
 
