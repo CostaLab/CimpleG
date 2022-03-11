@@ -1,8 +1,8 @@
 Package: CimpleG
 Type: Package
 Title: CimpleG - Individual/Single CpG sites For Classification and Deconvolution
-Date: 2022-03-09
-Version: 0.0.2.9020
+Date: 2022-03-10
+Version: 0.0.2.9023
 Authors@R:
     person("Tiago","F.V. Maié",email="tiagomaie@hotmail.com",role=c("aut","cre"))
 Maintainer: Tiago Maié <tiagomaie@hotmail.com>
@@ -25,7 +25,6 @@ Imports:
     plyr,
     tibble,
     parsnip,
-    rules,
     matrixStats,
     magrittr,
     assertthat,

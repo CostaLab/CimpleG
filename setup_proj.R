@@ -23,7 +23,6 @@ usethis::use_package("dplyr")
 usethis::use_package("plyr") # only used in a single place, check to rm
 usethis::use_package("tibble")
 usethis::use_package("parsnip")
-usethis::use_package("rules")
 usethis::use_package("matrixStats")
 usethis::use_package("magrittr")
 usethis::use_package("assertthat")
@@ -43,6 +42,7 @@ usethis::use_package("data.table")
 
 
 # suggested
+# usethis::use_package("rules","suggests")
 usethis::use_package("stringr", "suggests")
 usethis::use_package("reshape2", "suggests")
 usethis::use_package("future", "suggests")

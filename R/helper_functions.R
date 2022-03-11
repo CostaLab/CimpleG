@@ -882,21 +882,30 @@ train_general_model <- function(
       parsnip::set_engine("glmnet")
   }
   if(model_type == "decision_tree"){
+    corr_filter <- cimpleg_recipe %>%
+      recipes::step_nzv(recipes::all_predictors()) %>%
+      recipes::step_lincomb(recipes::all_predictors()) %>%
+      recipes::step_corr(
+        recipes::all_predictors(),
+        threshold = .5,
+        method = "spearman"
+      )
+
+    cimpleg_recipe <- recipes::prep(
+      corr_filter, training = train_data
+    )
+
     general_model <-
-      # specify the model
-      #       parsnip::decision_tree(
-        # TODO for c50 only one parameter is tuned
-        #cost_complexity=tune::tune(),
-        #tree_depth=tune::tune(),
-        #         min_n=tune::tune()
-        #       ) %>%
-        #       parsnip::set_engine("C5.0")
       parsnip::decision_tree(
-        cost_complexity=tune::tune(),
+        cost_complexity=0.01,
         tree_depth=tune::tune(),
         min_n=2
       ) %>%
-      parsnip::set_engine("rpart")
+      parsnip::set_engine(
+        "rpart",
+        maxsurrogate=2,
+        maxcompete=1
+      )
   }
   if(model_type == "null_model"){
     #FIXME crashes
@@ -929,9 +938,6 @@ train_general_model <- function(
 
   if (model_type == "mlp") {
 
-    #FIXME Doing filtering should be an option
-    #FIXME Maximum number of weights should be an option
-
     corr_filter <- cimpleg_recipe %>%
       recipes::step_nzv(recipes::all_predictors()) %>%
       recipes::step_lincomb(recipes::all_predictors()) %>%
@@ -944,18 +950,6 @@ train_general_model <- function(
     cimpleg_recipe <- recipes::prep(
       corr_filter, training = train_data
     )
-
-    #FIXME need to use bake later?
-    # filtered_te <- recipes::bake(filter_obj, test_data)
-
-    #     general_model <-
-    #       parsnip::mlp(
-    #         hidden_units = tune::tune(),
-    #         penalty = tune::tune(),
-    #         epochs = 20,
-    #         activation = "softmax"
-    #       ) %>%
-    #       parsnip::set_engine("keras")
     general_model <-
       # specify the model
       parsnip::mlp(
@@ -970,14 +964,32 @@ train_general_model <- function(
   }
 
   if (model_type == "rand_forest") {
+    corr_filter <- cimpleg_recipe %>%
+      recipes::step_nzv(recipes::all_predictors()) %>%
+      recipes::step_lincomb(recipes::all_predictors()) %>%
+      recipes::step_corr(
+        recipes::all_predictors(),
+        threshold = .5,
+        method = "spearman"
+      )
+
+    cimpleg_recipe <- recipes::prep(
+      corr_filter, training = train_data
+    )
     general_model <-
       # specify the model
       parsnip::rand_forest(
         trees = tune::tune(),
-        min_n = 10,
+        min_n = 1,
         mtry = floor(sqrt(ncol(train_data)))
       ) %>%
-      parsnip::set_engine("ranger")
+      parsnip::set_engine(
+        "ranger",
+        oob.error = FALSE,
+        respect.unordered.factors="order",
+        importance = "impurity_corrected" # this should be more correct
+        # importance = "impurity" # however this doesnt produce warnings
+      )
   }
 
 
@@ -998,11 +1010,13 @@ train_general_model <- function(
       metrics=yardstick::metric_set(
         yardstick::pr_auc
       )
-    )
+    ) %>%
+    tune::select_best(metric = "pr_auc")
+
   # model fitting
   cimpleg_final_model <- cimpleg_workflow %>%
-    tune::finalize_workflow(tune::select_best(cimpleg_res, metric = "pr_auc")) %>%
-    parsnip::fit(data = train_data) 
+    tune::finalize_workflow(cimpleg_res) %>%
+    parsnip::fit(data = train_data)
 
   # butcher model to axe unnecessary components
   if(model_type != "boost_tree"){
