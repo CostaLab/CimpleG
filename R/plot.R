@@ -552,12 +552,14 @@ diffmeans_sumvariance_plot <- function(
 #'   target_vector = train_targets$CELL_TYPE_MSCORFIBRO==1
 #' )
 #' # adding a column to this data frame \code{hl_col} with random CpGs
-#' # selected (as TRUE) or not (as FALSE).
+#' # selected (as TRUE) or not (as FALSE) to be highlighted and displayed.
 #' df_dmeansvar$hl_col <- sample(c(TRUE,FALSE),nrow(df_dmeansvar),replace=TRUE,prob=c(0.1,0.9))
+#' df_dmeansvar$dp_col <- df_dmeansvar$hl_col
 #'
 #' plt <- dmsv_plot(
 #'   data=df_dmeansvar,
 #'   highlight_var="hl_col",
+#'   display_var="hl_col",
 #'   label_var1="MSC",
 #'   point_color="red",
 #'   subtitle="method: CimpleG"
