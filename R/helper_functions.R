@@ -249,8 +249,9 @@ eval_test <- function(
   }
 
   dt_dmsv <- merge(train_results, rbind(hypo_aupr, hyper_aupr), by = "id")
-  data.table::setnames(dt_dmsv, "mean_aupr", "validation_mean_aupr")
-  dt_dmsv[, stat_origin := NULL]
+  data.table::setnames(dt_dmsv, "validation_aupr", "validation_mean_aupr")
+  data.table::setnames(dt_dmsv, "train_aupr", "train_mean_aupr")
+  #   dt_dmsv[, stat_origin := NULL]
   data.table::setkeyv(dt_dmsv, "train_rank")
 
   return(dt_dmsv)
@@ -454,19 +455,19 @@ cv_loop <- function(
     number = k_folds
   )
 
-  f_data <- rsample::caret2rsample(ctrl=tc,data = train_data)
+  f_data <- rsample::caret2rsample(ctrl = tc, data = train_data)
 
   # adding split id within the splits
   for(i in seq_len(length(f_data$splits))){
-    f_data$splits[[i]]$id <- tibble::tibble(id=sprintf("Fold%02d",i))
+    f_data$splits[[i]]$id <- tibble::tibble(id = sprintf("Fold%02d", i))
   }
 
   f_data$results <- purrr::map(
     .x = f_data$splits,
     .f = find_best_predictors,
     p_type = pred_type,
-    param_p=param_p,
-    q_threshold=q_threshold,
+    param_p = param_p,
+    q_threshold = q_threshold,
     verbose = verbose
   )
 
@@ -474,37 +475,57 @@ cv_loop <- function(
   train_summary <- f_data$results %>%
     data.table::rbindlist() %>%
     data.table::melt(
-      measure.vars=c("train_aupr","validation_aupr"),
-      variable.name="stat_origin",
-      value.name="aupr"
+      measure.vars = c("train_aupr","validation_aupr"),
+      variable.name = "stat_origin",
+      value.name = "aupr"
     )
 
   # compute mean aupr and number of times a predictor was in a fold
   train_summary <- train_summary[,
     .(
-      mean_aupr=sapply(.SD,mean),
-      fold_presence=.N
+      mean_aupr = sapply(.SD,mean),
+      fold_presence = .N
     ),
-    .SDcols=c("aupr"),
-    by=.(id,stat_origin)
+    .SDcols = c("aupr"),
+    by = .(id,stat_origin)
   ]
 
   data.table::setkeyv(train_summary,"id")
 
   dt_dmsv <- compute_diffmeans_sumvar(
-    data=train_data[,.SD,.SDcols=unique(train_summary$id)],
+    data = train_data[,.SD,.SDcols=!"target"],
     target_vector = train_data$target == "positive_class"
   )
+  data.table::setkeyv(dt_dmsv, "id")
+  dt_dmsv[, z_score := scale(diff_means, center = TRUE, scale = TRUE)]
 
-  data.table::setkeyv(dt_dmsv,"id")
+  dt_dmsv <- dt_dmsv[id %in% unique(train_summary$id)]
 
+
+  # join tables
   train_results <- train_summary[dt_dmsv]
-  train_results <- train_results[stat_origin=="validation_aupr"]
-  # calculating score (aupr * rescaled abs(diff means) * rescaled fold presence)
-  train_results[,cpg_score := mean_aupr * scales::rescale(abs(diff_means),to=c(0.0001,1))*scales::rescale(fold_presence,to=c(0.0001,1))]
-  data.table::setkeyv(train_results,"cpg_score")
-  data.table::setorder(train_results,-cpg_score,-mean_aupr)
 
+  # make wide format regarding training/validation aupr
+  train_results <- data.table::dcast(
+    train_results,
+    id + fold_presence + z_score + diff_means + sum_variance + pred_type ~ stat_origin,
+    value.var = "mean_aupr"
+  )
+
+  # calculating score (aupr * rescaled abs(diff means) * rescaled fold presence)
+  # TODO we should also somehow incorporate the training score into the cpg_score formula
+  train_results[, cpg_score :=
+    validation_aupr * scales::rescale(abs(diff_means),to=c(0.0001,1)) * scales::rescale(fold_presence,to=c(0.1,1),from=c(1,k_folds))
+  ]
+
+  train_results[, cpg_z_score :=
+    validation_aupr * abs(z_score) * scales::rescale(fold_presence,to=c(0.1,1),from=c(1,k_folds))
+  ]
+
+  data.table::setkeyv(train_results,"cpg_score")
+  data.table::setorder(train_results,-cpg_score,-validation_aupr)
+
+  # add index as rank
   train_results[, train_rank := .I ]
 
   print_timings(verbose<1)
