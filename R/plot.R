@@ -617,6 +617,7 @@ dmsv_plot.matrix <- function(
   assertthat::assert_that(is.matrix(data))
   assertthat::assert_that(!is.null(target_vector))
   assertthat::assert_that(is.logical(target_vector))
+  assertthat::assert_that(length(target_vector)==nrow(data))
 
   data <- as.data.frame(compute_diffmeans_sumvar(data,target_vector=target_vector))
 
@@ -694,6 +695,13 @@ dmsv_plot_base <- function(
     ) +
     ggplot2::geom_point(alpha=0.8,color=light_points_color) +
     ggplot2::geom_point(data=function(x){x[x[,highlight_var],]},size=2,color=point_color) +
+    ggrepel::geom_label_repel(
+      data=function(x){x[x[,display_var],]},
+      ggplot2::aes(label=id),
+      fill="white",color="black",
+      force_pull=2,force=2,
+      nudge_x=0,nudge_y = 0.2
+    ) +
     ggplot2::labs(
       x = expression(bar(beta)["cell"] - bar(beta)["others"]),
       y = expression(var(beta["cell"]) + var(beta["others"])),
