@@ -1050,8 +1050,8 @@ train_general_model <- function(
     cimpleg_final_model <- cimpleg_final_model %>%
       butcher::axe_call() %>%
       #       butcher::axe_ctrl() %>%
-      butcher::axe_env() %>%
-      butcher::axe_fitted()
+      butcher::axe_env() #%>%
+      #       butcher::axe_fitted()
   }
 
 
