@@ -18,7 +18,7 @@ for the given target data."><!-- mathjax --><script src="https://cdnjs.cloudflar
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3.9001</span>
       </span>
     </div>
 
@@ -190,8 +190,8 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in">  method <span class="op">=</span> <span class="st">"CimpleG"</span>,</span>
 <span class="r-in">  targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CELL_TYPE_MSCORFIBRO"</span>,<span class="st">"CELL_TYPE_NEURONS"</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Training for target 'CELL_TYPE_MSCORFIBRO' with 'CimpleG' has finished.: 6.8 sec elapsed</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Training for target 'CELL_TYPE_NEURONS' with 'CimpleG' has finished.: 1.35 sec elapsed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Training for target 'CELL_TYPE_MSCORFIBRO' with 'CimpleG' has finished.: 6.912 sec elapsed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Training for target 'CELL_TYPE_NEURONS' with 'CimpleG' has finished.: 0.741 sec elapsed</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># check results</span></span>
 <span class="r-in"><span class="va">cimpleg_result</span><span class="op">$</span><span class="va">results</span></span>
@@ -215,28 +215,28 @@ Default is <code>1</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_MSCORFIBRO$train_res$train_summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             id     stat_origin mean_aupr fold_presence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1: cg02023138      train_aupr 0.8271273             7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2: cg02023138 validation_aupr 0.8399188             7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3: cg03369247      train_aupr 0.9308368            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4: cg03369247 validation_aupr 0.9303787            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: cg04232282      train_aupr 0.7346344            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: cg04232282 validation_aupr 0.7637925            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: cg06932535      train_aupr 0.6617326            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8: cg06932535 validation_aupr 0.6848897            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg11029367      train_aupr 0.7912503            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg11029367 validation_aupr 0.8132996            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11: cg14021880      train_aupr 0.9485766            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12: cg14021880 validation_aupr 0.9541495            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: cg15324723      train_aupr 0.8774480            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14: cg15324723 validation_aupr 0.8761090            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15: cg16427420      train_aupr 0.6860021            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16: cg16427420 validation_aupr 0.7360030            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17: cg17786959      train_aupr 0.8717824            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18: cg17786959 validation_aupr 0.8879803            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: cg24192660      train_aupr 0.9016440            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20: cg24192660 validation_aupr 0.9035123            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: cg26461417      train_aupr 0.9396378             3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22: cg26461417 validation_aupr 0.8597503             3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1: cg02023138      train_aupr 0.8384677             5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: cg02023138 validation_aupr 0.7635033             5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: cg03369247      train_aupr 0.9307464            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: cg03369247 validation_aupr 0.9260013            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: cg04232282      train_aupr 0.7348560            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: cg04232282 validation_aupr 0.7725387            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: cg06932535      train_aupr 0.6619727            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8: cg06932535 validation_aupr 0.7164756            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg11029367      train_aupr 0.7913236            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg11029367 validation_aupr 0.8214807            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: cg14021880      train_aupr 0.9483873            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: cg14021880 validation_aupr 0.9399911            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: cg15324723      train_aupr 0.8773094            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: cg15324723 validation_aupr 0.8623728            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15: cg16427420      train_aupr 0.6865165            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: cg16427420 validation_aupr 0.7473319            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17: cg17786959      train_aupr 0.8718851            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18: cg17786959 validation_aupr 0.8920384            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19: cg24192660      train_aupr 0.9016050            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20: cg24192660 validation_aupr 0.9019713            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21: cg26461417      train_aupr 0.9339110             5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22: cg26461417 validation_aupr 0.9242715             5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             id     stat_origin mean_aupr fold_presence</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_MSCORFIBRO$train_res$dt_dmsv</span>
@@ -263,21 +263,21 @@ Default is <code>1</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  6: cg16427420            10 -4.032138 -0.5869993   0.07927203     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  7: cg04232282            10 -3.820640 -0.5580492   0.09075907     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  8: cg15324723            10 -3.554021 -0.5215541   0.06901091     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg02023138             7 -3.552706 -0.5213741   0.07679563     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg26461417             3  3.647789  0.4642382   0.04979224      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg02023138             5 -3.552706 -0.5213741   0.07679563     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg26461417             5  3.647789  0.4642382   0.04979224      TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11: cg17786959            10 -3.102995 -0.4598171   0.04412714     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     train_aupr validation_aupr    cpg_score cpg_z_score train_rank</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:  0.9016440       0.9035123 9.035123e-01   4.7933565          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:  0.9308368       0.9303787 5.924194e-01   3.8879480          2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:  0.7912503       0.8132996 5.798011e-01   3.5033479          3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:  0.9485766       0.9541495 4.672418e-01   3.7501637          4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:  0.6617326       0.6848897 4.145555e-01   2.8256615          5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:  0.6860021       0.7360030 4.047377e-01   2.9676655          6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:  0.7346344       0.7637925 3.244290e-01   2.9181761          7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:  0.8774480       0.8761090 2.339135e-01   3.1137100          8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:  0.8271273       0.8399188 1.565182e-01   2.0887893          9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:  0.9396378       0.8597503 4.955392e-03   0.9408564         10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:  0.8717824       0.8879803 8.879803e-05   2.7553982         11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:  0.9016050       0.9019713 9.019713e-01    4.785181          1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:  0.9307464       0.9260013 5.896321e-01    3.869655          2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:  0.7913236       0.8214807 5.856334e-01    3.538589          3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:  0.9483873       0.9399911 4.603085e-01    3.694516          4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:  0.6619727       0.7164756 4.336740e-01    2.955976          5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:  0.6865165       0.7473319 4.109676e-01    3.013345          6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:  0.7348560       0.7725387 3.281441e-01    2.951592          7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:  0.8773094       0.8623728 2.302460e-01    3.064891          8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:  0.8384677       0.7635033 1.016273e-01    1.356251          9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:  0.9339110       0.9242715 8.878795e-03    1.685774         10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:  0.8718851       0.8920384 8.920384e-05    2.767990         11</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_MSCORFIBRO$test_perf</span>
@@ -290,21 +290,21 @@ Default is <code>1</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  6: cg16427420            10 -4.032138 -0.5869993   0.07927203     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  7: cg04232282            10 -3.820640 -0.5580492   0.09075907     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  8: cg15324723            10 -3.554021 -0.5215541   0.06901091     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg02023138             7 -3.552706 -0.5213741   0.07679563     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg26461417             3  3.647789  0.4642382   0.04979224      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg02023138             5 -3.552706 -0.5213741   0.07679563     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg26461417             5  3.647789  0.4642382   0.04979224      TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11: cg17786959            10 -3.102995 -0.4598171   0.04412714     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     train_mean_aupr validation_mean_aupr    cpg_score cpg_z_score train_rank</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:       0.9016440            0.9035123 9.035123e-01   4.7933565          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:       0.9308368            0.9303787 5.924194e-01   3.8879480          2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:       0.7912503            0.8132996 5.798011e-01   3.5033479          3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:       0.9485766            0.9541495 4.672418e-01   3.7501637          4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:       0.6617326            0.6848897 4.145555e-01   2.8256615          5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:       0.6860021            0.7360030 4.047377e-01   2.9676655          6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:       0.7346344            0.7637925 3.244290e-01   2.9181761          7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:       0.8774480            0.8761090 2.339135e-01   3.1137100          8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:       0.8271273            0.8399188 1.565182e-01   2.0887893          9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:       0.9396378            0.8597503 4.955392e-03   0.9408564         10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:       0.8717824            0.8879803 8.879803e-05   2.7553982         11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:       0.9016050            0.9019713 9.019713e-01    4.785181          1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:       0.9307464            0.9260013 5.896321e-01    3.869655          2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:       0.7913236            0.8214807 5.856334e-01    3.538589          3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:       0.9483873            0.9399911 4.603085e-01    3.694516          4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:       0.6619727            0.7164756 4.336740e-01    2.955976          5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:       0.6865165            0.7473319 4.109676e-01    3.013345          6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:       0.7348560            0.7725387 3.281441e-01    2.951592          7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:       0.8773094            0.8623728 2.302460e-01    3.064891          8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:       0.8384677            0.7635033 1.016273e-01    1.356251          9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:       0.9339110            0.9242715 8.878795e-03    1.685774         10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:       0.8718851            0.8920384 8.920384e-05    2.767990         11</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     test_aupr</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1: 0.6379077</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2: 0.8777434</span>
@@ -319,7 +319,7 @@ Default is <code>1</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11: 0.7282899</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_MSCORFIBRO$elapsed_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Time difference of 6.943824 secs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Time difference of 7.06421 secs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS</span>
@@ -334,34 +334,37 @@ Default is <code>1</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     1 Analysis Fold04</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     1 Analysis Fold05</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     1 Analysis Fold06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     1 Analysis Fold08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     1 Analysis Fold09</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     1 Analysis Fold10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     1 Analysis Fold07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     1 Analysis Fold08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     1 Analysis Fold09</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     2 Analysis Fold01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 4,080 more rows</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS$train_res$train_summary</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             id     stat_origin mean_aupr fold_presence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1: cg01149264      train_aupr 0.5881411            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1: cg01149264      train_aupr 0.5845451            10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2: cg01149264 validation_aupr 0.7658934            10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3: cg02124957      train_aupr 1.0000000            10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  4: cg02124957 validation_aupr 1.0000000            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: cg09146232      train_aupr 0.5195810            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: cg09146232 validation_aupr 0.6763055            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: cg09194778      train_aupr 0.9326698            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8: cg09194778 validation_aupr 0.9594535            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg13618776      train_aupr 0.9309628            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg13618776 validation_aupr 0.9797267            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: cg09146232      train_aupr 0.5202030            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: cg09146232 validation_aupr 0.7062595            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: cg09194778      train_aupr 0.9320453            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8: cg09194778 validation_aupr 0.9045229            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg13618776      train_aupr 0.9301911            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg13618776 validation_aupr 0.9594535            10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 11: cg13700051      train_aupr 1.0000000            10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 12: cg13700051 validation_aupr 1.0000000            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: cg14356362      train_aupr 0.9789038            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: cg14356362      train_aupr 0.9788602            10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 14: cg14356362 validation_aupr 0.9797267            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15: cg17008486      train_aupr 0.9136975            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16: cg17008486 validation_aupr 0.9247961            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17: cg24548498      train_aupr 1.0000000            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18: cg24548498 validation_aupr 1.0000000            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: cg26682499      train_aupr 0.9307593            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20: cg26682499 validation_aupr 0.9509585            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15: cg17008486      train_aupr 0.9136574            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: cg17008486 validation_aupr 0.9163012            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17: cg23859313      train_aupr 0.5447319             1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18: cg23859313 validation_aupr 0.3187111             1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19: cg24548498      train_aupr 1.0000000            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20: cg24548498 validation_aupr 1.0000000            10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21: cg26682499      train_aupr 0.9291059             9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22: cg26682499 validation_aupr 0.9774742             9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             id     stat_origin mean_aupr fold_presence</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS$train_res$dt_dmsv</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             id diff_means sum_variance pred_type   z_score</span>
@@ -373,8 +376,9 @@ Default is <code>1</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  6: cg13700051 -0.5790852  0.010987231     FALSE -3.653476</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  7: cg14356362 -0.6419124  0.010098182     FALSE -4.048469</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  8: cg17008486 -0.7786229  0.032249027     FALSE -4.907965</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg24548498  0.5781948  0.008344877      TRUE  3.622313</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg26682499  0.5478238  0.017360200      TRUE  3.431371</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg23859313 -0.5748745  0.026046850     FALSE -3.627004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg24548498  0.5781948  0.008344877      TRUE  3.622313</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: cg26682499  0.5478238  0.017360200      TRUE  3.431371</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS$train_res$train_results</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             id fold_presence   z_score diff_means sum_variance pred_type</span>
@@ -382,23 +386,25 @@ Default is <code>1</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2: cg09146232            10 -4.620228 -0.7328558  0.031004450     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3: cg14356362            10 -4.048469 -0.6419124  0.010098182     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  4: cg13618776            10  3.944941  0.6295117  0.023289560      TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: cg09194778            10 -3.667657 -0.5813408  0.018445826     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: cg13700051            10 -3.653476 -0.5790852  0.010987231     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: cg24548498            10  3.622313  0.5781948  0.008344877      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: cg13700051            10 -3.653476 -0.5790852  0.010987231     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: cg24548498            10  3.622313  0.5781948  0.008344877      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: cg09194778            10 -3.667657 -0.5813408  0.018445826     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  8: cg01149264            10 -3.571634 -0.5660675  0.017254806     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg26682499            10  3.431371  0.5478238  0.017360200      TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg02124957            10 -3.327860 -0.5272931  0.008677887     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     train_aupr validation_aupr  cpg_score cpg_z_score train_rank</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:  0.9136975       0.9247961 0.92479613    4.538867          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:  0.5195810       0.6763055 0.55316266    3.124685          2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:  0.9789038       0.9797267 0.44685905    3.966394          3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:  0.9309628       0.9797267 0.39852376    3.864964          4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:  0.9326698       0.9594535 0.20640297    3.518947          5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:  1.0000000       1.0000000 0.20615179    3.653476          6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:  1.0000000       1.0000000 0.20260956    3.622313          7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:  0.5881411       0.7658934 0.11822466    2.735491          8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:  0.9307593       0.9509585 0.07776974    3.263092          9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:  1.0000000       1.0000000 0.00010000    3.327860         10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg26682499             9  3.431371  0.5478238  0.017360200      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg23859313             1 -3.627004 -0.5748745  0.026046850     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: cg02124957            10 -3.327860 -0.5272931  0.008677887     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     train_aupr validation_aupr   cpg_score cpg_z_score train_rank</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:  0.9136574       0.9163012 0.916301178   4.4971738          1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:  0.5202030       0.7062595 0.577662610   3.2630798          2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:  0.9788602       0.9797267 0.446859049   3.9663935          3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:  0.9301911       0.9594535 0.390277204   3.7849871          4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:  1.0000000       1.0000000 0.206151793   3.6534763          5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:  1.0000000       1.0000000 0.202609557   3.6223132          6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:  0.9320453       0.9045229 0.194585990   3.3174798          7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:  0.5845451       0.7658934 0.118224659   2.7354914          8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:  0.9291059       0.9774742 0.071944382   3.0186692          9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:  0.5447319       0.3187111 0.006036381   0.1155966         10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:  1.0000000       1.0000000 0.000100000   3.3278604         11</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS$test_perf</span>
@@ -407,37 +413,40 @@ Default is <code>1</code>.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2: cg09146232            10 -4.620228 -0.7328558  0.031004450     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3: cg14356362            10 -4.048469 -0.6419124  0.010098182     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  4: cg13618776            10  3.944941  0.6295117  0.023289560      TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: cg09194778            10 -3.667657 -0.5813408  0.018445826     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: cg13700051            10 -3.653476 -0.5790852  0.010987231     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: cg24548498            10  3.622313  0.5781948  0.008344877      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: cg13700051            10 -3.653476 -0.5790852  0.010987231     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: cg24548498            10  3.622313  0.5781948  0.008344877      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: cg09194778            10 -3.667657 -0.5813408  0.018445826     FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  8: cg01149264            10 -3.571634 -0.5660675  0.017254806     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg26682499            10  3.431371  0.5478238  0.017360200      TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg02124957            10 -3.327860 -0.5272931  0.008677887     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     train_mean_aupr validation_mean_aupr  cpg_score cpg_z_score train_rank</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:       0.9136975            0.9247961 0.92479613    4.538867          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:       0.5195810            0.6763055 0.55316266    3.124685          2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:       0.9789038            0.9797267 0.44685905    3.966394          3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:       0.9309628            0.9797267 0.39852376    3.864964          4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:       0.9326698            0.9594535 0.20640297    3.518947          5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:       1.0000000            1.0000000 0.20615179    3.653476          6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:       1.0000000            1.0000000 0.20260956    3.622313          7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:       0.5881411            0.7658934 0.11822466    2.735491          8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:       0.9307593            0.9509585 0.07776974    3.263092          9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:       1.0000000            1.0000000 0.00010000    3.327860         10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg26682499             9  3.431371  0.5478238  0.017360200      TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg23859313             1 -3.627004 -0.5748745  0.026046850     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: cg02124957            10 -3.327860 -0.5272931  0.008677887     FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     train_mean_aupr validation_mean_aupr   cpg_score cpg_z_score train_rank</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:       0.9136574            0.9163012 0.916301178   4.4971738          1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:       0.5202030            0.7062595 0.577662610   3.2630798          2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:       0.9788602            0.9797267 0.446859049   3.9663935          3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:       0.9301911            0.9594535 0.390277204   3.7849871          4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:       1.0000000            1.0000000 0.206151793   3.6534763          5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:       1.0000000            1.0000000 0.202609557   3.6223132          6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:       0.9320453            0.9045229 0.194585990   3.3174798          7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:       0.5845451            0.7658934 0.118224659   2.7354914          8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:       0.9291059            0.9774742 0.071944382   3.0186692          9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:       0.5447319            0.3187111 0.006036381   0.1155966         10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:       1.0000000            1.0000000 0.000100000   3.3278604         11</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     test_aupr</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1: 0.7248325</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2: 0.1663329</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3: 1.0000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  4: 0.9194535</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 0.8458771</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 0.4922118</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 0.9215675</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 0.4922118</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 0.9215675</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 0.8458771</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  8: 0.2562279</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  9: 0.9920899</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 0.8796454</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 0.2659656</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 0.8796454</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS$elapsed_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Time difference of 1.40318 secs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Time difference of 0.7955019 secs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"></span>
