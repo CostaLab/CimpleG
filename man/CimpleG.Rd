@@ -16,8 +16,8 @@ CimpleG(
   engine = c("glmnet", "xgboost", "nnet", "ranger"),
   k_folds = 10,
   grid_n = 10,
-  param_p = 4,
-  quantile_threshold = 0.01,
+  param_p = 2,
+  quantile_threshold = 0.005,
   train_only = FALSE,
   run_parallel = FALSE,
   save_dir = NULL,
@@ -89,10 +89,10 @@ in training for the stratified K-fold cross-validation procedure.}
 to train for.}
 
 \item{param_p}{An even number in `sigma / (delta^param_p)`. Tunes how much weight will be
-given to delta when doing feature selection. Default is \code{4}.}
+given to delta when doing feature selection. Default is \code{2}.}
 
 \item{quantile_threshold}{A number between 0 and 1.
-Determines how many features will be kept. Default is \code{0.001}.}
+Determines how many features will be kept. Default is \code{0.005}.}
 
 \item{train_only}{A boolean, if TRUE, CimpleG will only train (find predictors)
 but not test them against a test dataset.}

@@ -1,5 +1,7 @@
 
-pkg_pipeline: update_setup update_version check_package document_package build_package install_package
+pkg_pipeline: update_setup update_version\
+	check_package document_package build_package install_package\
+	githubactions_pkgdown_site
 
 install_package:
 	Rscript -e "devtools::install('.')"
