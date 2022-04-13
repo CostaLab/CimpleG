@@ -384,6 +384,8 @@ CimpleG <- function(
   }
 
   if(run_parallel){
+    requireNamespace("future", quietly = FALSE)
+    requireNamespace("future.apply", quietly = FALSE)
     res <- future.apply::future_lapply(
       X = targets,
       FUN = work_helper,

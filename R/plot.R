@@ -443,25 +443,29 @@ diffmeans_sumvariance_plot <- function(
     ggplot2::ylim(c(0,ymaxlim))
 
   if(pltDensity){
-    plt_diffMeanSumVar <- ggExtra::ggMarginal(
-      p=plt_diffMeanSumVar,
-      data=data,
-      x=xcol,
-      y=ycol,
-      groupFill=!is.null(is_feature_selected_col),
-      groupColour=!is.null(is_feature_selected_col),
-      type=density_type,
-      size=10)
+    if(requireNamespace("ggExtra",quietly = TRUE)){
+      plt_diffMeanSumVar <- ggExtra::ggMarginal(
+        p=plt_diffMeanSumVar,
+        data=data,
+        x=xcol,
+        y=ycol,
+        groupFill=!is.null(is_feature_selected_col),
+        groupColour=!is.null(is_feature_selected_col),
+        type=density_type,
+        size=10)
 
-    simple_plot = ggExtra::ggMarginal(
-      p=simple_plot,
-      data=data,
-      x=xcol,
-      y=ycol,
-      groupFill=!is.null(is_feature_selected_col),
-      groupColour=!is.null(is_feature_selected_col),
-      type=density_type,
-      size=10)
+      simple_plot = ggExtra::ggMarginal(
+        p=simple_plot,
+        data=data,
+        x=xcol,
+        y=ycol,
+        groupFill=!is.null(is_feature_selected_col),
+        groupColour=!is.null(is_feature_selected_col),
+        type=density_type,
+        size=10)
+    }else{
+      warning("You need to install the package `ggExtra` to use the pltDensity feature.")
+    }
   }
 
   fname_tag <- paste0(
