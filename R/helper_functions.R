@@ -421,8 +421,8 @@ cv_loop <- function(
   target_name,
   k_folds = 10,
   pred_type = c("both","hypo","hyper"),
-  param_p=param_p,
-  q_threshold=q_threshold,
+  param_p=NULL,
+  q_threshold=NULL,
   verbose=1
 ){
 
