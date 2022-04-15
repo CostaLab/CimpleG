@@ -481,6 +481,7 @@ cv_loop <- function(
     )
 
   # compute mean aupr and number of times a predictor was in a fold
+  # discard features that were present in less than a half of the folds
   train_summary <- train_summary[,
     .(
       mean_aupr = sapply(.SD,mean),
@@ -488,39 +489,27 @@ cv_loop <- function(
     ),
     .SDcols = c("aupr"),
     by = .(id,stat_origin)
-  ]
+  ][fold_presence>=ceiling(k_folds/2)]
+
 
   data.table::setkeyv(train_summary,"id")
 
   dt_dmsv <- compute_diffmeans_sumvar(
-    data = train_data[,.SD,.SDcols=!"target"],
+    data = train_data[,.SD,.SDcols=unique(train_summary$id)],
     target_vector = train_data$target == "positive_class"
   )
   data.table::setkeyv(dt_dmsv, "id")
-  dt_dmsv[, z_score := scale(diff_means, center = TRUE, scale = TRUE)]
 
-  dt_dmsv <- dt_dmsv[id %in% unique(train_summary$id)]
-
-
-  # join tables
-  train_results <- train_summary[dt_dmsv]
-
+  # join tables and
   # make wide format regarding training/validation aupr
   train_results <- data.table::dcast(
-    train_results,
-    id + fold_presence + z_score + diff_means + sum_variance + pred_type ~ stat_origin,
+    train_summary[dt_dmsv],
+    id + fold_presence + diff_means + sum_variance + pred_type ~ stat_origin,
     value.var = "mean_aupr"
   )
 
-  # calculating score (aupr * rescaled abs(diff means) * rescaled fold presence)
-  # TODO we should also somehow incorporate the training score into the cpg_score formula
-  train_results[, cpg_score :=
-    validation_aupr * scales::rescale(abs(diff_means),to=c(0.0001,1)) * scales::rescale(fold_presence,to=c(0.1,1),from=c(1,k_folds))
-  ]
-
-  train_results[, cpg_z_score :=
-    validation_aupr * abs(z_score) * scales::rescale(fold_presence,to=c(0.1,1),from=c(1,k_folds))
-  ]
+  # calculating ranking score
+  train_results[,cpg_score := ((validation_aupr * .5) + (train_aupr * .5)) * abs(diff_means) * fold_presence]
 
   data.table::setkeyv(train_results,"cpg_score")
   data.table::setorder(train_results,-cpg_score,-validation_aupr)
@@ -568,8 +557,8 @@ find_best_predictors <- function(
   # If we only search for one type of probe, we can discard the rest
   dt_dmsv <- dt_dmsv[
     p_type == "both" |
-    (pred_type == TRUE & p_type == "hyper") |
-    (pred_type == FALSE & p_type == "hypo"),
+    (pred_type & p_type == "hyper") |
+    (pred_type & p_type == "hypo"),
   ]
 
   # Get relevant features
