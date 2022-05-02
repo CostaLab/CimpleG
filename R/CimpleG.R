@@ -74,6 +74,8 @@
 #' @param grid_n An integer specifying the number of hyperparameter combinations
 #'  to train for.
 #'
+#' @param rank_method A string specifying the ranking strategy to rank the features during training.
+#'
 #' @param run_parallel A boolean, if `FALSE`, the default, it will search
 #'  for predictors for multiple targets sequentially.
 #'  If `TRUE` it will search for predictors for multiple targets
@@ -138,6 +140,7 @@ CimpleG <- function(
   ),
   pred_type = c("both", "hypo", "hyper"),
   engine = c("glmnet", "xgboost", "nnet", "ranger"),
+  rank_method = c("default_rank","a_rank","c_rank","ac_rank"),
   k_folds = 10,
   grid_n = 10,
   param_p = 2,
@@ -220,12 +223,14 @@ CimpleG <- function(
 
   assertthat::assert_that(is.numeric(param_p))
   assertthat::assert_that(is.numeric(quantile_threshold))
-  assertthat::assert_that(param_p > 0)
-  assertthat::assert_that(param_p %% 2 == 0, msg="param_p is not an even number.")
+  assertthat::assert_that(param_p > 0 & param_p %% 2 == 0, msg="param_p is not a positive even integer.")
   assertthat::assert_that(quantile_threshold > 0 && quantile_threshold < 1)
 
   selected_pred_type <- match.arg(
     pred_type, choices = c("both", "hypo", "hyper")
+  )
+  selected_rank_method <- match.arg(
+    rank_method, choices = c("default_rank","a_rank","c_rank","ac_rank")
   )
   assertthat::assert_that(grid_n > 0)
 
@@ -344,6 +349,7 @@ CimpleG <- function(
         pred_type = selected_pred_type,
         param_p = param_p,
         q_threshold = quantile_threshold,
+        rank_method = selected_rank_method,
         verbose = verbose
       )
 

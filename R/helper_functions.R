@@ -423,6 +423,7 @@ cv_loop <- function(
   pred_type = c("both","hypo","hyper"),
   param_p=NULL,
   q_threshold=NULL,
+  rank_method=NULL,
   verbose=1
 ){
 
@@ -480,22 +481,22 @@ cv_loop <- function(
       value.name = "aupr"
     )
 
-  # compute mean aupr and number of times a predictor was in a fold
+  # compute mean var_a, mean aupr and number of times a predictor was in a fold
   # discard features that were present in less than a half of the folds
   train_summary <- train_summary[,
     .(
-      mean_aupr = sapply(.SD,mean),
+      mean_aupr = sapply(.SD[,"aupr"], mean),
+      mean_var_a = sapply(.SD[,"var_a"], mean),
       fold_presence = .N
-    ),
-    .SDcols = c("aupr"),
-    by = .(id,stat_origin)
-  ][fold_presence>=ceiling(k_folds/2)]
-
+      ),
+    .SDcols = c("aupr","var_a"),
+    by = .(id, stat_origin)
+    ][fold_presence >= ceiling(k_folds / 2)]
 
   data.table::setkeyv(train_summary,"id")
 
   dt_dmsv <- compute_diffmeans_sumvar(
-    data = train_data[,.SD,.SDcols=unique(train_summary$id)],
+    data = train_data[, .SD, .SDcols = unique(train_summary$id)],
     target_vector = train_data$target == "positive_class"
   )
   data.table::setkeyv(dt_dmsv, "id")
@@ -504,15 +505,16 @@ cv_loop <- function(
   # make wide format regarding training/validation aupr
   train_results <- data.table::dcast(
     train_summary[dt_dmsv],
-    id + fold_presence + diff_means + sum_variance + pred_type ~ stat_origin,
+    id + fold_presence + diff_means + sum_variance + pred_type + mean_var_a ~ stat_origin,
     value.var = "mean_aupr"
   )
 
-  # calculating ranking score
-  train_results[,cpg_score := ((validation_aupr * .5) + (train_aupr * .5)) * abs(diff_means) * fold_presence]
+  # # calculating ranking score
+  # train_results[,cpg_score := ((validation_aupr * .5) + (train_aupr * .5)) * abs(diff_means) * fold_presence]
 
-  data.table::setkeyv(train_results,"cpg_score")
-  data.table::setorder(train_results,-cpg_score,-validation_aupr)
+  # data.table::setkeyv(train_results, "cpg_score")
+  # data.table::setorder(train_results, -cpg_score, -validation_aupr)
+  rank_results(train_res=train_results, rank_method=rank_method)
 
   # add index as rank
   train_results[, train_rank := .I ]
@@ -527,7 +529,39 @@ cv_loop <- function(
   ))
 }
 
-# TODO: rsample calls take a lot of time, perhaps I should improve it in the future
+
+rank_results <- function(train_res,rank_method){
+  switch(
+    rank_method,
+    default_rank = {
+      # calculating ranking score
+      train_res[,cpg_score := ((validation_aupr * .5) + (train_aupr * .5)) * abs(diff_means) * fold_presence]
+      data.table::setkeyv(train_res, "cpg_score")
+      data.table::setorder(train_res, -cpg_score)
+    },
+    a_rank = {
+      train_res[,cpg_score := mean_var_a]
+      data.table::setkeyv(train_res, "cpg_score")
+      data.table::setorder(train_res, cpg_score)
+    },
+    ac_rank = {
+      train_res[,cpg_score := (mean_var_a * 0.9) + ((1-(validation_aupr * .5 + train_aupr * .5)) * 0.1)]
+      data.table::setkeyv(train_res, "cpg_score")
+      data.table::setorder(train_res, cpg_score)
+    },
+    c_rank = {
+      train_res[,cpg_score := ((validation_aupr * .5) + (train_aupr * .5)) * fold_presence]
+      data.table::setkeyv(train_res, "cpg_score")
+      data.table::setorder(train_res, -cpg_score)
+    },
+    {
+      stop("No ranking method provided.")
+    }
+  )
+}
+
+
+
 find_best_predictors <- function(
   split_train_set,
   param_p,
@@ -640,7 +674,6 @@ find_best_predictors <- function(
   data.table::setorder(dt_dmsv, -validation_aupr)
 
   dt_dmsv[, resample := split_train_set$id %>% unlist()]
-
   print_timings(verbose < 2)
 
   return(dt_dmsv)
@@ -1123,7 +1156,7 @@ select_features <- function(x, y, a) {
 #' Feature selection function used in the sigma delta space
 #' @param dm, delta (difference in mean values)
 #' @param sv, sigma (sum of variance values)
-#' @param p, even number, the greater 'p' is the more importance will be given to delta
+#' @param p, even number, the greater 'p' is the more importance will be given to sigma
 #' @export
 compute_ax <- function(dm, sv, p){
   return(sv / (dm ** p) )
@@ -1382,6 +1415,15 @@ compute_diffmeans_sumvar <- function(data, target_vector) {
     if(requireNamespace("Rfast", quietly = TRUE)){
       data <- Rfast::data.frame.to_matrix(data, col.names=TRUE, row.names=TRUE)
     }else{
+      warning(paste0(
+          "CimpleG can run considerably faster if you have the package `Rfast` installed.\n",
+          "Consider installing `Rfast` with `install.packages('Rfast')`\n"
+      ))
+      if(Sys.info()['sysname']=="Linux"){
+        warning(paste0(
+            "Since you are using a linux distribution, you might need to install the system library 'libgsl-dev'.\n",
+        ))
+      }
       data <- as.matrix(data)
     }
   }else if(!is.matrix(data)){

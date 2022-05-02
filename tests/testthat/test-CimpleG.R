@@ -77,8 +77,8 @@ test_that(
     skip('parallel not working properly locally')
     # allow for enough obj size to be passed to futures
     library(future)
-    gbl_max = 2048*1024^2 # 1st term in MB
-    options(future.globals.maxSize=gbl_max)
+    gbl_max <- 2048*1024^2 # 1st term in MB
+    options(future.globals.maxSize = gbl_max)
 
     future::plan(future::multicore)
     set.seed(42)

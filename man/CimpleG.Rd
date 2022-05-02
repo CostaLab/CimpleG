@@ -14,6 +14,7 @@ CimpleG(
     "logistic_reg", "decision_tree", "boost_tree", "mlp", "rand_forest", "null_model"),
   pred_type = c("both", "hypo", "hyper"),
   engine = c("glmnet", "xgboost", "nnet", "ranger"),
+  rank_method = c("default_rank", "a_rank", "c_rank", "ac_rank"),
   k_folds = 10,
   grid_n = 10,
   param_p = 2,
@@ -81,6 +82,8 @@ If `hyper`, only hypermethylated predictors will be considered.}
 \item{engine}{A string specifying the
 machine learning engine behind `method`. Only used for complex models.
 Currently not in use.}
+
+\item{rank_method}{A string specifying the ranking strategy to rank the features during training.}
 
 \item{k_folds}{An integer specifying the number of folds (K) to be used
 in training for the stratified K-fold cross-validation procedure.}

@@ -11,7 +11,7 @@ compute_ax(dm, sv, p)
 
 \item{sv, }{sigma (sum of variance values)}
 
-\item{p, }{even number, the greater 'p' is the more importance will be given to delta}
+\item{p, }{even number, the greater 'p' is the more importance will be given to sigma}
 }
 \description{
 Feature selection function used in the sigma delta space

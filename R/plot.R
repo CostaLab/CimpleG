@@ -134,13 +134,6 @@ diffmeans_sumvariance_plot <- function(
 
   # setting colors
   points_color <- ifelse(!is.null(color_all_points),color_all_points,"black")
-  lighten <- function(color, factor = 0.5) {
-    if ((factor > 1) | (factor < 0)) stop("factor needs to be within [0,1]")
-    col <- grDevices::col2rgb(color)
-    col <- col + (255 - col)*factor
-    col <- grDevices::rgb(t(col), maxColorValue=255)
-    col
-  }
   light_points_color <- lighten(points_color,0.7)
 
   #message("plt diffMean,sumVariance")
@@ -503,6 +496,15 @@ diffmeans_sumvariance_plot <- function(
     height = 15
   )
   return(plt_diffMeanSumVar)
+}
+
+
+lighten <- function(color, factor = 0.5) {
+  if ((factor > 1) | (factor < 0)) stop("factor needs to be within [0,1]")
+  col <- grDevices::col2rgb(color)
+  col <- col + (255 - col)*factor
+  col <- grDevices::rgb(t(col), maxColorValue=255)
+  col
 }
 
 
