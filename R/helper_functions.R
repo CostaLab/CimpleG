@@ -424,6 +424,7 @@ cv_loop <- function(
   param_p=NULL,
   q_threshold=NULL,
   rank_method=NULL,
+  run_parallel=FALSE,
   verbose=1
 ){
 
@@ -463,6 +464,7 @@ cv_loop <- function(
     f_data$splits[[i]]$id <- tibble::tibble(id = sprintf("Fold%02d", i))
   }
 
+  # TODO: implement parallel cv loop
   f_data$results <- purrr::map(
     .x = f_data$splits,
     .f = find_best_predictors,
@@ -533,19 +535,13 @@ cv_loop <- function(
 rank_results <- function(train_res,rank_method){
   switch(
     rank_method,
-    default_rank = {
-      # calculating ranking score
-      train_res[,cpg_score := ((validation_aupr * .5) + (train_aupr * .5)) * abs(diff_means) * fold_presence]
-      data.table::setkeyv(train_res, "cpg_score")
-      data.table::setorder(train_res, -cpg_score)
-    },
     a_rank = {
       train_res[,cpg_score := mean_var_a]
       data.table::setkeyv(train_res, "cpg_score")
       data.table::setorder(train_res, cpg_score)
     },
     ac_rank = {
-      train_res[,cpg_score := (mean_var_a * 0.9) + ((1-(validation_aupr * .5 + train_aupr * .5)) * 0.1)]
+      train_res[,cpg_score := ((mean_var_a * 0.8) + ((1-(validation_aupr * .5 + train_aupr * .5)) * 0.2)) * (1/fold_presence)]
       data.table::setkeyv(train_res, "cpg_score")
       data.table::setorder(train_res, cpg_score)
     },
@@ -1159,7 +1155,7 @@ select_features <- function(x, y, a) {
 #' @param p, even number, the greater 'p' is the more importance will be given to sigma
 #' @export
 compute_ax <- function(dm, sv, p){
-  return(sv / (dm ** p) )
+  return(sv / (dm ** p))
 }
 
 
@@ -1410,6 +1406,9 @@ make_train_test_split <- function(
 #' @param target_vector boolean vector defining which samples in data are part of the target class
 #' @export
 compute_diffmeans_sumvar <- function(data, target_vector) {
+
+  assertthat::assert_that(is.logical(target_vector))
+  assertthat::are_equal(nrow(data),length(target_vector))
 
   if(is.data.frame(data)){
     if(requireNamespace("Rfast", quietly = TRUE)){

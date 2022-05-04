@@ -140,7 +140,7 @@ CimpleG <- function(
   ),
   pred_type = c("both", "hypo", "hyper"),
   engine = c("glmnet", "xgboost", "nnet", "ranger"),
-  rank_method = c("default_rank","a_rank","c_rank","ac_rank"),
+  rank_method = c("ac_rank","a_rank","c_rank"),
   k_folds = 10,
   grid_n = 10,
   param_p = 2,
@@ -230,7 +230,7 @@ CimpleG <- function(
     pred_type, choices = c("both", "hypo", "hyper")
   )
   selected_rank_method <- match.arg(
-    rank_method, choices = c("default_rank","a_rank","c_rank","ac_rank")
+    rank_method, choices = c("ac_rank","a_rank","c_rank")
   )
   assertthat::assert_that(grid_n > 0)
 
@@ -350,6 +350,7 @@ CimpleG <- function(
         param_p = param_p,
         q_threshold = quantile_threshold,
         rank_method = selected_rank_method,
+        run_parallel = run_parallel,
         verbose = verbose
       )
 
