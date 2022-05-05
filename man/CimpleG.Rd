@@ -14,7 +14,7 @@ CimpleG(
     "logistic_reg", "decision_tree", "boost_tree", "mlp", "rand_forest", "null_model"),
   pred_type = c("both", "hypo", "hyper"),
   engine = c("glmnet", "xgboost", "nnet", "ranger"),
-  rank_method = c("default_rank", "a_rank", "c_rank", "ac_rank"),
+  rank_method = c("ac_rank", "a_rank", "c_rank"),
   k_folds = 10,
   grid_n = 10,
   param_p = 2,

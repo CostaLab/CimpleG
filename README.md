@@ -59,7 +59,7 @@ cimpleg_result$results
 # check generated signatures
 cimpleg_result$signatures
 #> CELL_TYPE_MSCORFIBRO    CELL_TYPE_NEURONS 
-#>         "cg03369247"         "cg14356362"
+#>         "cg03369247"         "cg24548498"
 ```
 
 ## Difference of means vs Sum of variances (dmsv) plots
