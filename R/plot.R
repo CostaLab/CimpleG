@@ -499,12 +499,30 @@ diffmeans_sumvariance_plot <- function(
 }
 
 
+#' Helper function to lighten up a given color.
+#'
+#' @param color Color name or hex code of a color
+#' @param factor Multiplicative factor by which `color` will be lightened up
+#' @export
 lighten <- function(color, factor = 0.5) {
   if ((factor > 1) | (factor < 0)) stop("factor needs to be within [0,1]")
   col <- grDevices::col2rgb(color)
-  col <- col + (255 - col)*factor
-  col <- grDevices::rgb(t(col), maxColorValue=255)
-  col
+  col <- col + (255 - col) * factor
+  col <- grDevices::rgb(t(col), maxColorValue = 255)
+  return(col)
+}
+
+#' Helper function to darken down a given color.
+#'
+#' @param color Color name or hex code of a color
+#' @param factor Multiplicative factor by which `color` will be darkened down
+#' @export
+darken <- function(color, factor = 0.5) {
+  if ((factor > 1) | (factor < 0)) stop("factor needs to be within [0,1]")
+  col <- grDevices::col2rgb(color)
+  col <- col - col * factor
+  col <- grDevices::rgb(t(col), maxColorValue = 255)
+  return(col)
 }
 
 
@@ -678,15 +696,6 @@ dmsv_plot_base <- function(
   subtitle=NULL
 ){
 
-
-  lighten <- function(color, factor = 0.5) {
-    if ((factor > 1) | (factor < 0))
-      stop("factor needs to be within [0,1]")
-    col <- grDevices::col2rgb(color)
-    col <- col + (255 - col) * factor
-    col <- grDevices::rgb(t(col), maxColorValue = 255)
-    col
-  }
   light_points_color <- lighten(point_color, 0.7)
 
   ymaxlim <- ifelse(max(data[, y_var]) < 0.4, 0.4, max(data[,y_var]))
