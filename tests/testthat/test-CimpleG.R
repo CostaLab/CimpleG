@@ -20,7 +20,7 @@ test_that(
       quantile_threshold = 0.01,
       verbose=0
     )$signatures,
-    c(CELL_TYPE_MSCORFIBRO="cg24192660",CELL_TYPE_NEURONS="cg17008486")
+    c(CELL_TYPE_MSCORFIBRO="cg03369247",CELL_TYPE_NEURONS="cg24548498")
   )}
 )
 
