@@ -25,6 +25,9 @@
     <loc>/reference/compute_diffmeans_sumvar.html</loc>
   </url>
   <url>
+    <loc>/reference/darken.html</loc>
+  </url>
+  <url>
     <loc>/reference/deconvolution.html</loc>
   </url>
   <url>
@@ -38,6 +41,9 @@
   </url>
   <url>
     <loc>/reference/index.html</loc>
+  </url>
+  <url>
+    <loc>/reference/lighten.html</loc>
   </url>
   <url>
     <loc>/reference/load_object.html</loc>
