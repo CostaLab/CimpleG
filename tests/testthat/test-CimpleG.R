@@ -16,8 +16,6 @@ test_that(
       test_targets = test_targets,
       method = "CimpleG",
       targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
-      param_p = 4,
-      quantile_threshold = 0.01,
       verbose=0
     )$signatures,
     c(CELL_TYPE_MSCORFIBRO="cg03369247",CELL_TYPE_NEURONS="cg24548498")
