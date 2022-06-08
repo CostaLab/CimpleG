@@ -147,6 +147,7 @@ CimpleG <- function(
   quantile_threshold = 0.005,
   train_only = FALSE,
   run_parallel = FALSE,
+  deconvolution_reference = TRUE,
   save_dir = NULL,
   save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
   verbose=1
@@ -157,8 +158,21 @@ CimpleG <- function(
   # due to NSE notes in R CMD check
   id <- train_rank <- NULL
 
+  param_checkup(
+    train_data = train_data, train_targets = train_targets, targets = targets,
+    test_data = test_data, test_targets = test_targets, train_only = train_only,
+    k_folds = k_folds, param_p = param_p, grid_n = grid_n,
+    quantile_threshold = quantile_threshold
+  )
+
+  selected_method_params <- method_param_checkup(
+    method = method,
+    pred_type = pred_type,
+    rank_method = rank_method
+  )
+
   if(inherits(train_data, "SummarizedExperiment")){
-    prep_train <- prep_data(train_data,targets)
+    prep_train <- prep_data(train_data, targets)
     train_data <- prep_train$beta_mat
     train_targets <- prep_train$df_targets
     rm(prep_train)
@@ -170,69 +184,7 @@ CimpleG <- function(
       rm(prep_test)
     }
   }
-  
-  # Check train data
-  assertthat::assert_that(length(targets) > 0)
-  assertthat::assert_that(all(targets %in% colnames(train_targets)))
-  assertthat::assert_that(
-    assertthat::are_equal(nrow(train_data), nrow(train_targets))
-  )
-  assertthat::assert_that(
-    is.data.frame(train_targets) |
-    is.matrix(train_targets) |
-    data.table::is.data.table(train_targets)
-  )
 
-  if(nrow(train_data) > ncol(train_data)){
-    warning(
-      paste0(
-        "There are more samples (", nrow(train_data), ")",
-        " than features (", ncol(train_data), ").", "\n",
-        "This might be a sign that you forgot to transpose your data."
-      )
-    )
-  }
-
-  # Make sure samples for the given target exist for training (!=0)
-  purrr::walk(targets, function(target){
-    samples_in_target <- sum(as.integer(train_targets[, target]))
-    assertthat::assert_that(
-      samples_in_target > 0,
-      msg = paste0(
-        "Target class: '", target, "' has 0 samples to train for.", "\n",
-        "Make sure samples for the given target exist for training"
-      )
-    )
-    return(NULL)
-  })
-
-  # Check cv params
-  assertthat::assert_that(is.numeric(k_folds))
-  assertthat::assert_that(k_folds > 0)
-  # Check method params
-  selected_method <- match.arg(
-    method,
-    choices = c(
-      # simple models
-      "CimpleG", "CimpleG_parab", "CimpleG_unscaled", "brute_force", "oner",
-      # complex models
-      "logistic_reg", "decision_tree", "boost_tree", "mlp", "rand_forest",
-      "null_model"
-    )
-  )
-
-  assertthat::assert_that(is.numeric(param_p))
-  assertthat::assert_that(is.numeric(quantile_threshold))
-  assertthat::assert_that(param_p > 0 & param_p %% 2 == 0, msg="param_p is not a positive even integer.")
-  assertthat::assert_that(quantile_threshold > 0 && quantile_threshold < 1)
-
-  selected_pred_type <- match.arg(
-    pred_type, choices = c("both", "hypo", "hyper")
-  )
-  selected_rank_method <- match.arg(
-    rank_method, choices = c("ac_rank","a_rank","c_rank")
-  )
-  assertthat::assert_that(grid_n > 0)
 
   if((is.null(test_data) | is.null(test_targets)) & !train_only){
     if(verbose>=2){
@@ -253,20 +205,12 @@ CimpleG <- function(
     rm(split_data)
   }
 
-  # TODO: make a better implementation of train_only, so many "ifs" is just ugly
-  # Check test data
-  if(!train_only){
-    assertthat::assert_that(all(targets %in% colnames(test_targets)))
-    assertthat::assert_that(
-      assertthat::are_equal(nrow(test_data), nrow(test_targets))
-    )
-  }
 
   #TODO: make the "new" method the main one!
-  is_simple_method <- selected_method %in% c(
+  is_simple_method <- selected_method_params$method %in% c(
     "CimpleG_parab","brute_force", "CimpleG_unscaled", "oner"
   )
-  is_cimpleg <- selected_method %in% "CimpleG"
+  is_cimpleg <- selected_method_params$method %in% "CimpleG"
 
   if(is_cimpleg){
     # TODO: ensure other methods can run off of data.table so that I can remove is_cimpleg
@@ -327,9 +271,9 @@ CimpleG <- function(
     if(is_simple_method){
       train_res <- do_cv(
         train_data = train_data,
-        method = selected_method,
+        method = selected_method_params$method,
         k_folds = k_folds,
-        pred_type = selected_pred_type,
+        pred_type = selected_method_params$pred_type,
         target_name = target,
         verbose = verbose
       )
@@ -337,7 +281,7 @@ CimpleG <- function(
         test_res <- eval_test_data(
           test_data = test_data,
           final_model = train_res$model,
-          method = selected_method,
+          method = selected_method_params$method,
           verbose = verbose
         )
       }
@@ -346,10 +290,10 @@ CimpleG <- function(
         train_data = train_data,
         target_name = target,
         k_folds = k_folds,
-        pred_type = selected_pred_type,
+        pred_type = selected_method_params$pred_type,
         param_p = param_p,
         q_threshold = quantile_threshold,
-        rank_method = selected_rank_method,
+        rank_method = selected_method_params$rank_method,
         run_parallel = run_parallel,
         verbose = verbose
       )
@@ -364,7 +308,7 @@ CimpleG <- function(
       train_res <- train_general_model(
         train_data = train_data,
         k_folds = k_folds,
-        model_type = selected_method,
+        model_type = selected_method_params$method,
         engine = engine,
         grid_n = grid_n,
         target_name = target,
@@ -379,7 +323,6 @@ CimpleG <- function(
         )
       }
     }
-
 
     elapsed_time <- Sys.time() - start_time
 
@@ -404,6 +347,12 @@ CimpleG <- function(
       .f = work_helper
     ) %>% magrittr::set_names(targets)
   }
+
+  if(deconvolution_reference){
+    # ref_mat  <- prep_deconv_ref(cimpleg_res=res)
+  }
+
+
 
   o_time <- Sys.time() - start_o_time
 
@@ -451,6 +400,113 @@ CimpleG <- function(
   return(final_res)
 }
 
+param_checkup <- function(
+  train_data,
+  train_targets,
+  targets,
+  test_data,
+  test_targets,
+  train_only,
+  k_folds,
+  param_p,
+  quantile_threshold,
+  grid_n
+){
+
+  # Check train data
+  assertthat::assert_that(length(targets) > 0)
+  assertthat::assert_that(all(targets %in% colnames(train_targets)))
+  assertthat::assert_that(
+    assertthat::are_equal(nrow(train_data), nrow(train_targets))
+  )
+  assertthat::assert_that(
+    is.data.frame(train_targets) |
+    is.matrix(train_targets) |
+    data.table::is.data.table(train_targets)
+  )
+  # Check test data
+  if(!train_only){
+    assertthat::assert_that(all(targets %in% colnames(test_targets)))
+    assertthat::assert_that(
+      assertthat::are_equal(nrow(test_data), nrow(test_targets))
+    )
+  }
+
+  if(nrow(train_data) > ncol(train_data)){
+    warning(
+      paste0(
+        "There are more samples (", nrow(train_data), ")",
+        " than features (", ncol(train_data), ").", "\n",
+        "This might be a sign that you forgot to transpose your data."
+      )
+    )
+  }
+
+  # Make sure samples for the given target exist for training (!=0)
+  purrr::walk(targets, function(target){
+    samples_in_target <- sum(as.integer(train_targets[, target]))
+    assertthat::assert_that(
+      samples_in_target > 0,
+      msg = paste0(
+        "Target class: '", target, "' has 0 samples to train for.", "\n",
+        "Make sure samples for the given target exist for training"
+      )
+    )
+    return(NULL)
+  })
+  # Check cv params
+  assertthat::assert_that(is.numeric(k_folds))
+  assertthat::assert_that(k_folds > 0)
+  # Check CimpleG params
+  assertthat::assert_that(is.numeric(param_p))
+  assertthat::assert_that(is.numeric(quantile_threshold))
+  assertthat::assert_that(
+    param_p > 0 & param_p %% 2 == 0,
+    msg="param_p is not a positive even integer."
+  )
+  assertthat::assert_that(quantile_threshold > 0 && quantile_threshold < 1)
+  # Check ML params
+  assertthat::assert_that(grid_n > 0)
+
+  return(NULL)
+}
+
+method_param_checkup <- function(method,pred_type,rank_method){
+
+  # Check method params
+  selected_method <- match.arg(
+    method,
+    choices = c(
+      # simple models
+      "CimpleG", "CimpleG_parab", "CimpleG_unscaled", "brute_force", "oner",
+      # complex models
+      "logistic_reg", "decision_tree", "boost_tree", "mlp", "rand_forest",
+      "null_model"
+    )
+  )
+
+  selected_pred_type <- match.arg(
+    pred_type, choices = c("both", "hypo", "hyper")
+  )
+  selected_rank_method <- match.arg(
+    rank_method, choices = c("ac_rank", "a_rank", "c_rank")
+  )
+
+  return(
+    list(
+      method = selected_method,
+      pred_type = selected_pred_type,
+      rank_method = selected_rank_method
+    )
+  )
+}
+
+
+data_checkup <- function(){}
+
+
+
+
 prep_data <- function(data, targets){
 
   is_minfi_class <- 
@@ -483,8 +539,24 @@ prep_data <- function(data, targets){
   }
 
   # make samples as rows
-  beta_mat <- t(beta_mat)
-
+  if(requireNamespace("Rfast", quietly = TRUE)){
+    sample_names <- colnames(beta_mat)
+    feat_names <- rownames(beta_mat)
+    beta_mat <- Rfast::transpose(beta_mat)
+    rownames(beta_mat) <- sample_names
+    colnames(beta_mat) <- feat_names
+  }else{
+    warning(paste0(
+        "CimpleG can run considerably faster if you have the package `Rfast` installed.\n",
+        "Consider installing `Rfast` with `install.packages('Rfast')`\n"
+        ))
+    if(Sys.info()['sysname']=="Linux"){
+      warning(paste0(
+          "Since you are using a linux distribution, you might need to install the system library 'libgsl-dev'.\n",
+          ))
+    }
+    beta_mat <- t(beta_mat)
+  }
   # make DataFrame into data.frame
   df_targets <- as.data.frame(df_targets)
 
