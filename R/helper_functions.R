@@ -84,6 +84,7 @@ do_cv <- function(
     dplyr::group_by(predictor, type, .metric)
 
   if(any(grepl("CimpleG",method))){
+    # cimpleg parab
     train_summary <- train_summary %>%
       dplyr::summarise(
         mean_fold_performance = mean(.estimate,na.rm=TRUE),
@@ -92,21 +93,19 @@ do_cv <- function(
         diff_means = mean(diff_means),
         .groups = "drop"
       )
-      if(!any(grepl("CimpleG_unscaled",method))){
-        # here is where we do all the scaling
-        train_summary <- train_summary %>%
-          dplyr::mutate(
-            mean_fold_performance = (
-              scales::rescale(abs(diff_means), to=c(0.1, 1)) * mean_fold_performance
-            )
-          ) %>%
-          dplyr::mutate(
-            mean_fold_performance = (
-              scales::rescale(n, to=c(0.1, 1)) * mean_fold_performance
-            )
-          )
-      }
+    train_summary <- train_summary %>%
+      dplyr::mutate(
+        mean_fold_performance = (
+          scales::rescale(abs(diff_means), to=c(0.1, 1)) * mean_fold_performance
+        )
+      ) %>%
+      dplyr::mutate(
+        mean_fold_performance = (
+          scales::rescale(n, to=c(0.1, 1)) * mean_fold_performance
+        )
+      )
   }else{
+    # brute force
     train_summary <- train_summary %>%
       dplyr::summarise(
         mean_fold_performance = mean(.estimate,na.rm=TRUE),
@@ -118,17 +117,30 @@ do_cv <- function(
   train_summary <- train_summary %>%
     dplyr::arrange(desc(n), desc(mean_fold_performance))
 
-  # get predictor that appears in more folds
-  best_pred <- train_summary %>%
+  # sort by predictor that appears in more folds and best mean fold perf
+  train_results <- train_summary %>%
     dplyr::filter(.metric == "pr_auc") %>%
     dplyr::arrange(desc(n), desc(mean_fold_performance)) %>%
-    dplyr::slice_head() # %>%
+    dplyr::mutate(train_rank=1:nrow(.),id=predictor)
   # dplyr::select(predictor,type)
   # dplyr::pull(predictor)
 
-  fmod <- final_model(train_data, best_pred, train_summary=train_summary, method = method, verbose = verbose)
-
-  return(fmod)
+  #   return(list(
+  #     CpG=best_pred$predictor,
+  #     model=best_pred,
+  #     train_summary=train_summary
+  #   ))
+  #   return(list(
+  #       fold_id=rsample::tidy(f_data),
+  #       train_summary=train_summary,
+  #       dt_dmsv=dt_dmsv,
+  #       train_results=train_results
+  #   ))
+  return(list(
+    fold_id=rsample::tidy(f_data),
+    train_summary=train_summary,
+    train_results=data.table::as.data.table(train_results)
+  ))
 }
 
 #' Evaluation of produced models on test data
@@ -148,37 +160,21 @@ eval_test_data <- function(
   # get performance on test data
   test_data$target <- test_data$target %>% stats::relevel("positive_class")
 
-  predictor_name <- NULL
+  predictor_name <- final_model %>% dplyr::filter(train_rank==1) %>% dplyr::pull(id)
+  is_hypo <- final_model %>% dplyr::filter(train_rank==1) %>% dplyr::pull(type) %>% {. == "hypo"}
 
-  if (identical(method, "oner")) {
+  pred_prob <- test_data %>% dplyr::pull(predictor_name)
 
-    pred_class <- predict(final_model, newdata = test_data, type = "class") %>%
-      stats::relevel("positive_class")
+  pred_prob <- if(is_hypo){ 1 - pred_prob }else{ pred_prob }
 
-    pred_prob <- predict(final_model, newdata = test_data, type = "prob") %>%
-      as.data.frame %>%
-      dplyr::pull(positive_class)
-
-    predictor_name <- final_model$feature
-  }else{
-
-    pred_prob <- test_data %>% dplyr::pull(final_model$predictor)
-
-    if(final_model$type == "hypo"){
-      pred_prob <- 1 - pred_prob
-    }
-
-    pred_class <- factor(
-      ifelse(
-        pred_prob > 0.5,
-        "positive_class",
-        "negative_class"
+  pred_class <- factor(
+    ifelse(
+      pred_prob > 0.5,
+      "positive_class",
+      "negative_class"
       ),
-      levels = levels(test_data$target)
-    )
-    predictor_name <- final_model$predictor
-  }
-
+    levels = levels(test_data$target)
+  )
 
   acc_perf <- yardstick::accuracy_vec(
     truth = test_data$target,
@@ -386,33 +382,6 @@ eval_general_model <- function(
     aupr = aupr_perf
   )
   return(res)
-}
-
-# Train the final model after training
-final_model <- function(
-  train_data,
-  best_pred,
-  train_summary,
-  method = "oner",
-  verbose=1
-) {
-  if(verbose>=3){ message("Getting final model...") }
-  if (method == "oner") {
-    # OneR
-    oner_predata <- OneR::optbin(
-      stats::as.formula(paste0("target~", best_pred$predictor)),
-      data = train_data, method = "logreg"
-    )
-    oner_mod <- OneR::OneR(oner_predata)
-    oner_mod <- fix_oner_boundaries(oner_mod)
-    return(list(CpG=best_pred$predictor,model=oner_mod))
-  }
-  # if not using any of the prev methods, return best predictor
-  return(list(
-    CpG=best_pred$predictor,
-    model=best_pred,
-    train_summary=train_summary
-  ))
 }
 
 
@@ -1472,7 +1441,7 @@ compute_diffmeans_sumvar <- function(data, target_vector) {
 }
 
 
-download_geo_gsm_idat = function(
+download_geo_gsm_idat <- function(
   gse_gsm_table,
   data_dir="ncbi_geo_data",
   show_warnings=FALSE,
@@ -1547,4 +1516,5 @@ download_geo_gsm_idat = function(
   return(res)
 }
 
+is.CimpleG <- function(x) inherits(x, "CimpleG")
 
