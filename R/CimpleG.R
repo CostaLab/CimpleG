@@ -15,13 +15,15 @@
 #'  the target samples should be encoded as `1` while every other sample
 #'  should be encoded as `0`.
 #'
-#' @param targets A string specifying the name of the column in `train_targets`
+#' @param target_columns A string specifying the name of the column in `train_targets`
 #'  to be used for training.
 #'  Can be a character vector if there are several columns in `train_targets`
 #'  to be used for training.
 #'  If this argument is a character vector, CimpleG will search for the
 #'  best predictors for each target sequentially or in parallel depending on the
 #'  value of `run_parallel`
+#'
+#' @param targets DEPRECATED use `target_columns`.
 #'
 #' @param test_data Testing dataset.
 #'  A matrix (s x f) with methylation data (Beta values)
@@ -94,6 +96,14 @@
 #'  At 0, no message is displayed, at 3 every message is displayed.
 #'  Default is \code{1}.
 #'
+#' @param deconvolution_reference A boolean, if `TRUE`, it will create 
+#'  a deconvolution reference matrix based on the training data.
+#'  This can later be used to perform deconvolution. Default is `FALSE`.
+#'
+#' @param split_data A boolean, if `TRUE`, it will subset the train data provided,
+#'  creating a smaller test set that will be used to test the models after training.
+#'  This parameter is experimental. Default is `FALSE`.
+#'
 #' @return A CimpleG object with the results per target class.
 #'
 #' @examples
@@ -112,31 +122,313 @@
 #'   test_data = test_data,
 #'   test_targets = test_targets,
 #'   method = "CimpleG",
-#'   targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS")
+#'   target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS")
 #' )
 #'
-#' # check results
-#' cimpleg_result$results
+#' # check signatures
+#' cimpleg_result$signatures
 #'
 #' @export
 CimpleG <- function(
   train_data,
   train_targets = NULL,
-  targets,
+  target_columns = NULL,
   test_data = NULL,
   test_targets = NULL,
   method = c(
     "CimpleG",
     "CimpleG_parab",
-    "CimpleG_unscaled",
     "brute_force",
-    "oner",
     "logistic_reg",
     "decision_tree",
     "boost_tree",
     "mlp",
-    "rand_forest",
-    "null_model"
+    "rand_forest"
+  ),
+  pred_type = c("both", "hypo", "hyper"),
+  engine = c("glmnet", "xgboost", "nnet", "ranger"),
+  rank_method = c("ac_rank","a_rank","c_rank"),
+  k_folds = 10,
+  grid_n = 10,
+  param_p = 2,
+  quantile_threshold = 0.005,
+  train_only = FALSE,
+  split_data = FALSE,
+  run_parallel = FALSE,
+  deconvolution_reference = TRUE,
+  save_dir = NULL,
+  save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
+  verbose=1,
+  targets=NULL
+) {
+  UseMethod("CimpleG")
+}
+
+#' @export
+CimpleG.matrix <- function(
+  train_data,
+  train_targets = NULL,
+  target_columns = NULL,
+  test_data = NULL,
+  test_targets = NULL,
+  method = c(
+    "CimpleG",
+    "CimpleG_parab",
+    "brute_force",
+    "logistic_reg",
+    "decision_tree",
+    "boost_tree",
+    "mlp",
+    "rand_forest"
+  ),
+  pred_type = c("both", "hypo", "hyper"),
+  engine = c("glmnet", "xgboost", "nnet", "ranger"),
+  rank_method = c("ac_rank","a_rank","c_rank"),
+  k_folds = 10,
+  grid_n = 10,
+  param_p = 2,
+  quantile_threshold = 0.005,
+  train_only = FALSE,
+  split_data = FALSE,
+  run_parallel = FALSE,
+  deconvolution_reference = TRUE,
+  save_dir = NULL,
+  save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
+  verbose=1,
+  targets=NULL
+){
+
+  if(!is.null(targets) & is.null(target_columns)){
+    warning("Parameter `targets` is deprecated, please use `target_columns` instead.")
+    target_columns <- targets
+  }
+
+  param_checkup(
+    k_folds = k_folds, param_p = param_p, grid_n = grid_n,
+    quantile_threshold = quantile_threshold
+  )
+
+  selected_method_params <- method_param_checkup(
+    method = method,
+    pred_type = pred_type,
+    rank_method = rank_method
+  )
+
+  input_data <- input_data_check_prep(
+    train_data = train_data, train_targets = train_targets,
+    test_data = test_data, test_targets = test_targets,
+    target_columns = target_columns,
+    train_only = train_only, split_data = split_data
+  )
+
+  CimpleG_main(
+    train_data = input_data$train_data,
+    train_targets = input_data$train_targets,
+    test_data = input_data$test_data,
+    test_targets = input_data$test_targets,
+    target_columns = input_data$target_columns,
+    method = selected_method_params$method,
+    pred_type = selected_method_params$pred_type,
+    rank_method = selected_method_params$rank_method,
+    k_folds = k_folds,
+    grid_n = grid_n,
+    param_p = param_p,
+    quantile_threshold = quantile_threshold,
+    train_only = train_only,
+    run_parallel = run_parallel,
+    deconvolution_reference = deconvolution_reference,
+    save_dir = save_dir,
+    save_format = save_format,
+    verbose = verbose
+  )
+}
+
+#' @export
+CimpleG.data.frame <- function(
+  train_data,
+  train_targets = NULL,
+  target_columns = NULL,
+  test_data = NULL,
+  test_targets = NULL,
+  method = c(
+    "CimpleG",
+    "CimpleG_parab",
+    "brute_force",
+    "logistic_reg",
+    "decision_tree",
+    "boost_tree",
+    "mlp",
+    "rand_forest"
+  ),
+  pred_type = c("both", "hypo", "hyper"),
+  engine = c("glmnet", "xgboost", "nnet", "ranger"),
+  rank_method = c("ac_rank","a_rank","c_rank"),
+  k_folds = 10,
+  grid_n = 10,
+  param_p = 2,
+  quantile_threshold = 0.005,
+  train_only = FALSE,
+  split_data = FALSE,
+  run_parallel = FALSE,
+  deconvolution_reference = TRUE,
+  save_dir = NULL,
+  save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
+  verbose=1,
+  targets=NULL
+){
+
+  if(!is.null(targets) & is.null(target_columns)){
+    warning("Parameter `targets` is deprecated, please use `target_columns` instead.")
+    target_columns <- targets
+  }
+
+  param_checkup(
+    k_folds = k_folds, param_p = param_p, grid_n = grid_n,
+    quantile_threshold = quantile_threshold
+  )
+
+  selected_method_params <- method_param_checkup(
+    method = method,
+    pred_type = pred_type,
+    rank_method = rank_method
+  )
+  input_data <- input_data_check_prep(
+    train_data = train_data, train_targets = train_targets,
+    test_data = test_data, test_targets = test_targets,
+    target_columns = target_columns,
+    train_only = train_only, split_data = split_data
+  )
+
+
+  CimpleG_main(
+    train_data = input_data$train_data,
+    train_targets = input_data$train_targets,
+    test_data = input_data$test_data,
+    test_targets = input_data$test_targets,
+    target_columns = input_data$target_columns,
+    method = selected_method_params$method,
+    pred_type = selected_method_params$pred_type,
+    rank_method = selected_method_params$rank_method,
+    k_folds = k_folds,
+    grid_n = grid_n,
+    param_p = param_p,
+    quantile_threshold = quantile_threshold,
+    train_only = train_only,
+    run_parallel = run_parallel,
+    deconvolution_reference = deconvolution_reference,
+    save_dir = save_dir,
+    save_format = save_format,
+    verbose = verbose
+  )
+}
+
+#' @export
+CimpleG.SummarizedExperiment <- function(
+  train_data,
+  train_targets = NULL,
+  target_columns = NULL,
+  test_data = NULL,
+  test_targets = NULL,
+  method = c(
+    "CimpleG",
+    "CimpleG_parab",
+    "brute_force",
+    "logistic_reg",
+    "decision_tree",
+    "boost_tree",
+    "mlp",
+    "rand_forest"
+  ),
+  pred_type = c("both", "hypo", "hyper"),
+  engine = c("glmnet", "xgboost", "nnet", "ranger"),
+  rank_method = c("ac_rank","a_rank","c_rank"),
+  k_folds = 10,
+  grid_n = 10,
+  param_p = 2,
+  quantile_threshold = 0.005,
+  train_only = FALSE,
+  split_data = FALSE,
+  run_parallel = FALSE,
+  deconvolution_reference = TRUE,
+  save_dir = NULL,
+  save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
+  verbose=1,
+  targets=NULL
+){
+
+  if(!is.null(targets) & is.null(target_columns)){
+    warning("Parameter `targets` is deprecated, please use `target_columns` instead.")
+    target_columns <- targets
+  }
+  param_checkup(
+    k_folds = k_folds, param_p = param_p, grid_n = grid_n,
+    quantile_threshold = quantile_threshold
+  )
+
+  selected_method_params <- method_param_checkup(
+    method = method,
+    pred_type = pred_type,
+    rank_method = rank_method
+  )
+
+  # if(inherits(train_data, "SummarizedExperiment")){
+  prep_train <- prep_summarizedexp_data(train_data, target_columns)
+  train_data <- prep_train$beta_mat
+  train_targets <- prep_train$df_targets
+  rm(prep_train)
+
+  if(!is.null(test_data) && inherits(test_data, "SummarizedExperiment") && !train_only){
+    prep_test <- prep_summarizedexp_data(test_data,target_columns)
+    test_data <- prep_test$beta_mat
+    test_targets <- prep_test$df_targets
+    rm(prep_test)
+  }
+  # }
+  input_data <- input_data_check_prep(
+    train_data = train_data, train_targets = train_targets,
+    test_data = test_data, test_targets = test_targets,
+    target_columns = target_columns,
+    train_only = train_only, split_data = split_data
+  )
+
+  CimpleG_main(
+    train_data = input_data$train_data,
+    train_targets = input_data$train_targets,
+    test_data = input_data$test_data,
+    test_targets = input_data$test_targets,
+    target_columns = input_data$target_columns,
+    method = selected_method_params$method,
+    pred_type = selected_method_params$pred_type,
+    rank_method = selected_method_params$rank_method,
+    k_folds = k_folds,
+    grid_n = grid_n,
+    param_p = param_p,
+    quantile_threshold = quantile_threshold,
+    train_only = train_only,
+    run_parallel = run_parallel,
+    deconvolution_reference = deconvolution_reference,
+    save_dir = save_dir,
+    save_format = save_format,
+    verbose = verbose
+  )
+}
+
+
+CimpleG_main <- function(
+  train_data,
+  train_targets = NULL,
+  target_columns = NULL,
+  test_data = NULL,
+  test_targets = NULL,
+  method = c(
+    "CimpleG",
+    "CimpleG_parab",
+    "brute_force",
+    "logistic_reg",
+    "decision_tree",
+    "boost_tree",
+    "mlp",
+    "rand_forest"
   ),
   pred_type = c("both", "hypo", "hyper"),
   engine = c("glmnet", "xgboost", "nnet", "ranger"),
@@ -158,59 +450,11 @@ CimpleG <- function(
   # due to NSE notes in R CMD check
   id <- train_rank <- NULL
 
-  param_checkup(
-    train_data = train_data, train_targets = train_targets, targets = targets,
-    test_data = test_data, test_targets = test_targets, train_only = train_only,
-    k_folds = k_folds, param_p = param_p, grid_n = grid_n,
-    quantile_threshold = quantile_threshold
-  )
-
-  selected_method_params <- method_param_checkup(
-    method = method,
-    pred_type = pred_type,
-    rank_method = rank_method
-  )
-
-  if(inherits(train_data, "SummarizedExperiment")){
-    prep_train <- prep_data(train_data, targets)
-    train_data <- prep_train$beta_mat
-    train_targets <- prep_train$df_targets
-    rm(prep_train)
-
-    if(!is.null(test_data) && inherits(test_data, "SummarizedExperiment") && !train_only){
-      prep_test <- prep_data(test_data,targets)
-      test_data <- prep_test$beta_mat
-      test_targets <- prep_test$df_targets
-      rm(prep_test)
-    }
-  }
-
-
-  if((is.null(test_data) | is.null(test_targets)) & !train_only){
-    if(verbose>=2){
-      message("'test_data' or 'test_targets' is NULL.")
-      message("'train_only' is set to FALSE.")
-      message("'train_data' will be partioned to create 'test_data'.")
-    }
-
-    split_data <- make_train_test_split(
-      train_d = train_data,
-      train_targets = train_targets,
-      targets = targets
-    )
-    train_data <- split_data$train_data
-    train_targets <- split_data$train_targets
-    test_data <- split_data$test_data
-    test_targets <- split_data$test_targets
-    rm(split_data)
-  }
-
-
   #TODO: make the "new" method the main one!
-  is_simple_method <- selected_method_params$method %in% c(
-    "CimpleG_parab","brute_force", "CimpleG_unscaled", "oner"
+  is_simple_method <- method %in% c(
+    "CimpleG_parab","brute_force"
   )
-  is_cimpleg <- selected_method_params$method %in% "CimpleG"
+  is_cimpleg <- method %in% "CimpleG"
 
   if(is_cimpleg){
     # TODO: ensure other methods can run off of data.table so that I can remove is_cimpleg
@@ -271,17 +515,17 @@ CimpleG <- function(
     if(is_simple_method){
       train_res <- do_cv(
         train_data = train_data,
-        method = selected_method_params$method,
+        method = method,
         k_folds = k_folds,
-        pred_type = selected_method_params$pred_type,
+        pred_type = pred_type,
         target_name = target,
         verbose = verbose
       )
       if(!train_only){
         test_res <- eval_test_data(
           test_data = test_data,
-          final_model = train_res$model,
-          method = selected_method_params$method,
+          final_model = train_res$train_results,
+          method = method,
           verbose = verbose
         )
       }
@@ -290,10 +534,10 @@ CimpleG <- function(
         train_data = train_data,
         target_name = target,
         k_folds = k_folds,
-        pred_type = selected_method_params$pred_type,
+        pred_type = pred_type,
         param_p = param_p,
         q_threshold = quantile_threshold,
-        rank_method = selected_method_params$rank_method,
+        rank_method = rank_method,
         run_parallel = run_parallel,
         verbose = verbose
       )
@@ -308,7 +552,7 @@ CimpleG <- function(
       train_res <- train_general_model(
         train_data = train_data,
         k_folds = k_folds,
-        model_type = selected_method_params$method,
+        model_type = method,
         engine = engine,
         grid_n = grid_n,
         target_name = target,
@@ -337,50 +581,69 @@ CimpleG <- function(
     requireNamespace("future", quietly = FALSE)
     requireNamespace("future.apply", quietly = FALSE)
     res <- future.apply::future_lapply(
-      X = targets,
+      X = target_columns,
       FUN = work_helper,
       future.seed = TRUE
-    ) %>% magrittr::set_names(targets)
+    ) %>% magrittr::set_names(target_columns)
   }else{
     res <- purrr::map(
-      .x = targets,
+      .x = target_columns,
       .f = work_helper
-    ) %>% magrittr::set_names(targets)
+    ) %>% magrittr::set_names(target_columns)
   }
-
-  if(deconvolution_reference){
-    # ref_mat  <- prep_deconv_ref(cimpleg_res=res)
-  }
-
 
 
   o_time <- Sys.time() - start_o_time
 
-  if(is_simple_method){
-    signatures <- purrr::map_chr(
-      res,
-      function(cg_res){
-        cg_res$train_res$CpG
-      }
-    )
-    final_res <- list(signatures = signatures, results = res, overall_time = o_time)
-  }else if(is_cimpleg){
+  if(is_cimpleg | is_simple_method){
+    # cimpleg | parab | brute force
     signatures <- purrr::map_chr(
       res,
       function(cg_res){
         cg_res$train_res$train_results[train_rank == 1, id]
       }
     )
-    final_res <- list(signatures = signatures, results = res, overall_time = o_time)
+    final_res <- list(
+      signatures = signatures,
+      results = res,
+      overall_time = o_time,
+      method = method
+    )
   }else{
-    final_res <- list(results = res, overall_time = o_time)
+    # ML models
+    final_res <- list(
+      results = res,
+      overall_time = o_time,
+      method = method
+    )
   }
 
   class(final_res) <- "CimpleG"
 
+
+  if(deconvolution_reference){
+
+    non_train_samples <- which(rowSums(train_targets[,target_columns])==0)
+    target_vector <- names(train_targets[,target_columns])[max.col(train_targets[,target_columns])]
+    target_vector[non_train_samples] <- "others"
+
+    if(any(grepl("target",colnames(train_data),fixed=TRUE))){
+      train_data <- train_data[,1:(ncol(train_data)-1)]
+    }
+
+    ref_mat  <- make_deconv_ref_matrix(
+      cimpleg_res=final_res,
+      ref_data=train_data,
+      ref_data_label=target_vector,
+      method=method
+    )
+    final_res <- append(final_res,ref_mat)
+    class(final_res) <- "CimpleG"
+  }
+
   if(!is.null(save_dir)){
 
-    target_name <- ifelse(length(targets) > 1, "multitargets", targets)
+    target_name <- ifelse(length(target_columns) > 1, "multitargets", target_columns)
     model_name <- method
     time_tag <- format(Sys.time(), "%Y%m%d-%H%M%S")
     f_name <- paste0(
@@ -398,207 +661,5 @@ CimpleG <- function(
   }
 
   return(final_res)
-}
-
-param_checkup <- function(
-  train_data,
-  train_targets,
-  targets,
-  test_data,
-  test_targets,
-  train_only,
-  k_folds,
-  param_p,
-  quantile_threshold,
-  grid_n
-){
-
-  # Check train data
-  assertthat::assert_that(length(targets) > 0)
-  assertthat::assert_that(all(targets %in% colnames(train_targets)))
-  assertthat::assert_that(
-    assertthat::are_equal(nrow(train_data), nrow(train_targets))
-  )
-  assertthat::assert_that(
-    is.data.frame(train_targets) |
-    is.matrix(train_targets) |
-    data.table::is.data.table(train_targets)
-  )
-  # Check test data
-  if(!train_only){
-    assertthat::assert_that(all(targets %in% colnames(test_targets)))
-    assertthat::assert_that(
-      assertthat::are_equal(nrow(test_data), nrow(test_targets))
-    )
-  }
-
-  if(nrow(train_data) > ncol(train_data)){
-    warning(
-      paste0(
-        "There are more samples (", nrow(train_data), ")",
-        " than features (", ncol(train_data), ").", "\n",
-        "This might be a sign that you forgot to transpose your data."
-      )
-    )
-  }
-
-  # Make sure samples for the given target exist for training (!=0)
-  purrr::walk(targets, function(target){
-    samples_in_target <- sum(as.integer(train_targets[, target]))
-    assertthat::assert_that(
-      samples_in_target > 0,
-      msg = paste0(
-        "Target class: '", target, "' has 0 samples to train for.", "\n",
-        "Make sure samples for the given target exist for training"
-      )
-    )
-    return(NULL)
-  })
-  # Check cv params
-  assertthat::assert_that(is.numeric(k_folds))
-  assertthat::assert_that(k_folds > 0)
-  # Check CimpleG params
-  assertthat::assert_that(is.numeric(param_p))
-  assertthat::assert_that(is.numeric(quantile_threshold))
-  assertthat::assert_that(
-    param_p > 0 & param_p %% 2 == 0,
-    msg="param_p is not a positive even integer."
-  )
-  assertthat::assert_that(quantile_threshold > 0 && quantile_threshold < 1)
-  # Check ML params
-  assertthat::assert_that(grid_n > 0)
-
-  return(NULL)
-}
-
-method_param_checkup <- function(method,pred_type,rank_method){
-
-  # Check method params
-  selected_method <- match.arg(
-    method,
-    choices = c(
-      # simple models
-      "CimpleG", "CimpleG_parab", "CimpleG_unscaled", "brute_force", "oner",
-      # complex models
-      "logistic_reg", "decision_tree", "boost_tree", "mlp", "rand_forest",
-      "null_model"
-    )
-  )
-
-  selected_pred_type <- match.arg(
-    pred_type, choices = c("both", "hypo", "hyper")
-  )
-  selected_rank_method <- match.arg(
-    rank_method, choices = c("ac_rank", "a_rank", "c_rank")
-  )
-
-  return(
-    list(
-      method = selected_method,
-      pred_type = selected_pred_type,
-      rank_method = selected_rank_method
-    )
-  )
-}
-
-
-data_checkup <- function(){}
-
-
-
-
-prep_data <- function(data, targets){
-
-  is_minfi_class <- 
-    class(data) %in% c("MethylSet", "GenomicMethylSet", "RGChannelSet", "GenomicRatioSet")
-
-  is_sumexp_class <- is(data) %in% "SummarizedExperiment"
-
-  if(is_minfi_class & requireNamespace("minfi", quietly = TRUE)){
-
-    beta_mat <- minfi::getBeta(data)
-    df_targets <- minfi::pData(data)
-
-  }else if(is_sumexp_class & requireNamespace("SummarizedExperiment", quietly = TRUE)){
-
-    is_beta_in_assays <- tolower(SummarizedExperiment::assayNames(data)) == "beta"
-
-    assertthat::assert_that(any(is_beta_in_assays))
-
-    # samples as columns
-    beta_mat  <- SummarizedExperiment::assays(data)[which(is_beta_in_assays)][[1]]
-    df_targets <- SummarizedExperiment::colData(data)
-  }else{
-    abort(
-      paste0(
-        "Class of data provided ('",class(data),"'), is not supported.\n",
-        "Please provide a SummarizedExperiment object or a ",
-        "simple matrix/data frame with your data."
-      )
-    )
-  }
-
-  # make samples as rows
-  if(requireNamespace("Rfast", quietly = TRUE)){
-    sample_names <- colnames(beta_mat)
-    feat_names <- rownames(beta_mat)
-    beta_mat <- Rfast::transpose(beta_mat)
-    rownames(beta_mat) <- sample_names
-    colnames(beta_mat) <- feat_names
-  }else{
-    warning(paste0(
-        "CimpleG can run considerably faster if you have the package `Rfast` installed.\n",
-        "Consider installing `Rfast` with `install.packages('Rfast')`\n"
-        ))
-    if(Sys.info()['sysname']=="Linux"){
-      warning(paste0(
-          "Since you are using a linux distribution, you might need to install the system library 'libgsl-dev'.\n",
-          ))
-    }
-    beta_mat <- t(beta_mat)
-  }
-  # make DataFrame into data.frame
-  df_targets <- as.data.frame(df_targets)
-
-  assertthat::assert_that(all(targets %in% colnames(df_targets)))
-  
-  # check which cols don't have their values as 0 or 1
-  # these will be the ones to edit
-  # cols_to edit is a named vector
-  cols_to_edit <- which(sapply(
-    df_targets[targets],
-    function(dcols){!all(dcols %in% c(0,1))}
-  ))
-
-  # make cols to edit factor
-  df_targets[names(cols_to_edit)] <- lapply(
-    df_targets[names(cols_to_edit)],factor
-  )
-
-  # find in each col to edit (targets that are not 0/1) which of the values
-  # is in a smaller proportion, these values will become 1
-  # fetch_col will be a named vector where the values are the minority "class"
-  # and the names are the name of the corresponding column
-  fetch_col <- sapply(
-    df_targets[names(cols_to_edit)],
-    function(x){levels(x)[which.min(tabulate(x))]}
-  )
-
-  # make cols one-hot encoded
-  df_targets <- as.data.frame(
-    mltools::one_hot(
-      dt=data.table::as.data.table(df_targets),
-      cols=names(cols_to_edit),
-      dropCols=FALSE
-    )
-  )
-  # for each col that needs to be edited, fetch it and the corresponding name
-  # created by one_hot
-  df_targets[,names(fetch_col)] <- lapply(
-    names(fetch_col),
-    function(x){df_targets[,paste0(x,"_",fetch_col[x])]}
-  )
-
-  return(list(beta_mat = beta_mat, df_targets = df_targets))
 }
 

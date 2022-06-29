@@ -7,11 +7,11 @@
 CimpleG(
   train_data,
   train_targets = NULL,
-  targets,
+  target_columns = NULL,
   test_data = NULL,
   test_targets = NULL,
-  method = c("CimpleG", "CimpleG_parab", "CimpleG_unscaled", "brute_force", "oner",
-    "logistic_reg", "decision_tree", "boost_tree", "mlp", "rand_forest", "null_model"),
+  method = c("CimpleG", "CimpleG_parab", "brute_force", "logistic_reg",
+    "decision_tree", "boost_tree", "mlp", "rand_forest"),
   pred_type = c("both", "hypo", "hyper"),
   engine = c("glmnet", "xgboost", "nnet", "ranger"),
   rank_method = c("ac_rank", "a_rank", "c_rank"),
@@ -20,10 +20,13 @@ CimpleG(
   param_p = 2,
   quantile_threshold = 0.005,
   train_only = FALSE,
+  split_data = FALSE,
   run_parallel = FALSE,
+  deconvolution_reference = TRUE,
   save_dir = NULL,
   save_format = c("zstd", "lz4", "gzip", "bzip2", "xz", "nocomp"),
-  verbose = 1
+  verbose = 1,
+  targets = NULL
 )
 }
 \arguments{
@@ -39,7 +42,7 @@ Target columms need to be one-hot encoded, meaning that, for that column
 the target samples should be encoded as `1` while every other sample
 should be encoded as `0`.}
 
-\item{targets}{A string specifying the name of the column in `train_targets`
+\item{target_columns}{A string specifying the name of the column in `train_targets`
 to be used for training.
 Can be a character vector if there are several columns in `train_targets`
 to be used for training.
@@ -100,12 +103,20 @@ Determines how many features will be kept. Default is \code{0.005}.}
 \item{train_only}{A boolean, if TRUE, CimpleG will only train (find predictors)
 but not test them against a test dataset.}
 
+\item{split_data}{A boolean, if `TRUE`, it will subset the train data provided,
+creating a smaller test set that will be used to test the models after training.
+This parameter is experimental. Default is `FALSE`.}
+
 \item{run_parallel}{A boolean, if `FALSE`, the default, it will search
 for predictors for multiple targets sequentially.
 If `TRUE` it will search for predictors for multiple targets
 at the same time (parallel processing) in order to save
 in computational time. You need to set up `future::plan()` before running
 this function.}
+
+\item{deconvolution_reference}{A boolean, if `TRUE`, it will create 
+a deconvolution reference matrix based on the training data.
+This can later be used to perform deconvolution. Default is `FALSE`.}
 
 \item{save_dir}{If defined it will save the resulting model to the given directory.
 Default is \code{NULL}.}
@@ -117,6 +128,8 @@ One of "zstd", "lz4", "gzip", "bzip2","xz", "nocomp".
 \item{verbose}{How verbose you want CimpleG to be while it is running.
 At 0, no message is displayed, at 3 every message is displayed.
 Default is \code{1}.}
+
+\item{targets}{DEPRECATED use `target_columns`.}
 }
 \value{
 A CimpleG object with the results per target class.
@@ -141,7 +154,7 @@ cimpleg_result <- CimpleG(
   test_data = test_data,
   test_targets = test_targets,
   method = "CimpleG",
-  targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS")
+  target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS")
 )
 
 # check results
