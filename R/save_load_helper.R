@@ -39,6 +39,7 @@ save_object <- function(object, file_name, file_format=NULL){
 #'  files are supported. If the \code{archive} package is installed.
 #' @export
 load_object <- function(file_name){
+  if(!file.exists(file_name)) stop(paste0("File '",file_name,"' not found."))
   con <- archive::file_read(file = file_name)
   res <- readRDS(file = con)
   close(con)
