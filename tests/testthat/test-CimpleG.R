@@ -7,18 +7,84 @@ set.seed(42)
 
 # check results
 test_that(
-  "signatures are generated",
+  "signatures are generated w/ CimpleG",
   {expect_identical(
-    CimpleG(
-      train_data = train_data,
-      train_targets = train_targets,
-      test_data = test_data,
-      test_targets = test_targets,
-      method = "CimpleG",
-      targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
-      verbose=0
-    )$signatures,
+    {
+      set.seed(42)
+      CimpleG(
+        train_data = train_data,
+        train_targets = train_targets,
+        test_data = test_data,
+        test_targets = test_targets,
+        method = "CimpleG",
+        target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+        verbose=0
+        )$signatures
+    },
     c(CELL_TYPE_MSCORFIBRO="cg03369247",CELL_TYPE_NEURONS="cg24548498")
+  )}
+)
+test_that(
+  "signatures are generated w/ CimpleG_parab",
+  {expect_identical(
+    {
+      set.seed(42)
+      CimpleG(
+        train_data = train_data,
+        train_targets = train_targets,
+        test_data = test_data,
+        test_targets = test_targets,
+        method = "CimpleG_parab",
+        target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+        verbose=0
+        )$signatures
+    },
+    c(CELL_TYPE_MSCORFIBRO="cg24192660",CELL_TYPE_NEURONS="cg17008486")
+  )}
+)
+test_that(
+  "signatures are generated w/ brute_force",
+  {
+    suppressWarnings(expect_identical(
+    {
+      skip("Skipping to speed up testing, brute_force takes too long.")
+      set.seed(42)
+      CimpleG(
+        train_data = train_data,
+        train_targets = train_targets,
+        test_data = test_data,
+        test_targets = test_targets,
+        method = "brute_force",
+        target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+        verbose=0
+        )$signatures
+    },
+    c(CELL_TYPE_MSCORFIBRO="cg14021880",CELL_TYPE_NEURONS="cg02124957")
+  )
+    )
+  }
+)
+test_that(
+  "signatures are generated w/ ElasticNet",
+  {expect_equal(
+    {
+      set.seed(42)
+      res <- CimpleG(
+        train_data = train_data,
+        train_targets = train_targets,
+        test_data = test_data,
+        test_targets = test_targets,
+        method = "logistic_reg",
+        target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+        verbose=0
+        )
+      res <- c(
+        res$results$CELL_TYPE_MSCORFIBRO$test_perf$accuracy,
+        res$results$CELL_TYPE_NEURONS$test_perf$accuracy
+      )
+    },
+    c(0.9529412,0.9882353),
+    tolerance=0.001
   )}
 )
 
@@ -29,7 +95,7 @@ cimpleg_result <- CimpleG(
   test_data = test_data,
   test_targets = test_targets,
   method = "CimpleG",
-  targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+  target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
   save_dir=".",
   save_format="zstd",
   verbose=0
@@ -86,7 +152,7 @@ test_that(
       test_data = test_data[,1:100],
       test_targets = test_targets,
       method="CimpleG",
-      targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+      target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
       verbose=0,
       run_parallel=TRUE
     )
