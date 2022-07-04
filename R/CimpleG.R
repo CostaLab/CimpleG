@@ -632,9 +632,9 @@ CimpleG_main <- function(
     }
 
     ref_mat  <- make_deconv_ref_matrix(
-      cimpleg_res=final_res,
+      cpg_obj=final_res,
       ref_data=train_data,
-      ref_data_label=target_vector,
+      ref_data_labels=target_vector,
       method=method
     )
     final_res <- append(final_res,ref_mat)

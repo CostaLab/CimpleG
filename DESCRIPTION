@@ -1,8 +1,8 @@
 Package: CimpleG
 Type: Package
 Title: CimpleG - Individual/Single CpG sites For Classification and Deconvolution
-Date: 2022-06-28
-Version: 0.0.3.9020
+Date: 2022-07-04
+Version: 0.0.3.9026
 Authors@R:
     person("Tiago","F.V. Maié",email="tiagomaie@hotmail.com",role=c("aut","cre"))
 Maintainer: Tiago Maié <tiagomaie@hotmail.com>
@@ -22,7 +22,6 @@ Imports:
     caret,
     OneR,
     dplyr,
-    plyr,
     tibble,
     parsnip,
     matrixStats,
@@ -77,7 +76,8 @@ Suggests:
     Biobase (>= 2.54.0),
     GEOquery,
     gtools,
-    nnls
+    nnls,
+    plyr
 Remotes: 
     bioc::release/Biobase,
     bioc::release/EpiDISH,

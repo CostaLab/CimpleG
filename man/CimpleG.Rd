@@ -157,7 +157,7 @@ cimpleg_result <- CimpleG(
   target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS")
 )
 
-# check results
-cimpleg_result$results
+# check signatures
+cimpleg_result$signatures
 
 }

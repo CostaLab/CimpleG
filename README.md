@@ -41,7 +41,7 @@ data(test_targets)
 # what other columns can be used as targets
 # colnames(train_targets)
 
-# mini example with just 2 target signatures
+# mini example with just 4 target signatures
 set.seed(42)
 cimpleg_result <- CimpleG(
   train_data = train_data,
@@ -49,7 +49,12 @@ cimpleg_result <- CimpleG(
   test_data = test_data,
   test_targets = test_targets,
   method="CimpleG",
-  targets = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS")
+  target_columns = c(
+    "CELL_TYPE_NEURONS",
+    "CELL_TYPE_GLIA",
+    "CELL_TYPE_BLOOD.CELLS",
+    "CELL_TYPE_FIBROBLASTS"
+  )
 )
 
 cimpleg_result$results
@@ -58,8 +63,10 @@ cimpleg_result$results
 ``` r
 # check generated signatures
 cimpleg_result$signatures
-#> CELL_TYPE_MSCORFIBRO    CELL_TYPE_NEURONS 
-#>         "cg03369247"         "cg24548498"
+#>     CELL_TYPE_NEURONS        CELL_TYPE_GLIA CELL_TYPE_BLOOD.CELLS 
+#>          "cg24548498"          "cg14501977"          "cg04785083" 
+#> CELL_TYPE_FIBROBLASTS 
+#>          "cg03369247"
 ```
 
 ## Difference of means vs Sum of variances (dmsv) plots
@@ -69,7 +76,7 @@ cimpleg_result$signatures
 ``` r
 plt <- diffmeans_sumvariance_plot(
   data = train_data,
-  target_vector = train_targets$CELL_TYPE_MSCORFIBRO==1
+  target_vector = train_targets$CELL_TYPE_NEURONS==1
 )
 print(plt)
 ```
@@ -81,7 +88,7 @@ print(plt)
 ``` r
 df_dmeansvar <- compute_diffmeans_sumvar(
   data = train_data,
-  target_vector = train_targets$CELL_TYPE_MSCORFIBRO==1
+  target_vector = train_targets$CELL_TYPE_NEURONS==1
 )
 
 parab_param <- .7
@@ -94,8 +101,8 @@ df_dmeansvar$is_selected <- select_features(
 
 plt <- diffmeans_sumvariance_plot(
   data = df_dmeansvar,
-  label_var1 = "MSC",
-  color_all_points = "red",
+  label_var1 = "Neurons",
+  color_all_points = "purple",
   threshold_func = function(x,a) (a*x)^2,
   is_feature_selected_col = "is_selected",
   func_factor = parab_param
@@ -122,24 +129,18 @@ print(plt)
 ### mini example with just 2 signatures
 
 ``` r
-deconv_result <- deconvolution(
-  CimpleG_result = cimpleg_result,
-  reference_data = train_data,
-  reference_targets=train_targets,
-  targets=c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
-  new_data=test_data
+deconv_result <- run_deconvolution(
+  cpg_obj = cimpleg_result,
+  new_data = test_data
 )
 
-# making color palette for our 2 classes
-col_palette <- make_color_palette(c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"))
-
-plt <- plot_deconvolution(
-  deconv_mat = deconv_result,
-  name_tag = "MSCFRIBRO-NEURONS",
-  sorted_classes = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
-  color_palette_df=col_palette
+plt <- deconvolution_barplot(
+  deconvoluted_data = deconv_result,
+  meta_data = test_targets |> dplyr::mutate(CELL_TYPE = paste0("CELL_TYPE_",CELL_TYPE)),
+  sample_id = "GSM",
+  true_label = "CELL_TYPE"
 )
-print(plt$deconv_plot)
+print(plt$plot)
 ```
 
 ![](man/figures/README-unnamed-chunk-8-1.png)<!-- -->
