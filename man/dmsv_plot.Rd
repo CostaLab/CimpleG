@@ -8,13 +8,13 @@ These CpGs are often located on the bottom left and
 bottom right of this plot.}
 \usage{
 dmsv_plot(
-  data,
+  dat,
   target_vector = NULL,
   x_var = "diff_means",
   y_var = "sum_variance",
   id_var = "id",
-  highlight_var = "highlight_features",
-  display_var = "display_features",
+  highlight_var = NULL,
+  display_var = NULL,
   label_var1 = "Target",
   label_var2 = "Others",
   point_color = "black",
@@ -22,7 +22,7 @@ dmsv_plot(
 )
 }
 \arguments{
-\item{data}{Data to create dmsv plot (difference in means, sum of variances plot).
+\item{dat}{Data to create dmsv plot (difference in means, sum of variances plot).
 Either a data.frame with `x_var`,`y_var` and `id_var` or, if
 `target_vector` is not `NULL` a matrix with beta values from which,
 given the target, the difference in means between the target and others,
@@ -72,7 +72,7 @@ data(train_targets)
 
 # make basic plot straight from the data
 plt <- dmsv_plot(
-  data = train_data,
+  dat = train_data,
   target_vector = train_targets$CELL_TYPE_MSCORFIBRO == 1
 )
 print(plt)
@@ -89,9 +89,9 @@ df_dmeansvar$hl_col <- sample(c(TRUE,FALSE),nrow(df_dmeansvar),replace=TRUE,prob
 df_dmeansvar$dp_col <- df_dmeansvar$hl_col
 
 plt <- dmsv_plot(
-  data=df_dmeansvar,
+  dat=df_dmeansvar,
   highlight_var="hl_col",
-  display_var="hl_col",
+  display_var="dp_col",
   label_var1="MSC",
   point_color="red",
   subtitle="method: CimpleG"

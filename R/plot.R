@@ -531,7 +531,7 @@ darken <- function(color, factor = 0.5) {
 #' These CpGs are often located on the bottom left and
 #' bottom right of this plot.
 #'
-#' @param data Data to create dmsv plot (difference in means, sum of variances plot).
+#' @param dat Data to create dmsv plot (difference in means, sum of variances plot).
 #'  Either a data.frame with `x_var`,`y_var` and `id_var` or, if
 #'  `target_vector` is not `NULL` a matrix with beta values from which,
 #'  given the target, the difference in means between the target and others,
@@ -564,7 +564,7 @@ darken <- function(color, factor = 0.5) {
 #'
 #' # make basic plot straight from the data
 #' plt <- dmsv_plot(
-#'   data = train_data,
+#'   dat = train_data,
 #'   target_vector = train_targets$CELL_TYPE_MSCORFIBRO == 1
 #' )
 #' print(plt)
@@ -581,9 +581,9 @@ darken <- function(color, factor = 0.5) {
 #' df_dmeansvar$dp_col <- df_dmeansvar$hl_col
 #'
 #' plt <- dmsv_plot(
-#'   data=df_dmeansvar,
+#'   dat=df_dmeansvar,
 #'   highlight_var="hl_col",
-#'   display_var="hl_col",
+#'   display_var="dp_col",
 #'   label_var1="MSC",
 #'   point_color="red",
 #'   subtitle="method: CimpleG"
@@ -592,87 +592,97 @@ darken <- function(color, factor = 0.5) {
 #'
 #' @export
 dmsv_plot <- function(
-  data,
+  dat,
   target_vector=NULL,
   x_var="diff_means",
   y_var="sum_variance",
   id_var="id",
-  highlight_var="highlight_features",
-  display_var="display_features",
+  highlight_var=NULL,
+  display_var=NULL,
   label_var1="Target",
   label_var2="Others",
   point_color="black",
   subtitle=NULL
 ){
+  UseMethod("dmsv_plot")
+}
+
+
+#' @export
+dmsv_plot.matrix <- function(
+  dat,
+  target_vector=NULL,
+  x_var="diff_means",
+  y_var="sum_variance",
+  id_var="id",
+  highlight_var=NULL,
+  display_var=NULL,
+  label_var1="Target",
+  label_var2="Others",
+  point_color="black",
+  subtitle=NULL
+){
+
   assertthat::assert_that(
     typeof(label_var1) == "character" &&
       typeof(label_var2) == "character"
   )
-
-  if(is.matrix(data)){
-    plt <- dmsv_plot.matrix(
-      data=data,target_vector=target_vector,
-      highlight_vector=highlight_var,
-      display_vector=display_var,
-      label_var1=label_var1,label_var2=label_var2,
-      point_color=point_color,subtitle=subtitle
-    )
-  }else{
-    plt <- dmsv_plot.data.frame(
-      data=data,x_var=x_var,y_var=y_var,
-      id_var=id_var,highlight_var=highlight_var,display_var=display_var,
-      label_var1=label_var1,label_var2=label_var2,
-      point_color=point_color,subtitle=subtitle
-    )
-  }
-  return(plt)
-}
-
-
-dmsv_plot.matrix <- function(
-  data,
-  target_vector=NULL,
-  highlight_vector=NULL,
-  display_vector=NULL,
-  label_var1="Target",
-  label_var2="Others",
-  point_color="black",
-  subtitle=NULL
-){
-
-  assertthat::assert_that(is.matrix(data))
+  assertthat::assert_that(is.matrix(dat))
   assertthat::assert_that(!is.null(target_vector))
   assertthat::assert_that(is.logical(target_vector))
-  assertthat::assert_that(length(target_vector)==nrow(data))
+  assertthat::assert_that(length(target_vector)==nrow(dat))
 
-  data <- as.data.frame(compute_diffmeans_sumvar(data,target_vector=target_vector))
+  dat <- as.data.frame(compute_diffmeans_sumvar(dat,target_vector=target_vector))
 
-  if(!is.null(highlight_vector)){
-    assertthat::assert_that(typeof(highlight_vector) == "character")
-    data <- data %>% dplyr::mutate(highlight_features = id %in% highlight_vector)
+  if(!is.null(highlight_var)){
+    assertthat::assert_that(typeof(highlight_var) == "character")
+    dat <- dat %>% dplyr::mutate(highlight_features = id %in% highlight_var)
+    highlight_var <- "highlight_features"
   }
-  if(!is.null(display_vector)){
-    assertthat::assert_that(typeof(display_vector) == "character")
-    data <- data %>% dplyr::mutate(display_features = id %in% display_vector)
+  if(!is.null(display_var)){
+    assertthat::assert_that(typeof(display_var) == "character")
+    dat <- dat %>% dplyr::mutate(display_features = id %in% display_var)
+    display_var <- "display_features"
   }
 
-  plt <- dmsv_plot_base(data=data,point_color=point_color,subtitle=subtitle)
+  plt <- dmsv_plot_base(
+    dat=dat,
+    x_var="diff_means",
+    y_var="sum_variance",
+    id_var="id",
+    point_color=point_color,
+    subtitle=subtitle,
+    label_var1=label_var1,
+    label_var2=label_var2,
+    highlight_var=highlight_var,
+    display_var=display_var
+  )
 
   return(plt)
 }
 
 
+#' @export
 dmsv_plot.data.frame <- function(
-  data,x_var=NULL,y_var=NULL,
-  id_var=NULL,highlight_var=NULL,display_var=NULL,
+  dat,
+  target_vector=NULL,
+  x_var="diff_means",
+  y_var="sum_variance",
+  id_var="id",
+  highlight_var=NULL,
+  display_var=NULL,
   label_var1="Target",
   label_var2="Others",
   point_color="black",
   subtitle=NULL
 ){
 
+  assertthat::assert_that(
+    typeof(label_var1) == "character" &&
+      typeof(label_var2) == "character"
+  )
   plt <- dmsv_plot_base(
-    data=as.data.frame(data),
+    dat=as.data.frame(dat),
     x_var=x_var,y_var=y_var,
     id_var=id_var,highlight_var=highlight_var,display_var=display_var,
     label_var1=label_var1,label_var2=label_var2,point_color=point_color,
@@ -684,7 +694,7 @@ dmsv_plot.data.frame <- function(
 
 
 dmsv_plot_base <- function(
-  data,
+  dat,
   x_var="diff_means",
   y_var="sum_variance",
   id_var="id",
@@ -698,11 +708,21 @@ dmsv_plot_base <- function(
 
   light_points_color <- lighten(point_color, 0.7)
 
-  ymaxlim <- ifelse(max(data[, y_var]) < 0.4, 0.4, max(data[,y_var]))
+  ymaxlim <- ifelse(max(dat[, y_var]) < 0.4, 0.4, max(dat[,y_var]))
+
+  if(is.null(highlight_var)){
+    highlight_var <- "no_highlights"
+    dat <- dat %>% dplyr::mutate(no_highlights = FALSE)
+  }
+
+  if(is.null(display_var)){
+    display_var <- "no_display"
+    dat <- dat %>% dplyr::mutate(no_display = FALSE)
+  }
 
   dmsv_plt <-
     ggplot2::ggplot(
-      data,
+      dat,
       ggplot2::aes(
         x = !!ggplot2::sym(x_var),
         y = !!ggplot2::sym(y_var),
@@ -711,9 +731,9 @@ dmsv_plot_base <- function(
       )
     ) +
     ggplot2::geom_point(alpha=0.8,color=light_points_color) +
-    ggplot2::geom_point(data=function(x){x[x[,highlight_var],]},size=2,color=point_color) +
+    ggplot2::geom_point(dat=function(x){x[x[,highlight_var],]},size=2,color=point_color) +
     ggrepel::geom_label_repel(
-      data=function(x){x[x[,display_var],]},
+      dat=function(x){x[x[,display_var],]},
       ggplot2::aes(label=id),
       fill="white",color="black",
       force_pull=2,force=2,
@@ -727,10 +747,8 @@ dmsv_plot_base <- function(
     ) +
     ggplot2::xlim(c(-1, 1)) + ggplot2::ylim(c(0, ymaxlim)) +
     ggplot2::theme_classic(base_size=18) +
-    ggplot2::theme(
-      legend.position="none"#,
-      #text=ggplot2::element_text(family="arial")
-    )
+    ggplot2::theme(legend.position="none")
+
   return(dmsv_plt)
 }
 
