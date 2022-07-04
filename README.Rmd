@@ -12,7 +12,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# CimpleG <img src="man/figures/CimpleG_logo.png" align="right" width="120" />
+# CimpleG <img src="man/figures/CimpleG_logo.png" align = "right" width = "120" />
 
 ## Overview
 
@@ -30,11 +30,11 @@ devtools::install_github("costalab/CimpleG")
 
 # Alternatively, downloading it and install it from a local source:
 #  - ie navigating through your system
-install.packages(file.choose(), repos=NULL, type="source")
+install.packages(file.choose(), repos = NULL, type = "source")
 #  - ie given a path to a local source
-install.packages("~/Downloads/CimpleG_0.0.3.9000.tar.gz", repos=NULL, type="source")
+install.packages("~/Downloads/CimpleG_0.0.4.9002.tar.gz", repos = NULL, type = "source")
 # or
-devtools::install_local("~/Downloads/CimpleG_0.0.3.9000.tar.gz")
+devtools::install_local("~/Downloads/CimpleG_0.0.4.9002.tar.gz")
 ```
 
 ## Getting started
@@ -58,7 +58,7 @@ cimpleg_result <- CimpleG(
   train_targets = train_targets,
   test_data = test_data,
   test_targets = test_targets,
-  method="CimpleG",
+  method = "CimpleG",
   target_columns = c(
     "CELL_TYPE_NEURONS",
     "CELL_TYPE_GLIA",
@@ -81,7 +81,7 @@ cimpleg_result$signatures
 ```{r, eval = TRUE, echo = TRUE, message=FALSE, warning=FALSE}
 plt <- diffmeans_sumvariance_plot(
   data = train_data,
-  target_vector = train_targets$CELL_TYPE_NEURONS==1
+  target_vector = train_targets$CELL_TYPE_NEURONS == 1
 )
 print(plt)
 ```
@@ -91,7 +91,7 @@ print(plt)
 ```{r, eval = TRUE, echo = TRUE, message=FALSE, warning=FALSE}
 df_dmeansvar <- compute_diffmeans_sumvar(
   data = train_data,
-  target_vector = train_targets$CELL_TYPE_NEURONS==1
+  target_vector = train_targets$CELL_TYPE_NEURONS == 1
 )
 
 parab_param <- .7
@@ -106,7 +106,7 @@ plt <- diffmeans_sumvariance_plot(
   data = df_dmeansvar,
   label_var1 = "Neurons",
   color_all_points = "purple",
-  threshold_func = function(x,a) (a*x)^2,
+  threshold_func = function(x, a) (a * x) ^ 2,
   is_feature_selected_col = "is_selected",
   func_factor = parab_param
 )
@@ -125,7 +125,7 @@ print(plt)
 
 ## Deconvolution plots
 
-### mini example with just 2 signatures
+### mini example with just 4 signatures
 
 ```{r, eval = TRUE, echo = TRUE, message=FALSE, warning=FALSE}
 deconv_result <- run_deconvolution(
@@ -135,10 +135,11 @@ deconv_result <- run_deconvolution(
 
 plt <- deconvolution_barplot(
   deconvoluted_data = deconv_result,
-  meta_data = test_targets |> dplyr::mutate(CELL_TYPE = paste0("CELL_TYPE_",CELL_TYPE)),
+  meta_data = test_targets |> dplyr::mutate(CELL_TYPE = paste0("CELL_TYPE_", CELL_TYPE)),
   sample_id = "GSM",
   true_label = "CELL_TYPE"
 )
 print(plt$plot)
 
 ```
+
