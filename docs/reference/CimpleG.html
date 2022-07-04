@@ -18,7 +18,7 @@ for the given target data."><!-- mathjax --><script src="https://cdnjs.cloudflar
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3.9017</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9001</span>
       </span>
     </div>
 
@@ -55,11 +55,11 @@ for the given target data.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">CimpleG</span><span class="op">(</span>
   <span class="va">train_data</span>,
   train_targets <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">targets</span>,
+  target_columns <span class="op">=</span> <span class="cn">NULL</span>,
   test_data <span class="op">=</span> <span class="cn">NULL</span>,
   test_targets <span class="op">=</span> <span class="cn">NULL</span>,
-  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CimpleG"</span>, <span class="st">"CimpleG_parab"</span>, <span class="st">"CimpleG_unscaled"</span>, <span class="st">"brute_force"</span>, <span class="st">"oner"</span>,
-    <span class="st">"logistic_reg"</span>, <span class="st">"decision_tree"</span>, <span class="st">"boost_tree"</span>, <span class="st">"mlp"</span>, <span class="st">"rand_forest"</span>, <span class="st">"null_model"</span><span class="op">)</span>,
+  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CimpleG"</span>, <span class="st">"CimpleG_parab"</span>, <span class="st">"brute_force"</span>, <span class="st">"logistic_reg"</span>,
+    <span class="st">"decision_tree"</span>, <span class="st">"boost_tree"</span>, <span class="st">"mlp"</span>, <span class="st">"rand_forest"</span><span class="op">)</span>,
   pred_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"hypo"</span>, <span class="st">"hyper"</span><span class="op">)</span>,
   engine <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"glmnet"</span>, <span class="st">"xgboost"</span>, <span class="st">"nnet"</span>, <span class="st">"ranger"</span><span class="op">)</span>,
   rank_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ac_rank"</span>, <span class="st">"a_rank"</span>, <span class="st">"c_rank"</span><span class="op">)</span>,
@@ -68,10 +68,13 @@ for the given target data.</p>
   param_p <span class="op">=</span> <span class="fl">2</span>,
   quantile_threshold <span class="op">=</span> <span class="fl">0.005</span>,
   train_only <span class="op">=</span> <span class="cn">FALSE</span>,
+  split_data <span class="op">=</span> <span class="cn">FALSE</span>,
   run_parallel <span class="op">=</span> <span class="cn">FALSE</span>,
+  deconvolution_reference <span class="op">=</span> <span class="cn">TRUE</span>,
   save_dir <span class="op">=</span> <span class="cn">NULL</span>,
   save_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zstd"</span>, <span class="st">"lz4"</span>, <span class="st">"gzip"</span>, <span class="st">"bzip2"</span>, <span class="st">"xz"</span>, <span class="st">"nocomp"</span><span class="op">)</span>,
-  verbose <span class="op">=</span> <span class="fl">1</span>
+  verbose <span class="op">=</span> <span class="fl">1</span>,
+  targets <span class="op">=</span> <span class="cn">NULL</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -89,7 +92,7 @@ with as many rows and in the same order as `train_data`.
 Target columms need to be one-hot encoded, meaning that, for that column
 the target samples should be encoded as `1` while every other sample
 should be encoded as `0`.</p></dd>
-<dt>targets</dt>
+<dt>target_columns</dt>
 <dd><p>A string specifying the name of the column in `train_targets`
 to be used for training.
 Can be a character vector if there are several columns in `train_targets`
@@ -150,6 +153,10 @@ Determines how many features will be kept. Default is <code>0.005</code>.</p></d
 <dt>train_only</dt>
 <dd><p>A boolean, if TRUE, CimpleG will only train (find predictors)
 but not test them against a test dataset.</p></dd>
+<dt>split_data</dt>
+<dd><p>A boolean, if `TRUE`, it will subset the train data provided,
+creating a smaller test set that will be used to test the models after training.
+This parameter is experimental. Default is `FALSE`.</p></dd>
 <dt>run_parallel</dt>
 <dd><p>A boolean, if `FALSE`, the default, it will search
 for predictors for multiple targets sequentially.
@@ -157,6 +164,10 @@ If `TRUE` it will search for predictors for multiple targets
 at the same time (parallel processing) in order to save
 in computational time. You need to set up `future::plan()` before running
 this function.</p></dd>
+<dt>deconvolution_reference</dt>
+<dd><p>A boolean, if `TRUE`, it will create 
+a deconvolution reference matrix based on the training data.
+This can later be used to perform deconvolution. Default is `FALSE`.</p></dd>
 <dt>save_dir</dt>
 <dd><p>If defined it will save the resulting model to the given directory.
 Default is <code>NULL</code>.</p></dd>
@@ -168,6 +179,8 @@ One of "zstd", "lz4", "gzip", "bzip2","xz", "nocomp".
 <dd><p>How verbose you want CimpleG to be while it is running.
 At 0, no message is displayed, at 3 every message is displayed.
 Default is <code>1</code>.</p></dd>
+<dt>targets</dt>
+<dd><p>DEPRECATED use `target_columns`.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -191,150 +204,15 @@ Default is <code>1</code>.</p></dd>
 <span class="r-in">  test_data <span class="op">=</span> <span class="va">test_data</span>,</span>
 <span class="r-in">  test_targets <span class="op">=</span> <span class="va">test_targets</span>,</span>
 <span class="r-in">  method <span class="op">=</span> <span class="st">"CimpleG"</span>,</span>
-<span class="r-in">  targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CELL_TYPE_MSCORFIBRO"</span>,<span class="st">"CELL_TYPE_NEURONS"</span><span class="op">)</span></span>
+<span class="r-in">  target_columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CELL_TYPE_MSCORFIBRO"</span>,<span class="st">"CELL_TYPE_NEURONS"</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Training for target 'CELL_TYPE_MSCORFIBRO' with 'CimpleG' has finished.: 1.567 sec elapsed</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Training for target 'CELL_TYPE_NEURONS' with 'CimpleG' has finished.: 0.406 sec elapsed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Training for target 'CELL_TYPE_MSCORFIBRO' with 'CimpleG' has finished.: 1.725 sec elapsed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Training for target 'CELL_TYPE_NEURONS' with 'CimpleG' has finished.: 0.485 sec elapsed</span>
 <span class="r-in"></span>
-<span class="r-in"><span class="co"># check results</span></span>
-<span class="r-in"><span class="va">cimpleg_result</span><span class="op">$</span><span class="va">results</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_MSCORFIBRO</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_MSCORFIBRO$train_res</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_MSCORFIBRO$train_res$fold_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4,090 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      Row Data     Fold  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     1 Analysis Fold01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     1 Analysis Fold02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     1 Analysis Fold03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     1 Analysis Fold04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     1 Analysis Fold05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     1 Analysis Fold07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     1 Analysis Fold08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     1 Analysis Fold09</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     1 Analysis Fold10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     2 Analysis Fold01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 4,080 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_MSCORFIBRO$train_res$train_summary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            id     stat_origin mean_aupr mean_var_a fold_presence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: cg03369247      train_aupr 0.9307781  0.1708691            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: cg03369247 validation_aupr 0.9288881  0.1708691            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: cg06932535      train_aupr 0.6619210  0.2162229            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: cg06932535 validation_aupr 0.7161953  0.2162229            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: cg14021880      train_aupr 0.9484917  0.1976869            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: cg14021880 validation_aupr 0.9487517  0.1976869            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7: cg17786959      train_aupr 0.8718135  0.2088844            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8: cg17786959 validation_aupr 0.8912168  0.2088844            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_MSCORFIBRO$train_res$dt_dmsv</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            id diff_means sum_variance pred_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: cg03369247 -0.6070865   0.06291659     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: cg06932535 -0.5998086   0.07776802     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: cg14021880 -0.5730696   0.06488891     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: cg17786959 -0.4598171   0.04412714     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_MSCORFIBRO$train_res$train_results</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            id fold_presence diff_means sum_variance pred_type mean_var_a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: cg03369247            10 -0.6070865   0.06291659     FALSE  0.1708691</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: cg14021880            10 -0.5730696   0.06488891     FALSE  0.1976869</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: cg17786959            10 -0.4598171   0.04412714     FALSE  0.2088844</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: cg06932535            10 -0.5998086   0.07776802     FALSE  0.2162229</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    train_aupr validation_aupr  cpg_score train_rank</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  0.9307781       0.9288881 0.01507287          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  0.9484917       0.9487517 0.01684252          2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  0.8718135       0.8912168 0.01908045          3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  0.6619210       0.7161953 0.02351667          4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_MSCORFIBRO$test_perf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            id fold_presence diff_means sum_variance pred_type mean_var_a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: cg03369247            10 -0.6070865   0.06291659     FALSE  0.1708691</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: cg14021880            10 -0.5730696   0.06488891     FALSE  0.1976869</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: cg17786959            10 -0.4598171   0.04412714     FALSE  0.2088844</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: cg06932535            10 -0.5998086   0.07776802     FALSE  0.2162229</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    train_mean_aupr validation_mean_aupr  cpg_score train_rank test_aupr</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:       0.9307781            0.9288881 0.01507287          1 0.8777434</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       0.9484917            0.9487517 0.01684252          2 1.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:       0.8718135            0.8912168 0.01908045          3 0.7282899</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:       0.6619210            0.7161953 0.02351667          4 0.8938304</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_MSCORFIBRO$elapsed_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Time difference of 1.611973 secs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS$train_res</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS$train_res$fold_id</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 4,090 × 3</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      Row Data     Fold  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>     1 Analysis Fold01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>     1 Analysis Fold02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>     1 Analysis Fold03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>     1 Analysis Fold04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>     1 Analysis Fold05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>     1 Analysis Fold06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     1 Analysis Fold08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     1 Analysis Fold09</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     1 Analysis Fold10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     2 Analysis Fold01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 4,080 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS$train_res$train_summary</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             id     stat_origin mean_aupr mean_var_a fold_presence</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1: cg02124957      train_aupr 1.0000000 0.03119762            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2: cg02124957 validation_aupr 1.0000000 0.03119762            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3: cg13700051      train_aupr 1.0000000 0.03279551            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4: cg13700051 validation_aupr 1.0000000 0.03279551            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: cg14356362      train_aupr 0.9785246 0.02450846            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: cg14356362 validation_aupr 0.9306853 0.02450846            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: cg21637776      train_aupr 0.9722584 0.04636407             6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8: cg21637776 validation_aupr 0.8844755 0.04636407             6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: cg24548498      train_aupr 1.0000000 0.02493848            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: cg24548498 validation_aupr 1.0000000 0.02493848            10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS$train_res$dt_dmsv</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            id diff_means sum_variance pred_type</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: cg02124957 -0.5272931  0.008677887     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: cg13700051 -0.5790852  0.010987231     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: cg14356362 -0.6419124  0.010098182     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: cg21637776 -0.3788893  0.006784796     FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: cg24548498  0.5781948  0.008344877      TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS$train_res$train_results</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            id fold_presence diff_means sum_variance pred_type mean_var_a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: cg24548498            10  0.5781948  0.008344877      TRUE 0.02493848</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: cg02124957            10 -0.5272931  0.008677887     FALSE 0.03119762</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: cg13700051            10 -0.5790852  0.010987231     FALSE 0.03279551</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: cg14356362            10 -0.6419124  0.010098182     FALSE 0.02450846</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: cg21637776             6 -0.3788893  0.006784796     FALSE 0.04636407</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    train_aupr validation_aupr   cpg_score train_rank</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:  1.0000000       1.0000000 0.001995078          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:  1.0000000       1.0000000 0.002495810          2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:  1.0000000       1.0000000 0.002623641          3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  0.9785246       0.9306853 0.002868578          4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:  0.9722584       0.8844755 0.008569644          5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS$test_perf</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            id fold_presence diff_means sum_variance pred_type mean_var_a</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: cg24548498            10  0.5781948  0.008344877      TRUE 0.02493848</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: cg02124957            10 -0.5272931  0.008677887     FALSE 0.03119762</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: cg13700051            10 -0.5790852  0.010987231     FALSE 0.03279551</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: cg14356362            10 -0.6419124  0.010098182     FALSE 0.02450846</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: cg21637776             6 -0.3788893  0.006784796     FALSE 0.04636407</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    train_mean_aupr validation_mean_aupr   cpg_score train_rank test_aupr</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:       1.0000000            1.0000000 0.001995078          1 0.9215675</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       1.0000000            1.0000000 0.002495810          2 0.8796454</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:       1.0000000            1.0000000 0.002623641          3 0.4922118</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:       0.9785246            0.9306853 0.002868578          4 1.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:       0.9722584            0.8844755 0.008569644          5 0.6205813</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $CELL_TYPE_NEURONS$elapsed_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Time difference of 0.4313352 secs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span class="co"># check signatures</span></span>
+<span class="r-in"><span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CELL_TYPE_MSCORFIBRO    CELL_TYPE_NEURONS </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         "cg03369247"         "cg24548498" </span>
 <span class="r-in"></span>
 </code></pre></div>
     </div>

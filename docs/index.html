@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3.9017</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9001</span>
       </span>
     </div>
 
@@ -102,7 +102,7 @@
 <span class="co"># what other columns can be used as targets</span>
 <span class="co"># colnames(train_targets)</span>
 
-<span class="co"># mini example with just 2 target signatures</span>
+<span class="co"># mini example with just 4 target signatures</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
 <span class="va">cimpleg_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/CimpleG.html">CimpleG</a></span><span class="op">(</span>
   train_data <span class="op">=</span> <span class="va">train_data</span>,
@@ -110,15 +110,22 @@
   test_data <span class="op">=</span> <span class="va">test_data</span>,
   test_targets <span class="op">=</span> <span class="va">test_targets</span>,
   method<span class="op">=</span><span class="st">"CimpleG"</span>,
-  targets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CELL_TYPE_MSCORFIBRO"</span>,<span class="st">"CELL_TYPE_NEURONS"</span><span class="op">)</span>
+  target_columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
+    <span class="st">"CELL_TYPE_NEURONS"</span>,
+    <span class="st">"CELL_TYPE_GLIA"</span>,
+    <span class="st">"CELL_TYPE_BLOOD.CELLS"</span>,
+    <span class="st">"CELL_TYPE_FIBROBLASTS"</span>
+  <span class="op">)</span>
 <span class="op">)</span>
 
 <span class="va">cimpleg_result</span><span class="op">$</span><span class="va">results</span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># check generated signatures</span>
 <span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span>
-<span class="co">#&gt; CELL_TYPE_MSCORFIBRO    CELL_TYPE_NEURONS </span>
-<span class="co">#&gt;         "cg03369247"         "cg24548498"</span></code></pre></div>
+<span class="co">#&gt;     CELL_TYPE_NEURONS        CELL_TYPE_GLIA CELL_TYPE_BLOOD.CELLS </span>
+<span class="co">#&gt;          "cg24548498"          "cg14501977"          "cg04785083" </span>
+<span class="co">#&gt; CELL_TYPE_FIBROBLASTS </span>
+<span class="co">#&gt;          "cg03369247"</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="difference-of-means-vs-sum-of-variances-dmsv-plots">Difference of means vs Sum of variances (dmsv) plots<a class="anchor" aria-label="anchor" href="#difference-of-means-vs-sum-of-variances-dmsv-plots"></a>
@@ -129,7 +136,7 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="va">train_data</span>,
-  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span><span class="op">==</span><span class="fl">1</span>
+  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_NEURONS</span><span class="op">==</span><span class="fl">1</span>
 <span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-5-1.png"><!-- --></p>
@@ -140,7 +147,7 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">df_dmeansvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_diffmeans_sumvar.html">compute_diffmeans_sumvar</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="va">train_data</span>,
-  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span><span class="op">==</span><span class="fl">1</span>
+  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_NEURONS</span><span class="op">==</span><span class="fl">1</span>
 <span class="op">)</span>
 
 <span class="va">parab_param</span> <span class="op">&lt;-</span> <span class="fl">.7</span>
@@ -153,8 +160,8 @@
 
 <span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span>
   data <span class="op">=</span> <span class="va">df_dmeansvar</span>,
-  label_var1 <span class="op">=</span> <span class="st">"MSC"</span>,
-  color_all_points <span class="op">=</span> <span class="st">"red"</span>,
+  label_var1 <span class="op">=</span> <span class="st">"Neurons"</span>,
+  color_all_points <span class="op">=</span> <span class="st">"purple"</span>,
   threshold_func <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">a</span><span class="op">)</span> <span class="op">(</span><span class="va">a</span><span class="op">*</span><span class="va">x</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>,
   is_feature_selected_col <span class="op">=</span> <span class="st">"is_selected"</span>,
   func_factor <span class="op">=</span> <span class="va">parab_param</span>
@@ -181,24 +188,18 @@
 <h3 id="mini-example-with-just-2-signatures">mini example with just 2 signatures<a class="anchor" aria-label="anchor" href="#mini-example-with-just-2-signatures"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">deconv_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/deconvolution.html">deconvolution</a></span><span class="op">(</span>
-  CimpleG_result <span class="op">=</span> <span class="va">cimpleg_result</span>,
-  reference_data <span class="op">=</span> <span class="va">train_data</span>,
-  reference_targets<span class="op">=</span><span class="va">train_targets</span>,
-  targets<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CELL_TYPE_MSCORFIBRO"</span>,<span class="st">"CELL_TYPE_NEURONS"</span><span class="op">)</span>,
-  new_data<span class="op">=</span><span class="va">test_data</span>
+<code class="sourceCode R"><span class="va">deconv_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span>
+  cpg_obj <span class="op">=</span> <span class="va">cimpleg_result</span>,
+  new_data <span class="op">=</span> <span class="va">test_data</span>
 <span class="op">)</span>
 
-<span class="co"># making color palette for our 2 classes</span>
-<span class="va">col_palette</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/make_color_palette.html">make_color_palette</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CELL_TYPE_MSCORFIBRO"</span>,<span class="st">"CELL_TYPE_NEURONS"</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/plot_deconvolution.html">plot_deconvolution</a></span><span class="op">(</span>
-  deconv_mat <span class="op">=</span> <span class="va">deconv_result</span>,
-  name_tag <span class="op">=</span> <span class="st">"MSCFRIBRO-NEURONS"</span>,
-  sorted_classes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CELL_TYPE_MSCORFIBRO"</span>,<span class="st">"CELL_TYPE_NEURONS"</span><span class="op">)</span>,
-  color_palette_df<span class="op">=</span><span class="va">col_palette</span>
+<span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/deconvolution_barplot.html">deconvolution_barplot</a></span><span class="op">(</span>
+  deconvoluted_data <span class="op">=</span> <span class="va">deconv_result</span>,
+  meta_data <span class="op">=</span> <span class="va">test_targets</span> |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>CELL_TYPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"CELL_TYPE_"</span>,<span class="va">CELL_TYPE</span><span class="op">)</span><span class="op">)</span>,
+  sample_id <span class="op">=</span> <span class="st">"GSM"</span>,
+  true_label <span class="op">=</span> <span class="st">"CELL_TYPE"</span>
 <span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">$</span><span class="va">deconv_plot</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-8-1.png"><!-- --></p>
 </div>
 </div>
