@@ -28,7 +28,16 @@
     <loc>/reference/darken.html</loc>
   </url>
   <url>
-    <loc>/reference/deconvolution.html</loc>
+    <loc>/reference/deconvolution_barplot.html</loc>
+  </url>
+  <url>
+    <loc>/reference/deconvolution_epidish.html</loc>
+  </url>
+  <url>
+    <loc>/reference/deconvolution_nmf.html</loc>
+  </url>
+  <url>
+    <loc>/reference/deconvolution_nnls.html</loc>
   </url>
   <url>
     <loc>/reference/diffmeans_sumvariance_plot.html</loc>
@@ -52,7 +61,10 @@
     <loc>/reference/make_color_palette.html</loc>
   </url>
   <url>
-    <loc>/reference/plot_deconvolution.html</loc>
+    <loc>/reference/make_deconv_ref_matrix.html</loc>
+  </url>
+  <url>
+    <loc>/reference/run_deconvolution.html</loc>
   </url>
   <url>
     <loc>/reference/save_object.html</loc>

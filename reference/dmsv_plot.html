@@ -26,7 +26,7 @@ bottom right of this plot."><!-- mathjax --><script src="https://cdnjs.cloudflar
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.3.9017</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.0000</span>
       </span>
     </div>
 
@@ -65,100 +65,123 @@ bottom right of this plot.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">dmsv_plot</span><span class="op">(</span>
-  <span class="va">data</span>,
-  target_vector <span class="op">=</span> <span class="cn">NULL</span>,
-  x_var <span class="op">=</span> <span class="st">"diff_means"</span>,
-  y_var <span class="op">=</span> <span class="st">"sum_variance"</span>,
-  id_var <span class="op">=</span> <span class="st">"id"</span>,
-  highlight_var <span class="op">=</span> <span class="st">"highlight_features"</span>,
-  display_var <span class="op">=</span> <span class="st">"display_features"</span>,
-  label_var1 <span class="op">=</span> <span class="st">"Target"</span>,
-  label_var2 <span class="op">=</span> <span class="st">"Others"</span>,
-  point_color <span class="op">=</span> <span class="st">"black"</span>,
-  subtitle <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dmsv_plot</span><span class="op">(</span></span>
+<span>  <span class="va">dat</span>,</span>
+<span>  target_vector <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  x_var <span class="op">=</span> <span class="st">"diff_means"</span>,</span>
+<span>  y_var <span class="op">=</span> <span class="st">"sum_variance"</span>,</span>
+<span>  id_var <span class="op">=</span> <span class="st">"id"</span>,</span>
+<span>  highlight_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  display_var <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label_var1 <span class="op">=</span> <span class="st">"Target"</span>,</span>
+<span>  label_var2 <span class="op">=</span> <span class="st">"Others"</span>,</span>
+<span>  point_color <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  subtitle <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>data</dt>
+    <dl><dt>dat</dt>
 <dd><p>Data to create dmsv plot (difference in means, sum of variances plot).
 Either a data.frame with `x_var`,`y_var` and `id_var` or, if
 `target_vector` is not `NULL` a matrix with beta values from which,
 given the target, the difference in means between the target and others,
 and the sum of variances within the target and others will be calculated.</p></dd>
+
+
 <dt>target_vector</dt>
 <dd><p>if not NULL a boolean vector with target class assignment, see data</p></dd>
+
+
 <dt>x_var</dt>
 <dd><p>Name of the column with x-axis data (difference of means).</p></dd>
+
+
 <dt>y_var</dt>
 <dd><p>Name of the column with y-axis data (sum of variances).</p></dd>
+
+
 <dt>id_var</dt>
 <dd><p>Name of the column with the feature/CpG ID.</p></dd>
+
+
 <dt>highlight_var</dt>
 <dd><p>(Optional) Name of the column with the highlighted features.
 Values in this column should be boolean (<code>TRUE</code> for selected,
 <code>FALSE</code> for not selected).</p></dd>
+
+
 <dt>display_var</dt>
 <dd><p>(Optional) Name of the column with the features that should be displayed
 in the plot as a label. Values in this column should be boolean
 (<code>TRUE</code> for feature that should be displayed,
 <code>FALSE</code> for feature that should not be displayed).</p></dd>
+
+
 <dt>label_var1</dt>
 <dd><p>Label of the target class. Default is <code>"Target"</code>.</p></dd>
+
+
 <dt>label_var2</dt>
 <dd><p>Label of the other classes. Default is <code>"Others"</code>.</p></dd>
+
+
 <dt>point_color</dt>
 <dd><p>Color of the features/CpGs in the plot. Default is <code>"black"</code>.
 If features are highlighted, non-highlighted features will have a lighter color.</p></dd>
+
+
 <dt>subtitle</dt>
 <dd><p>Subtitle to be displayed in the plot. Default is <code>NULL</code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>a <code>ggplot2</code> object with the dmsv plot.</p>
+    
+
+<p>a <code>ggplot2</code> object with the dmsv plot.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/CostaLab/CimpleG" class="external-link">"CimpleG"</a></span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># load CimpleG example data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_data</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_targets</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># make basic plot straight from the data</span></span>
-<span class="r-in"><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu">dmsv_plot</span><span class="op">(</span></span>
-<span class="r-in">  data <span class="op">=</span> <span class="va">train_data</span>,</span>
-<span class="r-in">  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span> <span class="op">==</span> <span class="fl">1</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/CostaLab/CimpleG" class="external-link">"CimpleG"</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># load CimpleG example data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_data</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_targets</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># make basic plot straight from the data</span></span></span>
+<span class="r-in"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu">dmsv_plot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  dat <span class="op">=</span> <span class="va">train_data</span>,</span></span>
+<span class="r-in"><span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span> <span class="op">==</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="dmsv_plot-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># make plot with highlighted features</span></span>
-<span class="r-in"><span class="co"># first create a diffmeans sumvar data frame from the data</span></span>
-<span class="r-in"><span class="va">df_dmeansvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="compute_diffmeans_sumvar.html">compute_diffmeans_sumvar</a></span><span class="op">(</span></span>
-<span class="r-in">  <span class="va">train_data</span>,</span>
-<span class="r-in">  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span><span class="op">==</span><span class="fl">1</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="co"># adding a column to this data frame \code{hl_col} with random CpGs</span></span>
-<span class="r-in"><span class="co"># selected (as TRUE) or not (as FALSE) to be highlighted and displayed.</span></span>
-<span class="r-in"><span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">hl_col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>,<span class="cn">FALSE</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">df_dmeansvar</span><span class="op">)</span>,replace<span class="op">=</span><span class="cn">TRUE</span>,prob<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">0.9</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">dp_col</span> <span class="op">&lt;-</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">hl_col</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu">dmsv_plot</span><span class="op">(</span></span>
-<span class="r-in">  data<span class="op">=</span><span class="va">df_dmeansvar</span>,</span>
-<span class="r-in">  highlight_var<span class="op">=</span><span class="st">"hl_col"</span>,</span>
-<span class="r-in">  display_var<span class="op">=</span><span class="st">"hl_col"</span>,</span>
-<span class="r-in">  label_var1<span class="op">=</span><span class="st">"MSC"</span>,</span>
-<span class="r-in">  point_color<span class="op">=</span><span class="st">"red"</span>,</span>
-<span class="r-in">  subtitle<span class="op">=</span><span class="st">"method: CimpleG"</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ggrepel: 101 unlabeled data points (too many overlaps). Consider increasing max.overlaps</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># make plot with highlighted features</span></span></span>
+<span class="r-in"><span><span class="co"># first create a diffmeans sumvar data frame from the data</span></span></span>
+<span class="r-in"><span><span class="va">df_dmeansvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="compute_diffmeans_sumvar.html">compute_diffmeans_sumvar</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">train_data</span>,</span></span>
+<span class="r-in"><span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span><span class="op">==</span><span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># adding a column to this data frame \code{hl_col} with random CpGs</span></span></span>
+<span class="r-in"><span><span class="co"># selected (as TRUE) or not (as FALSE) to be highlighted and displayed.</span></span></span>
+<span class="r-in"><span><span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">hl_col</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>,<span class="cn">FALSE</span><span class="op">)</span>,<span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">df_dmeansvar</span><span class="op">)</span>,replace<span class="op">=</span><span class="cn">TRUE</span>,prob<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">0.9</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">dp_col</span> <span class="op">&lt;-</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">hl_col</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu">dmsv_plot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  dat<span class="op">=</span><span class="va">df_dmeansvar</span>,</span></span>
+<span class="r-in"><span>  highlight_var<span class="op">=</span><span class="st">"hl_col"</span>,</span></span>
+<span class="r-in"><span>  display_var<span class="op">=</span><span class="st">"dp_col"</span>,</span></span>
+<span class="r-in"><span>  label_var1<span class="op">=</span><span class="st">"MSC"</span>,</span></span>
+<span class="r-in"><span>  point_color<span class="op">=</span><span class="st">"red"</span>,</span></span>
+<span class="r-in"><span>  subtitle<span class="op">=</span><span class="st">"method: CimpleG"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>ggrepel: 84 unlabeled data points (too many overlaps). Consider increasing max.overlaps</span>
 <span class="r-plt img"><img src="dmsv_plot-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -173,7 +196,7 @@ If features are highlighted, non-highlighted features will have a lighter color.
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer></div>
