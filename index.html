@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9001</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9002</span>
       </span>
     </div>
 
@@ -80,11 +80,11 @@
 <span></span>
 <span><span class="co"># Alternatively, downloading it and install it from a local source:</span></span>
 <span><span class="co">#  - ie navigating through your system</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span>, repos<span class="op">=</span><span class="cn">NULL</span>, type<span class="op">=</span><span class="st">"source"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"source"</span><span class="op">)</span></span>
 <span><span class="co">#  - ie given a path to a local source</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"~/Downloads/CimpleG_0.0.3.9000.tar.gz"</span>, repos<span class="op">=</span><span class="cn">NULL</span>, type<span class="op">=</span><span class="st">"source"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"~/Downloads/CimpleG_0.0.4.9002.tar.gz"</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"source"</span><span class="op">)</span></span>
 <span><span class="co"># or</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">install_local</a></span><span class="op">(</span><span class="st">"~/Downloads/CimpleG_0.0.3.9000.tar.gz"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">install_local</a></span><span class="op">(</span><span class="st">"~/Downloads/CimpleG_0.0.4.9002.tar.gz"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
@@ -108,7 +108,7 @@
 <span>  train_targets <span class="op">=</span> <span class="va">train_targets</span>,</span>
 <span>  test_data <span class="op">=</span> <span class="va">test_data</span>,</span>
 <span>  test_targets <span class="op">=</span> <span class="va">test_targets</span>,</span>
-<span>  method<span class="op">=</span><span class="st">"CimpleG"</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"CimpleG"</span>,</span>
 <span>  target_columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"CELL_TYPE_NEURONS"</span>,</span>
 <span>    <span class="st">"CELL_TYPE_GLIA"</span>,</span>
@@ -135,7 +135,7 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">train_data</span>,</span>
-<span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_NEURONS</span><span class="op">==</span><span class="fl">1</span></span>
+<span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_NEURONS</span> <span class="op">==</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-5-1.png"><!-- --></p>
@@ -146,7 +146,7 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df_dmeansvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_diffmeans_sumvar.html">compute_diffmeans_sumvar</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">train_data</span>,</span>
-<span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_NEURONS</span><span class="op">==</span><span class="fl">1</span></span>
+<span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_NEURONS</span> <span class="op">==</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">parab_param</span> <span class="op">&lt;-</span> <span class="fl">.7</span></span>
@@ -161,7 +161,7 @@
 <span>  data <span class="op">=</span> <span class="va">df_dmeansvar</span>,</span>
 <span>  label_var1 <span class="op">=</span> <span class="st">"Neurons"</span>,</span>
 <span>  color_all_points <span class="op">=</span> <span class="st">"purple"</span>,</span>
-<span>  threshold_func <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">a</span><span class="op">)</span> <span class="op">(</span><span class="va">a</span><span class="op">*</span><span class="va">x</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>,</span>
+<span>  threshold_func <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">a</span><span class="op">)</span> <span class="op">(</span><span class="va">a</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span> <span class="op">^</span> <span class="fl">2</span>,</span>
 <span>  is_feature_selected_col <span class="op">=</span> <span class="st">"is_selected"</span>,</span>
 <span>  func_factor <span class="op">=</span> <span class="va">parab_param</span></span>
 <span><span class="op">)</span></span>
@@ -184,7 +184,7 @@
 <h2 id="deconvolution-plots">Deconvolution plots<a class="anchor" aria-label="anchor" href="#deconvolution-plots"></a>
 </h2>
 <div class="section level3">
-<h3 id="mini-example-with-just-2-signatures">mini example with just 2 signatures<a class="anchor" aria-label="anchor" href="#mini-example-with-just-2-signatures"></a>
+<h3 id="mini-example-with-just-4-signatures">mini example with just 4 signatures<a class="anchor" aria-label="anchor" href="#mini-example-with-just-4-signatures"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">deconv_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
@@ -194,7 +194,7 @@
 <span></span>
 <span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/deconvolution_barplot.html">deconvolution_barplot</a></span><span class="op">(</span></span>
 <span>  deconvoluted_data <span class="op">=</span> <span class="va">deconv_result</span>,</span>
-<span>  meta_data <span class="op">=</span> <span class="va">test_targets</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>CELL_TYPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"CELL_TYPE_"</span>,<span class="va">CELL_TYPE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  meta_data <span class="op">=</span> <span class="va">test_targets</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>CELL_TYPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"CELL_TYPE_"</span>, <span class="va">CELL_TYPE</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  sample_id <span class="op">=</span> <span class="st">"GSM"</span>,</span>
 <span>  true_label <span class="op">=</span> <span class="st">"CELL_TYPE"</span></span>
 <span><span class="op">)</span></span>
