@@ -1,0 +1,82 @@
+---
+title: "Generate signatures"
+author: "Tiago Maié"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to update a released site}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## CimpleG (Simple CpG signatures)
+
+* CimpleG tries to find the CpGs that best classify a cell-type given a train dataset
+* It also enables you to perform cell-type deconvolution in a couple of easy steps
+* It can use beta or M values
+* Here we show how easy it is to generate a signatures
+
+### Installation
+
+If you haven't installed CimpleG, you can find the instructions to do so [here](https://costalab.github.io/CimpleG/#installation).
+However it should be as simple as:
+
+```{r install_cimpleg, eval=FALSE}
+if(!require("CimpleG")) devtools::install_github("costalab/CimpleG")
+```
+
+### Loading package
+
+We load the CimpleG package.
+
+```{r load_cimpleg}
+library("CimpleG")
+```
+
+### Loading data
+
+In this tutorial, we will use a small dataset with just 409 samples and 1000 CpGs.
+We will also use a table with metadata regarding these samples.
+This dataset comes included with CimpleG. You can read more about it [here]().
+
+```{r load_data}
+# load data
+data(train_data)
+data(train_targets)
+```
+
+### Running CimpleG
+
+Running CimpleG can be quite simple. You just need to run the CimpleG function with a few parameters.
+
+```{r cimpleg}
+# run CimpleG
+cimpleg_result <- CimpleG(
+  train_data,
+  train_targets,
+  target_columns = c("CELL_TYPE_BLOOD.CELLS","CELL_TYPE_HEPATOCYTES"),
+  train_only = TRUE,
+  method = "CimpleG"
+)
+```
+
+Here we are generating signatures to find leukocytes and hepatocytes.
+
+We can quickly visualize how our signature is able to separate the data.
+
+```{r plot_cimpleg}
+# plot_signature(cimpleg_result,train_data)
+# TODO
+```
+
+
+

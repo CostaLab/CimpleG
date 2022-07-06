@@ -38,7 +38,7 @@ Samples (s) must be in rows while features/CpGs (f) must be in columns.}
 \item{train_targets}{A data frame with the training target samples one-hot encoded.
 A data frame with at least 1 column,
 with as many rows and in the same order as `train_data`.
-Target columms need to be one-hot encoded, meaning that, for that column
+Target columns need to be one-hot encoded, meaning that, for that column
 the target samples should be encoded as `1` while every other sample
 should be encoded as `0`.}
 
@@ -61,7 +61,7 @@ samples from `train_data` and `train_targets`.}
 \item{test_targets}{A data frame with the testing target samples one-hot encoded.
 A data frame with at least 1 column,
 with as many rows and in the same order as `test_data`.
-Target columms need to be one-hot encoded, meaning that, for that column
+Target columns need to be one-hot encoded, meaning that, for that column
 the target samples should be encoded as `1` while every other sample
 should be encoded as `0`.
 If `test_data` *OR* `test_targets` are NULL, CimpleG will generate a

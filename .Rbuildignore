@@ -18,3 +18,5 @@
 ^README\.html$
 ^temp_test\.R$
 ^init\.r$
+^doc$
+^Meta$

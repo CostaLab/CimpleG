@@ -8,3 +8,6 @@ test_data
 README.html
 docs
 init.r
+inst/doc
+/doc/
+/Meta/

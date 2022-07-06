@@ -25,7 +25,8 @@ load_all_package:
 document_package:
 	Rscript -e "devtools::document()"
 	Rscript -e "devtools::build_readme()"
-#	Rscript -e "rmarkdown::render('README.Rmd',output_file='README.md')"
+	Rscript -e "devtools::build_vignettes()"
+	# Rscript -e "devtools::build_manual()"
 
 update_version:
 	bash update_version.sh
@@ -33,6 +34,7 @@ update_version:
 githubactions_pkgdown_site:
 	Rscript -e "usethis::use_pkgdown()"
 	Rscript -e "pkgdown::build_site()"
+	Rscript -e "pkgdown::build_favicons()"
 	Rscript -e 'usethis::use_github_action("pkgdown")'
 
 githubactions_check:

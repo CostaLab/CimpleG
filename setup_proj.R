@@ -13,6 +13,14 @@ usethis::use_build_ignore(c(
   "init.r"
 ))
 
+# vignettes
+usethis::use_vignette("generate-signatures","Generate signatures")
+
+# misc
+# usethis::use_citation()
+# usethis::use_spell_check(vignettes = TRUE, lang = "en-US", error = FALSE) # run manually
+
+
 # use pkg
 usethis::use_package("tictoc")
 usethis::use_package("rsample")
