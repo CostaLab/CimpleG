@@ -67,61 +67,61 @@ do_cv <- function(
   # get metrics per fold and predictor
   train_summary <- f_data$results %>%
     dplyr::bind_rows() %>%
-    dplyr::mutate(truth = stats::relevel(truth, "positive_class")) %>%
-    dplyr::mutate(prediction = stats::relevel(prediction, "positive_class")) %>%
+    dplyr::mutate(truth = stats::relevel(.data$truth, "positive_class")) %>%
+    dplyr::mutate(prediction = stats::relevel(.data$prediction, "positive_class")) %>%
     dplyr::group_by(
-      resample,
-      predictor,
-      type,
+      .data$resample,
+      .data$predictor,
+      .data$type,
       dplyr::across(tidyselect::any_of("parab_param")),
       dplyr::across(tidyselect::any_of("diff_means"))
     ) %>%
     class_prob_metrics(
-      truth,
-      positive_prob,
-      estimate = prediction
+      .data$truth,
+      .data$positive_prob,
+      estimate = .data$prediction
     ) %>%
-    dplyr::group_by(predictor, type, .metric)
+    dplyr::group_by(.data$predictor, .data$type, .data$.metric)
 
   if(any(grepl("CimpleG",method))){
     # cimpleg parab
     train_summary <- train_summary %>%
       dplyr::summarise(
-        mean_fold_performance = mean(.estimate,na.rm=TRUE),
-        n = length(predictor),
-        mean_parab_param = mean(parab_param),
-        diff_means = mean(diff_means),
+        mean_fold_performance = mean(.data$.estimate,na.rm=TRUE),
+        n = length(.data$predictor),
+        mean_parab_param = mean(.data$parab_param),
+        diff_means = mean(.data$diff_means),
         .groups = "drop"
       )
     train_summary <- train_summary %>%
       dplyr::mutate(
         mean_fold_performance = (
-          scales::rescale(abs(diff_means), to=c(0.1, 1)) * mean_fold_performance
+          scales::rescale(abs(.data$diff_means), to=c(0.1, 1)) * .data$mean_fold_performance
         )
       ) %>%
       dplyr::mutate(
         mean_fold_performance = (
-          scales::rescale(n, to=c(0.1, 1)) * mean_fold_performance
+          scales::rescale(.data$n, to=c(0.1, 1)) * .data$mean_fold_performance
         )
       )
   }else{
     # brute force
     train_summary <- train_summary %>%
       dplyr::summarise(
-        mean_fold_performance = mean(.estimate,na.rm=TRUE),
-        n = length(predictor),
+        mean_fold_performance = mean(.data$.estimate,na.rm=TRUE),
+        n = length(.data$predictor),
         .groups = "drop"
       )
   }
 
   train_summary <- train_summary %>%
-    dplyr::arrange(desc(n), desc(mean_fold_performance))
+    dplyr::arrange(dplyr::desc(.data$n), dplyr::desc(.data$mean_fold_performance))
 
   # sort by predictor that appears in more folds and best mean fold perf
   train_results <- train_summary %>%
-    dplyr::filter(.metric == "pr_auc") %>%
-    dplyr::arrange(desc(n), desc(mean_fold_performance)) %>%
-    dplyr::mutate(train_rank=1:nrow(.),id=predictor)
+    dplyr::filter(.data$.metric == "pr_auc") %>%
+    dplyr::arrange(dplyr::desc(.data$n), dplyr::desc(.data$mean_fold_performance)) %>%
+    dplyr::mutate(train_rank=1:nrow(.),id=.data$predictor)
   # dplyr::select(predictor,type)
   # dplyr::pull(predictor)
 
@@ -160,8 +160,8 @@ eval_test_data <- function(
   # get performance on test data
   test_data$target <- test_data$target %>% stats::relevel("positive_class")
 
-  predictor_name <- final_model %>% dplyr::filter(train_rank==1) %>% dplyr::pull(id)
-  is_hypo <- final_model %>% dplyr::filter(train_rank==1) %>% dplyr::pull(type) %>% {. == "hypo"}
+  predictor_name <- final_model %>% dplyr::filter(.data$train_rank==1) %>% dplyr::pull(.data$id)
+  is_hypo <- final_model %>% dplyr::filter(.data$train_rank==1) %>% dplyr::pull(.data$type) %>% {. == "hypo"}
 
   pred_prob <- test_data %>% dplyr::pull(predictor_name)
 
@@ -352,7 +352,7 @@ eval_general_model <- function(
     new_data = test_data,
     type = "class"
   ) %>%
-  dplyr::pull(.pred_class)
+  dplyr::pull(.data$.pred_class)
 
   test_pred_prob <- predict(
     object = final_model,
@@ -360,7 +360,7 @@ eval_general_model <- function(
     type = "prob"
    ) %>%
   as.data.frame %>%
-  dplyr::pull(.pred_positive_class)
+  dplyr::pull(.data$.pred_positive_class)
 
   acc_perf <- yardstick::accuracy_vec(
     truth=test_data$target,
@@ -502,6 +502,10 @@ cv_loop <- function(
 
 
 rank_results <- function(train_res,rank_method){
+
+  # due to NSE notes in R CMD check
+  cpg_score <- mean_var_a <- validation_aupr <- train_aupr <- fold_presence <- NULL
+
   switch(
     rank_method,
     a_rank = {
@@ -757,7 +761,7 @@ find_predictors <- function(
       hyperM_predictors,
       hypoM_predictors
     ) %>%
-      dplyr::arrange(dplyr::desc(AUPR))
+      dplyr::arrange(dplyr::desc(.data$AUPR))
 
 
     holdout_res <- rsample::assessment(split_train_set)
@@ -1097,12 +1101,18 @@ get_relevant_features <- function(
   param_p,
   q_threshold=0.01
 ){
+
+  # due to NSE notes in R CMD check
+  var_a <- diff_means <- sum_variance <- NULL
+
   # TODO: compare efficiency of the 2 lines below
   dt_diffmean_sumvar[, var_a := compute_ax(diff_means,sum_variance,param_p)]
   #   data.table::set(dt_diffmean_sumvar, j="var_a",value=compute_ax(dt_diffmean_sumvar$diff_means,dt_diffmean_sumvar$sum_variance,param_p))
 
   data.table::setkeyv(dt_diffmean_sumvar, "var_a")
-  dt_diffmean_sumvar <- dt_diffmean_sumvar[var_a < stats::quantile(var_a, q_threshold)]
+  dt_diffmean_sumvar <-
+    dt_diffmean_sumvar[var_a < stats::quantile(var_a, q_threshold)]
+
   return(dt_diffmean_sumvar)
 }
 
@@ -1286,10 +1296,10 @@ make_train_test_split <- function(
     }, .id = "id"
   ) %>%
     tidyr::unite(col = "merged") %>%
-    dplyr::mutate(merged = gsub("[0]+", "", merged)) %>%
-    dplyr::mutate(merged = gsub("^[_]+", "", merged)) %>%
-    dplyr::mutate(merged = gsub("[_]+$", "", merged)) %>%
-    dplyr::mutate(merged = ifelse(merged == "", 0, merged))
+    dplyr::mutate(merged = gsub("[0]+", "", .data$merged)) %>%
+    dplyr::mutate(merged = gsub("^[_]+", "", .data$merged)) %>%
+    dplyr::mutate(merged = gsub("[_]+$", "", .data$merged)) %>%
+    dplyr::mutate(merged = ifelse(.data$merged == "", 0, .data$merged))
   # > merged
   # A
   # 0
@@ -1317,7 +1327,7 @@ make_train_test_split <- function(
   part_d <- rsample::initial_split(
     data = train_d %>%
       as.data.frame %>%
-      dplyr::mutate(target_strat = target_strat %>% dplyr::pull(merged)),
+      dplyr::mutate(target_strat = target_strat %>% dplyr::pull(.data$merged)),
     prop = prop,
     strata = "target_strat",
     pool = min_pool
@@ -1330,11 +1340,11 @@ make_train_test_split <- function(
     tibble::rownames_to_column("id") %>%
     dplyr::mutate(tmp_value = 1) %>%
     tidyr::pivot_wider(
-      id_cols = id,
-      names_from = target_strat,
-      values_from = tmp_value
+      id_cols = .data$id,
+      names_from = .data$target_strat,
+      values_from = .data$tmp_value
     ) %>%
-    dplyr::select(id, dplyr::all_of(targets)) %>%
+    dplyr::select(.data$id, dplyr::all_of(targets)) %>%
     dplyr::mutate_all(tidyr::replace_na, 0) %>%
     tibble::column_to_rownames("id")
 
@@ -1347,13 +1357,13 @@ make_train_test_split <- function(
     tibble::rownames_to_column("id") %>%
     dplyr::mutate(tmp_value = 1) %>%
     tidyr::pivot_wider(
-      id_cols = id,
-      names_from = target_strat,
-      values_from = tmp_value
+      id_cols = .data$id,
+      names_from = .data$target_strat,
+      values_from = .data$tmp_value
     ) %>%
     # add col with the missing target names if theres any
     tibble::add_column(!!!pseudo_targets[setdiff(names(targets), names(.))]) %>%
-    dplyr::select(id, dplyr::all_of(targets)) %>%
+    dplyr::select(.data$id, dplyr::all_of(targets)) %>%
     dplyr::mutate_all(tidyr::replace_na, 0) %>%
     tibble::column_to_rownames("id")
 
@@ -1457,22 +1467,22 @@ download_geo_gsm_idat <- function(
   assertthat::assert_that("GSM" %in% toupper(colnames(gse_gsm_table)))
 
   gse_gsm_table <- gse_gsm_table %>%
-    dplyr::select(matches("GSE"),matches("GSM"))
+    dplyr::select(dplyr::matches("GSE"),dplyr::matches("GSM"))
 
   colnames(gse_gsm_table) <- c("GSE","GSM")
 
   gse_gsm_table <- gse_gsm_table %>%
-    dplyr::mutate(GSE = trimws(GSE)) %>%
-    dplyr::mutate(GSM = trimws(GSM))
+    dplyr::mutate(GSE = trimws(.data$GSE)) %>%
+    dplyr::mutate(GSM = trimws(.data$GSM))
 
   gse_gsm_table %>%
-    dplyr::pull(GSE) %>%
+    dplyr::pull(.data$GSE) %>%
     unique %>%
     file.path(data_dir,.) %>%
     purrr::map_chr(.f=dir.create,recursive = TRUE,showWarnings=FALSE)
 
   targets = gse_gsm_table %>%
-    dplyr::select(GSE,GSM) %>%
+    dplyr::select(.data$GSE,.data$GSM) %>%
     split(f=seq(nrow(.)))
 
   work_helper = function(target){

@@ -6,7 +6,8 @@ input_data_check_prep <- function(
   test_targets=NULL,
   target_columns=NULL,
   train_only=FALSE,
-  split_data=FALSE
+  split_data=FALSE,
+  verbose=0
 ){
 
   if(!is.null(target_columns) & !is.null(train_targets)){

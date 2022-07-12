@@ -28,7 +28,6 @@ Imports:
     magrittr,
     assertthat,
     PRROC,
-    devtools,
     purrr,
     recipes,
     tune,
@@ -80,7 +79,10 @@ Suggests:
     plyr,
     knitr,
     rmarkdown,
-    spelling
+    spelling,
+    biomaRt,
+    devtools,
+    patchwork
 Remotes: 
     bioc::release/Biobase,
     bioc::release/EpiDISH,

@@ -34,7 +34,6 @@ usethis::use_package("matrixStats")
 usethis::use_package("magrittr")
 usethis::use_package("assertthat")
 usethis::use_package("PRROC")
-usethis::use_package("devtools")
 usethis::use_package("purrr")
 usethis::use_package("recipes")
 usethis::use_package("tune")
@@ -49,6 +48,7 @@ usethis::use_package("data.table")
 
 
 # suggested
+usethis::use_package("devtools", "suggests")
 # usethis::use_package("rules","suggests")
 usethis::use_package("stringr", "suggests")
 usethis::use_package("reshape2", "suggests")
@@ -72,6 +72,7 @@ usethis::use_package("forcats", "suggests")
 usethis::use_package("future.apply", "suggests")
 usethis::use_package("ggbeeswarm", "suggests")
 usethis::use_package("ggsci", "suggests")
+usethis::use_package("patchwork", "suggests")
 usethis::use_package("ggsignif", "suggests")
 usethis::use_package("plyr","suggests") # only used in a single place, check to rm
 usethis::use_dev_package("minfi", "suggests", remote="bioc::release/minfi")
@@ -82,6 +83,7 @@ usethis::use_dev_package("SummarizedExperiment", "suggests", remote="bioc::relea
 usethis::use_package("archive", "suggests")
 usethis::use_package("Rfast","suggests")
 usethis::use_package("GEOquery","suggests")
+usethis::use_package("biomaRt","suggests")
 # usethis::use_package("Cairo", "suggests")
 
 # remotes

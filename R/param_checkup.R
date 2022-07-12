@@ -23,17 +23,22 @@ param_checkup <- function(
   return(NULL)
 }
 
-method_param_checkup <- function(method,pred_type,rank_method){
+method_param_checkup <- function(method, pred_type, rank_method){
 
   # Check method params
   selected_method <- match.arg(
     method,
     choices = c(
       # simple models
-      "CimpleG", "CimpleG_parab", "CimpleG_unscaled", "brute_force", "oner",
+      "CimpleG",
+      "CimpleG_parab",
+      "brute_force",
       # complex models
-      "logistic_reg", "decision_tree", "boost_tree", "mlp", "rand_forest",
-      "null_model"
+      "logistic_reg",
+      "decision_tree",
+      "boost_tree",
+      "mlp",
+      "rand_forest"
     )
   )
 
