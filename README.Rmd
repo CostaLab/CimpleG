@@ -74,6 +74,25 @@ cimpleg_result$results
 cimpleg_result$signatures
 ```
 
+### Plot generated signatures
+
+```{r, eval = TRUE, echo = TRUE, message=FALSE, warning=FALSE}
+
+# adjust target names to match signature names
+train_targets$targets <- paste0("CELL_TYPE_",train_targets$CELL_TYPE)
+
+# check generated signatures
+plt <- signature_plot(
+  cimpleg_result,
+  train_data,
+  train_targets,
+  sample_id_column = "GSM",
+  true_label_column = "targets"
+)
+print(plt$plot)
+```
+
+
 ## Difference of means vs Sum of variances (dmsv) plots
 
 ### basic plot

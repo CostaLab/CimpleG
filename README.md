@@ -69,6 +69,25 @@ cimpleg_result$signatures
 #>          "cg03369247"
 ```
 
+### Plot generated signatures
+
+``` r
+# adjust target names to match signature names
+train_targets$targets <- paste0("CELL_TYPE_",train_targets$CELL_TYPE)
+
+# check generated signatures
+plt <- signature_plot(
+  cimpleg_result,
+  train_data,
+  train_targets,
+  sample_id_column = "GSM",
+  true_label_column = "targets"
+)
+print(plt$plot)
+```
+
+![](man/figures/README-unnamed-chunk-5-1.png)<!-- -->
+
 ## Difference of means vs Sum of variances (dmsv) plots
 
 ### basic plot
@@ -81,7 +100,7 @@ plt <- diffmeans_sumvariance_plot(
 print(plt)
 ```
 
-![](man/figures/README-unnamed-chunk-5-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-6-1.png)<!-- -->
 
 ### adding color, highlighting selected features
 
@@ -110,7 +129,7 @@ plt <- diffmeans_sumvariance_plot(
 print(plt)
 ```
 
-![](man/figures/README-unnamed-chunk-6-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-7-1.png)<!-- -->
 
 ### labeling specific features
 
@@ -122,7 +141,7 @@ plt <- diffmeans_sumvariance_plot(
 print(plt)
 ```
 
-![](man/figures/README-unnamed-chunk-7-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-8-1.png)<!-- -->
 
 ## Deconvolution plots
 
@@ -143,4 +162,4 @@ plt <- deconvolution_barplot(
 print(plt$plot)
 ```
 
-![](man/figures/README-unnamed-chunk-8-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-9-1.png)<!-- -->

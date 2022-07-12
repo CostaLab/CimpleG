@@ -87,6 +87,8 @@ run_deconvolution.matrix <- function(
 #' @param ref_mat The reference matrix as created by CimpleG.
 deconvolution_nnls <- function(dt, compute_cols, ref_mat){
 
+  cell_type <- NULL # R CMD check pass
+
   # For each computable column, run nnls, normalize/transform into proportion 0-1, add and sort by label
   dt[, (compute_cols) := lapply(.SD, function(x) nnls::nnls(A = as.matrix(ref_mat), b = x)$x), .SDcols = compute_cols][,
     (compute_cols) := lapply(.SD, function(x) x / sum(x)),.SDcols = compute_cols][,
@@ -208,10 +210,10 @@ make_deconv_ref_matrix <- function(
       as.data.frame() %>% 
       dplyr::select(as.character(cpg_obj$signatures)) %>%
       dplyr::mutate(true_class=ref_data_labels) %>% 
-      dplyr::filter(true_class  %in% names(cpg_obj$signatures))
+      dplyr::filter(.data$true_class  %in% names(cpg_obj$signatures))
 
     ref_mat <-
-      ref_pred_res %>% dplyr::group_by(true_class) %>% 
+      ref_pred_res %>% dplyr::group_by(.data$true_class) %>% 
       dplyr::summarize_at(dplyr::vars(dplyr::starts_with("cg")),mean) %>% 
       # dplyr::filter(true_class %in% gsub("class_","",colnames(.))) %>% 
       tibble::column_to_rownames("true_class") %>% as.matrix() %>% t()
@@ -221,7 +223,8 @@ make_deconv_ref_matrix <- function(
       cpg_obj$results %>%
       purrr::map_df(
         function(x){
-          pres <- workflows:::predict.workflow(
+          # pres <- workflows:::predict.workflow(
+          pres <- predict(
             object=x$train_res,
             new_data=ref_data,
             type="prob"
@@ -237,9 +240,9 @@ make_deconv_ref_matrix <- function(
 
     # summarize train/ref data into ref matrix
     ref_mat <-
-      ref_pred_res %>% dplyr::group_by(true_class) %>% 
+      ref_pred_res %>% dplyr::group_by(.data$true_class) %>% 
       dplyr::summarize_at(dplyr::vars(dplyr::starts_with(colnames(.))),mean) %>%
-      dplyr::filter(true_class %in% gsub("classifier_","",colnames(.))) %>% 
+      dplyr::filter(.data$true_class %in% gsub("classifier_","",colnames(.))) %>% 
       tibble::column_to_rownames("true_class") %>% as.matrix() %>% t()
   }
 
@@ -274,7 +277,8 @@ deconv_ml <- function(
     cpg_obj$results %>%
     purrr::map_dfr(
       function(x){
-        workflows:::predict.workflow(
+        # workflows:::predict.workflow(
+        predict(
           object=x$train_res,
           new_data=new_data,
           type="prob"
@@ -414,7 +418,8 @@ deconvolution_corrplot <- function(
   meta_data,
   sample_id,
   true_label,
-  color_dict=NULL
+  color_dict = NULL,
+  base_size = 14
 ){
 
   dat <- deconvoluted_data %>%
@@ -422,16 +427,16 @@ deconvolution_corrplot <- function(
       meta_data %>%
         as.data.frame() %>%
         dplyr::mutate(sample_id = !!ggplot2::sym(sample_id), true_label = !!ggplot2::sym(true_label)) %>%
-        dplyr::select(sample_id,true_label),
+        dplyr::select(.data$sample_id,true_label),
       by="sample_id"
       ) %>%
   dplyr::arrange(true_label,sample_id) %>% 
-  dplyr::group_by(sample_id) %>% 
-  dplyr::mutate(ct=forcats::fct_reorder(cell_type,order(true_label))) %>% 
-  dplyr::group_by(ct) %>% 
-  dplyr::mutate(ss=forcats::fct_reorder(sample_id,order(true_label,sample_id))) %>%
-  dplyr::mutate(true_label_value=dplyr::if_else(cell_type==as.character(true_label),1,0)) %>%
-  dplyr::mutate(rmse=sqrt(mean((true_label_value - proportion)^2)))
+  dplyr::group_by(.data$sample_id) %>% 
+  dplyr::mutate(ct=forcats::fct_reorder(.data$cell_type,order(.data$true_label))) %>% 
+  dplyr::group_by(.data$ct) %>% 
+  dplyr::mutate(ss=forcats::fct_reorder(.data$sample_id,order(.data$true_label,.data$sample_id))) %>%
+  dplyr::mutate(true_label_value=dplyr::if_else(.data$cell_type==as.character(.data$true_label),1,0)) %>%
+  dplyr::mutate(rmse=sqrt(mean((.data$true_label_value - .data$proportion)^2)))
 
   if(is.null(color_dict)){
     n_color <- dat$ct %>% levels %>% length
@@ -440,14 +445,24 @@ deconvolution_corrplot <- function(
   }
 
   plt <- dat %>% 
-    ggplot2::ggplot(ggplot2::aes(x=true_label_value,y=proportion,group=true_label,color=ct))+
-    ggplot2::geom_smooth(ggplot2::aes(color=true_label),formula=y~x,method="lm",show.legend=FALSE)+
+    ggplot2::ggplot(
+      ggplot2::aes(
+        x = .data$true_label_value,
+        y = .data$proportion,
+        group = .data$true_label,
+        color = .data$ct
+      )
+    )+
+    ggplot2::geom_smooth(
+      ggplot2::aes(color=true_label),
+      formula=y~x, method="lm", show.legend=FALSE
+    )+
     ggplot2::geom_point()+
     ggplot2::scale_color_manual(values=color_dict) +
     ggplot2::scale_x_continuous(breaks=c(0,1)) +
     ggplot2::scale_y_continuous(breaks=seq(0,1,0.25)) +
     ggplot2::facet_wrap(.~true_label,nrow=2)+
-    ggplot2::theme_classic(base_size=14) +
+    ggplot2::theme_classic(base_size=base_size) +
     ggplot2::guides(fill=ggplot2::guide_legend(nrow=1,byrow=TRUE))+
     ggplot2::theme(legend.position="bottom")
 
@@ -483,18 +498,18 @@ deconvolution_barplot <- function(
       sample_id = !!ggplot2::sym(sample_id_column),
       true_label = !!ggplot2::sym(true_label_column)
     ) %>%
-    dplyr::select(sample_id, true_label)
+    dplyr::select(.data$sample_id, .data$true_label)
 
   dat <- deconvoluted_data %>%
     dplyr::left_join(
       set_meta,
       by="sample_id"
     ) %>%
-    dplyr::arrange(true_label, sample_id) %>%
-    dplyr::group_by(sample_id) %>%
-    dplyr::mutate(ct=forcats::fct_reorder(cell_type, order(true_label))) %>%
-    dplyr::group_by(ct) %>%
-    dplyr::mutate(ss=forcats::fct_reorder(sample_id, order(true_label, sample_id)))
+    dplyr::arrange(.data$true_label, .data$sample_id) %>%
+    dplyr::group_by(.data$sample_id) %>%
+    dplyr::mutate(ct=forcats::fct_reorder(.data$cell_type, order(.data$true_label))) %>%
+    dplyr::group_by(.data$ct) %>%
+    dplyr::mutate(ss=forcats::fct_reorder(.data$sample_id, order(.data$true_label, .data$sample_id)))
 
   if(is.null(color_dict)){
     n_color <- dat$ct %>% levels %>% length
@@ -503,21 +518,21 @@ deconvolution_barplot <- function(
   }
 
   plt <- dat %>%
-    ggplot2::ggplot(ggplot2::aes(x=ss, y=proportion, fill=ct)) +
-    ggplot2::geom_bar(stat="identity") +
-    ggplot2::geom_tile(ggplot2::aes(y=-0.05, fill=true_label, height=0.05)) +
-    ggplot2::geom_tile(ggplot2::aes(y=1.05, fill=true_label, height=0.05)) +
-    ggplot2::scale_fill_manual(values=color_dict,na.value = "#000000") +
-    ggplot2::scale_y_continuous(limits=c(-0.08, 1.08), breaks=seq(0, 1, 0.25)) +
-    ggplot2::theme_classic(base_size=14)+
-    ggplot2::labs(x="Samples",y="Proportion") +
-    ggplot2::guides(fill=ggplot2::guide_legend(nrow=2,byrow=TRUE)) +
+    ggplot2::ggplot(ggplot2::aes(x = .data$ss, y = .data$proportion, fill = .data$ct)) +
+    ggplot2::geom_bar(stat = "identity") +
+    ggplot2::geom_tile(ggplot2::aes(y = -0.05, fill = .data$true_label, height = 0.05)) +
+    ggplot2::geom_tile(ggplot2::aes(y = 1.05, fill = .data$true_label, height = 0.05)) +
+    ggplot2::scale_fill_manual(values = color_dict, na.value = "#000000") +
+    ggplot2::scale_y_continuous(limits = c(-0.08, 1.08), breaks = seq(0, 1, 0.25)) +
+    ggplot2::theme_classic(base_size = base_size)+
+    ggplot2::labs(x = "Samples", y = "Proportion") +
+    ggplot2::guides(fill = ggplot2::guide_legend(nrow = 2,byrow = TRUE)) +
     ggplot2::theme(
-      axis.text.x=if(show_x_label) ggplot2::element_text(angle=90,vjust=0,hjust=0) else ggplot2::element_blank(),
-      legend.position="bottom",
+      axis.text.x = if(show_x_label) ggplot2::element_text(angle = 90, vjust = 0, hjust = 0) else ggplot2::element_blank(),
+      legend.position = "bottom",
       ...
     )
 
-  return(list(data=dat, plot=plt))
+  return(list(data = dat, plot = plt))
 }
 
