@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9007</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9010</span>
       </span>
     </div>
 
@@ -85,7 +85,7 @@
       <h1 data-toc-skip>Generate signatures</h1>
                         <h4 data-toc-skip class="author">Tiago Maié</h4>
             
-            <h4 data-toc-skip class="date">2022-07-07</h4>
+            <h4 data-toc-skip class="date">2022-07-12</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/CostaLab/CimpleG/blob/HEAD/vignettes/generate-signatures.Rmd" class="external-link"><code>vignettes/generate-signatures.Rmd</code></a></small>
       <div class="hidden name"><code>generate-signatures.Rmd</code></div>
@@ -117,7 +117,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/CostaLab/CimpleG" class="external-link">"CimpleG"</a></span><span class="op">)</span>
 <span class="co">#&gt; --------------------------</span>
-<span class="co">#&gt; CimpleG version 0.0.4.9007</span>
+<span class="co">#&gt; CimpleG version 0.0.4.9010</span>
 <span class="co">#&gt; --------------------------</span></code></pre></div>
 </div>
 <div class="section level3">
@@ -139,16 +139,45 @@
   <span class="va">train_data</span>,
   <span class="va">train_targets</span>,
   target_columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CELL_TYPE_BLOOD.CELLS"</span>,<span class="st">"CELL_TYPE_HEPATOCYTES"</span><span class="op">)</span>,
-  train_only <span class="op">=</span> <span class="cn">TRUE</span>,
-  method <span class="op">=</span> <span class="st">"CimpleG"</span>
+  train_only <span class="op">=</span> <span class="cn">TRUE</span>
 <span class="op">)</span>
-<span class="co">#&gt; Training for target 'CELL_TYPE_BLOOD.CELLS' with 'CimpleG' has finished.: 1.524 sec elapsed</span>
-<span class="co">#&gt; Training for target 'CELL_TYPE_HEPATOCYTES' with 'CimpleG' has finished.: 0.416 sec elapsed</span></code></pre></div>
+<span class="co">#&gt; Training for target 'CELL_TYPE_BLOOD.CELLS' with 'CimpleG' has finished.: 1.812 sec elapsed</span>
+<span class="co">#&gt; Training for target 'CELL_TYPE_HEPATOCYTES' with 'CimpleG' has finished.: 0.321 sec elapsed</span></code></pre></div>
 <p>Here we are generating signatures to find leukocytes and hepatocytes.</p>
+</div>
+<div class="section level3">
+<h3 id="plotting-cimpleg-cpg-signature">Plotting CimpleG CpG signature<a class="anchor" aria-label="anchor" href="#plotting-cimpleg-cpg-signature"></a>
+</h3>
 <p>We can quickly visualize how our signature is able to separate the data.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># plot_signature(cimpleg_result,train_data)</span>
-<span class="co"># TODO</span></code></pre></div>
+<code class="sourceCode R"><span class="va">train_targets</span><span class="op">$</span><span class="va">targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"CELL_TYPE_"</span>,<span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE</span><span class="op">)</span>
+
+<span class="fu"><a href="../reference/signature_plot.html">signature_plot</a></span><span class="op">(</span>
+  <span class="va">cimpleg_result</span>,
+  <span class="va">train_data</span>,
+  <span class="va">train_targets</span>,
+  sample_id_column <span class="op">=</span> <span class="st">"GSM"</span>,
+  true_label_column <span class="op">=</span> <span class="st">"targets"</span>
+<span class="op">)</span>
+<span class="co">#&gt; $data</span>
+<span class="co">#&gt; <span style="color: #949494;"># A tibble: 818 × 5</span></span>
+<span class="co">#&gt; <span style="color: #949494;"># Groups:   sig_set [2]</span></span>
+<span class="co">#&gt;    sample_id  true_label           signatures value sig_set              </span>
+<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                </span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> GSM1415516 CELL_TYPE_ADIPOCYTES cg04785083 0.922 CELL_TYPE_BLOOD.CELLS</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> GSM1415516 CELL_TYPE_ADIPOCYTES cg02258444 0.938 CELL_TYPE_HEPATOCYTES</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> GSM1415518 CELL_TYPE_ADIPOCYTES cg04785083 0.932 CELL_TYPE_BLOOD.CELLS</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> GSM1415518 CELL_TYPE_ADIPOCYTES cg02258444 0.912 CELL_TYPE_HEPATOCYTES</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> GSM1415520 CELL_TYPE_ADIPOCYTES cg04785083 0.923 CELL_TYPE_BLOOD.CELLS</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> GSM1415520 CELL_TYPE_ADIPOCYTES cg02258444 0.907 CELL_TYPE_HEPATOCYTES</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> GSM1415522 CELL_TYPE_ADIPOCYTES cg04785083 0.936 CELL_TYPE_BLOOD.CELLS</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> GSM1415522 CELL_TYPE_ADIPOCYTES cg02258444 0.908 CELL_TYPE_HEPATOCYTES</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> GSM1415526 CELL_TYPE_ADIPOCYTES cg04785083 0.938 CELL_TYPE_BLOOD.CELLS</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> GSM1415526 CELL_TYPE_ADIPOCYTES cg02258444 0.905 CELL_TYPE_HEPATOCYTES</span>
+<span class="co">#&gt; <span style="color: #949494;"># … with 808 more rows</span></span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $plot</span></code></pre></div>
+<p><img src="generate-signatures_files/figure-html/plot_cimpleg-1.png" width="700"></p>
 </div>
 </div>
   </div>
