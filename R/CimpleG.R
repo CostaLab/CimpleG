@@ -623,12 +623,19 @@ CimpleG_main <- function(
 
   if(deconvolution_reference){
 
-    non_train_samples <- which(rowSums(train_targets[,target_columns])==0)
-    target_vector <- names(train_targets[,target_columns])[max.col(train_targets[,target_columns])]
+    # select targets of interest
+    targets_oi <- train_targets %>% dplyr::select(target_columns)
+    # define which samples were not part of the training process
+    non_train_samples <- targets_oi %>% {rowSums(.) < 1} %>% which()
+    # create a vector the size of n_samples where each value will be the
+    # column names of targets_oi depending on which of its values is highest
+    target_vector <- names(targets_oi)[max.col(targets_oi)]
+    # rename samples that are not part of the training process
+    # even if these are present in the targets_oi (should not happen)
     target_vector[non_train_samples] <- "others"
 
-    if(any(grepl("target",colnames(train_data),fixed=TRUE))){
-      train_data <- train_data[,1:(ncol(train_data)-1)]
+    if(any(grepl("target", colnames(train_data), fixed=TRUE))){
+      train_data <- train_data[, 1:(ncol(train_data) - 1)]
     }
 
     ref_mat  <- make_deconv_ref_matrix(
