@@ -49,6 +49,7 @@ usethis::use_package("data.table")
 
 # suggested
 usethis::use_package("devtools", "suggests")
+usethis::use_package("withr", "suggests")
 # usethis::use_package("rules","suggests")
 usethis::use_package("stringr", "suggests")
 usethis::use_package("reshape2", "suggests")
@@ -102,6 +103,6 @@ usethis::use_import_from("dplyr", "%>%")
 usethis::use_import_from("rlang", ".data")
 usethis::use_data_table()
 
-usethis::use_testthat()
+usethis::use_testthat(parallel = TRUE)
 usethis::use_test("CimpleG")
 usethis::use_gpl_license()
