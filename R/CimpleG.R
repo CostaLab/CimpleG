@@ -662,7 +662,7 @@ CimpleG_main <- function(
 
     save_object(
       object = final_res,
-      file_name = file.path(save_dir, f_name),
+      file_name = file.path(save_dir, paste0(f_name,".rds.",save_format)),
       file_format = save_format
     )
   }
