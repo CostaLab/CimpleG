@@ -1,7 +1,7 @@
 
 # test parallel
 test_that("parallel processing works",{
-  # skip('parallel not working properly locally')
+  skip('parallel not working properly locally')
   # allow for enough obj size to be passed to futures
   library(future)
   gbl_max <- 2048*1024^2 # 1st term in MB

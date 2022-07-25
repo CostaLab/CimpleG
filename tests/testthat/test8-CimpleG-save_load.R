@@ -31,38 +31,38 @@ test_that("CimpleG result can be properly loaded from file", {
 
 test_that("save_object and load_object save and load data properly", {
 
-  withr::with_file("mtcars.rds.lz4", {
-    save_object(mtcars,file_name = "mtcars",file_format = "lz4")
-    expect_true(file.exists("mtcars.rds.lz4"))
-    load_res <- load_object("mtcars.rds.lz4")
-    expect_identical(load_res, mtcars)
-  })
-  withr::with_file("mtcars.rds.zstd", {
-    save_object(mtcars,file_name = "mtcars",file_format = "zstd")
-    expect_true(file.exists("mtcars.rds.zstd"))
-    load_res <- load_object("mtcars.rds.zstd")
-    expect_identical(load_res, mtcars)
-  })
   withr::with_file("mtcars.rds", {
-    save_object(mtcars,file_name = "mtcars",file_format = "bzip2")
+    save_object(mtcars,file_name = "mtcars.rds",file_format = "lz4")
     expect_true(file.exists("mtcars.rds"))
     load_res <- load_object("mtcars.rds")
     expect_identical(load_res, mtcars)
   })
   withr::with_file("mtcars.rds", {
-    save_object(mtcars,file_name = "mtcars",file_format = "gzip")
+    save_object(mtcars,file_name = "mtcars.rds",file_format = "zstd")
     expect_true(file.exists("mtcars.rds"))
     load_res <- load_object("mtcars.rds")
     expect_identical(load_res, mtcars)
   })
   withr::with_file("mtcars.rds", {
-    save_object(mtcars,file_name = "mtcars",file_format = "xz")
+    save_object(mtcars,file_name = "mtcars.rds",file_format = "bzip2")
     expect_true(file.exists("mtcars.rds"))
     load_res <- load_object("mtcars.rds")
     expect_identical(load_res, mtcars)
   })
   withr::with_file("mtcars.rds", {
-    save_object(mtcars,file_name = "mtcars",file_format = "nocomp")
+    save_object(mtcars,file_name = "mtcars.rds",file_format = "gzip")
+    expect_true(file.exists("mtcars.rds"))
+    load_res <- load_object("mtcars.rds")
+    expect_identical(load_res, mtcars)
+  })
+  withr::with_file("mtcars.rds", {
+    save_object(mtcars,file_name = "mtcars.rds",file_format = "xz")
+    expect_true(file.exists("mtcars.rds"))
+    load_res <- load_object("mtcars.rds")
+    expect_identical(load_res, mtcars)
+  })
+  withr::with_file("mtcars.rds", {
+    save_object(mtcars,file_name = "mtcars.rds",file_format = "nocomp")
     expect_true(file.exists("mtcars.rds"))
     load_res <- load_object("mtcars.rds")
     expect_identical(load_res, mtcars)
