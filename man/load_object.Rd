@@ -8,8 +8,8 @@ load_object(file_name)
 }
 \arguments{
 \item{file_name}{File name in the working directory or path to file
-to be loaded. Files saved with \code{CimpleG::save_object} and \code{.rds}
-files are supported. If the \code{archive} package is installed.}
+to be loaded. Files saved with \code{CimpleG::save_object} and \code{base::saveRDS}
+files are supported.}
 }
 \description{
 Load an R object saved with CimpleG or an RDS file.
