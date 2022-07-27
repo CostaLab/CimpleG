@@ -4,8 +4,9 @@ prep_summarizedexp_data <- function(data, target_columns){
   is_minfi_class <-
     class(data) %in% c("MethylSet", "GenomicMethylSet", "RGChannelSet", "GenomicRatioSet")
 
-  is_sumexp_class <- is(data) %in% "SummarizedExperiment"
+  is_sumexp_class <- "SummarizedExperiment" %in% is(data)
 
+  # TODO: add support for M values assay
   if(is_minfi_class & requireNamespace("minfi", quietly = TRUE)){
 
     beta_mat <- minfi::getBeta(data)
@@ -63,34 +64,36 @@ prep_summarizedexp_data <- function(data, target_columns){
     function(dcols){!all(dcols %in% c(0,1))}
   ))
 
-  # make cols to edit factor
-  df_targets[names(cols_to_edit)] <- lapply(
-    df_targets[names(cols_to_edit)],factor
-  )
-
-  # find in each col to edit (targets that are not 0/1) which of the values
-  # is in a smaller proportion, these values will become 1
-  # fetch_col will be a named vector where the values are the minority "class"
-  # and the names are the name of the corresponding column
-  fetch_col <- sapply(
-    df_targets[names(cols_to_edit)],
-    function(x){ levels(x)[which.min(tabulate(x))] }
-  )
-
-  # make cols one-hot encoded
-  df_targets <- as.data.frame(
-    mltools::one_hot(
-      dt = data.table::as.data.table(df_targets),
-      cols = names(cols_to_edit),
-      dropCols = FALSE
+  if(length(cols_to_edit)){
+    # make cols to edit factor
+    df_targets[names(cols_to_edit)] <- lapply(
+      df_targets[names(cols_to_edit)],factor
     )
-  )
-  # for each col that needs to be edited, fetch it and the corresponding name
-  # created by one_hot
-  df_targets[,names(fetch_col)] <- lapply(
-    names(fetch_col),
-    function(x){df_targets[,paste0(x, "_", fetch_col[x])]}
-  )
+
+    # find in each col to edit (targets that are not 0/1) which of the values
+    # is in a smaller proportion, these values will become 1
+    # fetch_col will be a named vector where the values are the minority "class"
+    # and the names are the name of the corresponding column
+    fetch_col <- sapply(
+      df_targets[names(cols_to_edit)],
+      function(x){ levels(x)[which.min(tabulate(x))] }
+    )
+
+    # make cols one-hot encoded
+    df_targets <- as.data.frame(
+      mltools::one_hot(
+        dt = data.table::as.data.table(df_targets),
+        cols = names(cols_to_edit),
+        dropCols = FALSE
+      )
+    )
+    # for each col that needs to be edited, fetch it and the corresponding name
+    # created by one_hot
+    df_targets[,names(fetch_col)] <- lapply(
+      names(fetch_col),
+      function(x){df_targets[,paste0(x, "_", fetch_col[x])]}
+    )
+  }
 
   return(list(beta_mat = beta_mat, df_targets = df_targets))
 }
