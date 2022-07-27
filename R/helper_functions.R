@@ -561,7 +561,7 @@ find_best_predictors <- function(
   dt_dmsv <- dt_dmsv[
     p_type == "both" |
     (pred_type & p_type == "hyper") |
-    (pred_type & p_type == "hypo"),
+    (!pred_type & p_type == "hypo"),
   ]
 
   # Get relevant features
