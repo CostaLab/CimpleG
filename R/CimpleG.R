@@ -450,10 +450,7 @@ CimpleG_main <- function(
   # due to NSE notes in R CMD check
   id <- train_rank <- NULL
 
-  #TODO: make the "new" method the main one!
-  is_simple_method <- method %in% c(
-    "CimpleG_parab","brute_force"
-  )
+  is_simple_method <- method %in% c("CimpleG_parab", "brute_force")
   is_cimpleg <- method %in% "CimpleG"
 
   if(is_cimpleg){
@@ -462,6 +459,8 @@ CimpleG_main <- function(
       train_data <- as.data.frame(train_data)
       data.table::setDT(train_data)
     }else if(is.data.frame(train_data)){
+      # TODO: check possible efficiency issues with this data.table::copy
+      train_data <- data.table::copy(train_data)
       data.table::setDT(train_data)
     }
     if(!train_only){
@@ -469,6 +468,8 @@ CimpleG_main <- function(
         test_data <- as.data.frame(test_data)
         data.table::setDT(test_data)
       }else if(is.data.frame(test_data)){
+        # TODO: check possible efficiency issues with this data.table::copy
+        test_data <- data.table::copy(test_data)
         data.table::setDT(test_data)
       }
     }
