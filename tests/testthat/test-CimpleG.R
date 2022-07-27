@@ -205,8 +205,8 @@ test_that("input data is not changed regardless of input format", {
 
   set.seed(42)
   res <- CimpleG(
-    train_data = se_train,
-    test_data = se_test,
+    train_data = dat_used,
+    test_data = tdat_used,
     method = "CimpleG",
     target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
     verbose=0
