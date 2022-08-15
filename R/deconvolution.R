@@ -223,8 +223,7 @@ make_deconv_ref_matrix <- function(
       cpg_obj$results %>%
       purrr::map_df(
         function(x){
-          # pres <- workflows:::predict.workflow(
-          pres <- predict(
+          pres <- workflows:::predict.workflow(
             object=x$train_res,
             new_data=ref_data,
             type="prob"
@@ -277,8 +276,7 @@ deconv_ml <- function(
     cpg_obj$results %>%
     purrr::map_dfr(
       function(x){
-        # workflows:::predict.workflow(
-        predict(
+        workflows:::predict.workflow(
           object=x$train_res,
           new_data=new_data,
           type="prob"
