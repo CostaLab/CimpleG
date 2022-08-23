@@ -19,6 +19,34 @@ test_that("signatures and deconv w/ CimpleG", {
   expect_identical(res$signatures, c(CELL_TYPE_MSCORFIBRO="cg03369247", CELL_TYPE_NEURONS="cg24548498"))
 })
 
+test_that("CimpleG alias", {
+
+  set.seed(42)
+  alias1 <- cimpleg(
+    train_data = train_data,
+    train_targets = train_targets,
+    test_data = test_data,
+    test_targets = test_targets,
+    method = "CimpleG",
+    target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+    verbose=0
+    )
+  set.seed(42)
+  alias2 <- cpg(
+    train_data = train_data,
+    train_targets = train_targets,
+    test_data = test_data,
+    test_targets = test_targets,
+    method = "CimpleG",
+    target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+    verbose=0
+    )
+
+  # check results
+  expect_identical(alias1$signatures, c(CELL_TYPE_MSCORFIBRO="cg03369247", CELL_TYPE_NEURONS="cg24548498"))
+  expect_identical(alias2$signatures, c(CELL_TYPE_MSCORFIBRO="cg03369247", CELL_TYPE_NEURONS="cg24548498"))
+})
+
 test_that("signatures w/ CimpleG when using SummarizedExperiment as input", {
 
   se_train <- SummarizedExperiment::SummarizedExperiment(

@@ -2,9 +2,61 @@
 % Please edit documentation in R/CimpleG.R
 \name{CimpleG}
 \alias{CimpleG}
+\alias{cimpleg}
+\alias{cpg}
 \title{Find simple CpG (CimpleG) signatures.}
 \usage{
 CimpleG(
+  train_data,
+  train_targets = NULL,
+  target_columns = NULL,
+  test_data = NULL,
+  test_targets = NULL,
+  method = c("CimpleG", "CimpleG_parab", "brute_force", "logistic_reg",
+    "decision_tree", "boost_tree", "mlp", "rand_forest"),
+  pred_type = c("both", "hypo", "hyper"),
+  engine = c("glmnet", "xgboost", "nnet", "ranger"),
+  rank_method = c("ac_rank", "a_rank", "c_rank"),
+  k_folds = 10,
+  grid_n = 10,
+  param_p = 2,
+  quantile_threshold = 0.005,
+  train_only = FALSE,
+  split_data = FALSE,
+  run_parallel = FALSE,
+  deconvolution_reference = TRUE,
+  save_dir = NULL,
+  save_format = c("zstd", "lz4", "gzip", "bzip2", "xz", "nocomp"),
+  verbose = 1,
+  targets = NULL
+)
+
+cimpleg(
+  train_data,
+  train_targets = NULL,
+  target_columns = NULL,
+  test_data = NULL,
+  test_targets = NULL,
+  method = c("CimpleG", "CimpleG_parab", "brute_force", "logistic_reg",
+    "decision_tree", "boost_tree", "mlp", "rand_forest"),
+  pred_type = c("both", "hypo", "hyper"),
+  engine = c("glmnet", "xgboost", "nnet", "ranger"),
+  rank_method = c("ac_rank", "a_rank", "c_rank"),
+  k_folds = 10,
+  grid_n = 10,
+  param_p = 2,
+  quantile_threshold = 0.005,
+  train_only = FALSE,
+  split_data = FALSE,
+  run_parallel = FALSE,
+  deconvolution_reference = TRUE,
+  save_dir = NULL,
+  save_format = c("zstd", "lz4", "gzip", "bzip2", "xz", "nocomp"),
+  verbose = 1,
+  targets = NULL
+)
+
+cpg(
   train_data,
   train_targets = NULL,
   target_columns = NULL,

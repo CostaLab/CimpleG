@@ -414,6 +414,15 @@ CimpleG.SummarizedExperiment <- function(
 }
 
 
+#' @rdname CimpleG
+#' @export
+cimpleg <- CimpleG
+
+#' @rdname CimpleG
+#' @export
+cpg <- CimpleG
+
+
 CimpleG_main <- function(
   train_data,
   train_targets = NULL,
