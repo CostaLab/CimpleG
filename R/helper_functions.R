@@ -1399,7 +1399,7 @@ compute_diffmeans_sumvar <- function(data, target_vector) {
       ))
       if(Sys.info()['sysname']=="Linux"){
         warning(paste0(
-            "Since you are using a linux distribution, you might need to install the system library 'libgsl-dev'.\n",
+            "Since you are using a linux distribution, you might need to install the system library 'libgsl-dev'.\n"
         ))
       }
       data <- as.matrix(data)
