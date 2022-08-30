@@ -909,9 +909,9 @@ train_general_model <- function(
 
     general_model <-
       parsnip::decision_tree(
-        cost_complexity=0.01,
+        cost_complexity=0.01, # Default
         tree_depth=tune::tune(),
-        min_n=2
+        min_n=2 # Default
       ) %>%
       parsnip::set_engine(
         "rpart",
@@ -931,20 +931,20 @@ train_general_model <- function(
     general_model <-
       # specify the model
       parsnip::boost_tree(
-        tree_depth = 6,
+        tree_depth = 6, # Default
         trees = tune::tune(),
-        learn_rate=0.3,
-        mtry = 100L, # max number of feats used
-        min_n = 1,
-        loss_reduction=0.0,
-        sample_size=1.0,
-        stop_iter = Inf
+        learn_rate=0.3, # Default
+        mtry = 100L, # Randomly selected predictors
+        min_n = 1, # Default
+        loss_reduction=0.0, # Default
+        sample_size=1.0, # Default
+        stop_iter = Inf # Default
       ) %>%
       parsnip::set_engine(
         "xgboost",
-        objective = "binary:logistic",
-        eval_metric="aucpr",
-        maximize=TRUE
+        objective = "binary:logistic", # Specific for binary classification
+        eval_metric="aucpr", # AUPR in line with the rest of the package
+        maximize=TRUE # We want to maximize AUPR
       )
   }
 
@@ -967,7 +967,7 @@ train_general_model <- function(
       parsnip::mlp(
         hidden_units = tune::tune(),
         penalty = tune::tune(),
-        epochs = 100
+        epochs = 100L # Default
       ) %>%
       parsnip::set_engine(
         "nnet",
@@ -992,8 +992,8 @@ train_general_model <- function(
       # specify the model
       parsnip::rand_forest(
         trees = tune::tune(),
-        min_n = 1,
-        mtry = floor(sqrt(ncol(train_data)))
+        min_n = 1, # Set to 1, default is 1 in ranger but 10 for classification in tidymodels
+        mtry = floor(sqrt(ncol(train_data))) # Default w/ ranger
       ) %>%
       parsnip::set_engine(
         "ranger",
