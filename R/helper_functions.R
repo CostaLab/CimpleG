@@ -254,47 +254,78 @@ eval_test <- function(
 }
 
 
+#' Predict outcome from a CimpleG signatures on new data
+#' @param object CimpleG object.
+#' @param new_data Data to be predicted, samples should be in rows and features in columns.
+#'  Last column of `new_data` should have the target/class labels coded as 0 or 1.
+#' @param idx An integer, the numerical index of the signature in the CimpleG result you want to predict for.
+#' @export
 predict.CimpleG <- function(
   object,
   new_data,
-  meth=c("hypo","hyper")
+  idx=1,
+  meth=c("hypo", "hyper")
 ){
 
   # due to NSE notes in R CMD check
   prediction_optimal <- prediction_default <- optimal_bins <- .metric <- NULL
 
   # assume object is cpg or CimpleG obj
-  assertthat::assert_that(is.character(object) | "CimpleG" %in% is(object))
-  if(!is.character(object)){
-    abort("TODO: implement")
+  assertthat::assert_that(is.CimpleG(object))
+  assertthat::assert_that(is.data.frame(new_data))
+
+  # check if feature is in new data
+  assertthat::assert_that(object$signatures[idx] %in% colnames(new_data))
+
+  # check if last column is target
+  assertthat::assert_that(
+    (new_data[,ncol(new_data)] |> as.factor() |> levels() |> length()) == 2,
+    msg = "The last column of the new_data object does not have 2 classes/labels."
+  )
+  assertthat::assert_that(all(new_data[,ncol(new_data)] %in% c(0,1)))
+
+  if(!data.table::is.data.table(new_data)){
+    new_data <- data.table::copy(new_data)
+    data.table::setDT(new_data)
   }
 
-  if(!data.table::is.data.table(new_data)) data.table::setDT(new_data)
+  # get sig to predict
+  sig <- object$signatures[idx]
 
-  assertthat::assert_that(object %in% colnames(new_data))
-
-  # assume last col is target
+  # assume last col in new_data is target/class column
   target_name <- names(new_data)[ncol(new_data)]
 
-  get_cols <- c(object,target_name)
+  get_cols <- c(sig, target_name)
   #   target_vec <- new_data[,ncol(new_data),with=FALSE]
   #   predictor_vec <- new_data[,object,with=FALSE]
-
   #   tbl_pred_target <- new_data[,..get_cols]
-  tbl_pred_target <- new_data[,.SD,.SDcols=get_cols]
+  tbl_pred_target <- new_data[, .SD, .SDcols = get_cols]
 
-  if(meth=="hypo"){
-    tbl_pred_target[,(object):= 1 - .SD, .SDcols=object]
-  }
+  tbl_pred_target[, (target_name) := lapply(
+    .SD,
+    function(vf){
+      ret_var <- as.factor(paste0("X",vf))
+      ret_var <- stats::relevel(ret_var, "X1")
+      return(ret_var)
+    }
+    ), .SDcols=target_name]
+
+  # get meth status of signature
+  is_hyper <-
+    object$results[[names(sig)]]$train_res$train_results %>%
+    dplyr::filter(id==sig) %>% dplyr::pull(pred_type)
+
+  # if hypo, invert values
+  if(!is_hyper) tbl_pred_target[, (sig) := 1 - .SD, .SDcols=sig]
 
   # Class prediction with optimal binning from information gain
   tbl_pred_target[, prediction_optimal:= OneR::optbin(.SD, method="infogain")[[1]], ]
-  levels(tbl_pred_target$prediction_optimal) <- c("X0","X1")
-  tbl_pred_target$prediction_optimal <- stats::relevel(tbl_pred_target$prediction_optimal,"X1")
-  tbl_pred_target[, optimal_bins:= OneR::optbin(.SD, method="infogain")[[1]], ]
+  tbl_pred_target[, optimal_bins := prediction_optimal ]
+  levels(tbl_pred_target$prediction_optimal) <- c("X0", "X1")
+  tbl_pred_target$prediction_optimal <- stats::relevel(tbl_pred_target$prediction_optimal, "X1")
 
   # Default class prediction, hypermethylated if over 0.5, hypomethylated otherwise
-  tbl_pred_target[, prediction_default := factor(ifelse(.SD >= 0.5, "X1", "X0"),levels=c("X1","X0")),.SDcols=object]
+  tbl_pred_target[, prediction_default := factor(ifelse(.SD >= 0.5, "X1", "X0"),levels=c("X1","X0")),.SDcols=sig]
 
   # method that we use in training is: prroc_prauc_vec(estimate = 1 - x, truth = true_v)
   class_prob_metrics <- yardstick::metric_set(
@@ -312,10 +343,11 @@ predict.CimpleG <- function(
   res <- class_prob_metrics(
     data = tbl_pred_target,
     truth = !! rlang::enquo(target_name),
-    object, ## prob
+    sig, ## prob
     estimate = prediction_default, ## class
     estimator = "binary"
   )[,c(".metric",".estimate")]
+  
   res_opt <- opt_metrics(
     data = tbl_pred_target,
     truth = !! rlang::enquo(target_name),
@@ -323,15 +355,14 @@ predict.CimpleG <- function(
     estimator = "binary"
   )[,c(".metric",".estimate")]
 
-  #   res_opt[.metric=="accuracy",.metric:="accuracy_opt"]
-  #   res_opt[.metric=="f_meas",.metric:="f_meas_opt"]
-  res_opt <- res_opt %>% dplyr::mutate(.metric = base::replace(.metric,.metric=="accuracy","accuracy_optimal"))
-  res_opt <- res_opt %>% dplyr::mutate(.metric = base::replace(.metric,.metric=="f_meas","f_optimal"))
+  res_opt <-
+    res_opt %>%
+    dplyr::mutate(.metric = base::replace(.metric,.metric=="accuracy","accuracy_optimal")) %>%
+    dplyr::mutate(.metric = base::replace(.metric,.metric=="f_meas","f_optimal"))
   res <- rbind(res,res_opt)
   res <- res[order(res$.metric),]
 
-  data.table::setnames(tbl_pred_target,object,paste0("prob.",object))
-  #   col_order <- c(paste0("prob.",object),"prediction","target")
+  data.table::setnames(tbl_pred_target,sig,paste0("prob.",sig))
 
   return(list(results=res,table=tbl_pred_target[]))
 }
