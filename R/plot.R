@@ -1,3 +1,5 @@
+# TODO make dmsv_plot the default of this kind
+
 #' Represent CpGs in the difference in means, sum of variances space.
 #' This plot is often used to select CpGs that would be good classifiers.
 #' These CpGs are often located on the bottom left and
