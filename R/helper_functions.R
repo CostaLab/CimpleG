@@ -443,7 +443,7 @@ cv_loop <- function(
     train_data$target,
     k = k_folds,
     # if returnTrain=TRUE when k=1, returns nothing
-    returnTrain = ifelse(k_folds < 2, FALSE, TRUE),
+    returnTrain = !(k_folds < 2),
     list=TRUE
   )
 
@@ -577,7 +577,7 @@ find_best_predictors <- function(
   tictoc::tic(split_train_set$id %>% unlist())
 
   # Train data
-  train_set <- data.table::copy(rsample::analysis(split_train_set))
+  train_set <- data.table::copy(split_train_set$data[split_train_set$in_id,])
   # Truth labels
   tru_v <- train_set$target == p_class
 
@@ -637,7 +637,7 @@ find_best_predictors <- function(
   data.table::setorder(dt_dmsv, -train_aupr)
 
   # Validation data
-  holdout_set <- rsample::assessment(split_train_set)
+  holdout_set <- data.table::copy(split_train_set$data[split_train_set$out_id,])
 
   # Metrics on validation data
   hyper_aupr <- holdout_set[,
