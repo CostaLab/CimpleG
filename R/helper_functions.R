@@ -268,7 +268,7 @@ predict.CimpleG <- function(
 ){
 
   # due to NSE notes in R CMD check
-  prediction_optimal <- prediction_default <- optimal_bins <- .metric <- NULL
+  prediction_optimal <- prediction_default <- optimal_bins <- .metric <- id <- pred_type <- NULL
 
   # assume object is cpg or CimpleG obj
   assertthat::assert_that(is.CimpleG(object))
@@ -279,10 +279,10 @@ predict.CimpleG <- function(
 
   # check if last column is target
   assertthat::assert_that(
-    (new_data[,ncol(new_data)] |> as.factor() |> levels() |> length()) == 2,
+    (new_data[, ncol(new_data)] |> as.factor() |> levels() |> length()) == 2,
     msg = "The last column of the new_data object does not have 2 classes/labels."
   )
-  assertthat::assert_that(all(new_data[,ncol(new_data)] %in% c(0,1)))
+  assertthat::assert_that(all(new_data[, ncol(new_data)] %in% c(0, 1)))
 
   if(!data.table::is.data.table(new_data)){
     new_data <- data.table::copy(new_data)
@@ -296,9 +296,6 @@ predict.CimpleG <- function(
   target_name <- names(new_data)[ncol(new_data)]
 
   get_cols <- c(sig, target_name)
-  #   target_vec <- new_data[,ncol(new_data),with=FALSE]
-  #   predictor_vec <- new_data[,object,with=FALSE]
-  #   tbl_pred_target <- new_data[,..get_cols]
   tbl_pred_target <- new_data[, .SD, .SDcols = get_cols]
 
   tbl_pred_target[, (target_name) := lapply(
@@ -308,12 +305,12 @@ predict.CimpleG <- function(
       ret_var <- stats::relevel(ret_var, "X1")
       return(ret_var)
     }
-    ), .SDcols=target_name]
+    ), .SDcols = target_name]
 
   # get meth status of signature
   is_hyper <-
     object$results[[names(sig)]]$train_res$train_results %>%
-    dplyr::filter(id==sig) %>% dplyr::pull(pred_type)
+    dplyr::filter(id == sig) %>% dplyr::pull(pred_type)
 
   # if hypo, invert values
   if(!is_hyper) tbl_pred_target[, (sig) := 1 - .SD, .SDcols=sig]
@@ -346,25 +343,25 @@ predict.CimpleG <- function(
     sig, ## prob
     estimate = prediction_default, ## class
     estimator = "binary"
-  )[,c(".metric",".estimate")]
+  )[, c(".metric", ".estimate")]
   
   res_opt <- opt_metrics(
     data = tbl_pred_target,
     truth = !! rlang::enquo(target_name),
     estimate = prediction_optimal, ## class
     estimator = "binary"
-  )[,c(".metric",".estimate")]
+  )[, c(".metric", ".estimate")]
 
   res_opt <-
     res_opt %>%
-    dplyr::mutate(.metric = base::replace(.metric,.metric=="accuracy","accuracy_optimal")) %>%
-    dplyr::mutate(.metric = base::replace(.metric,.metric=="f_meas","f_optimal"))
-  res <- rbind(res,res_opt)
+    dplyr::mutate(.metric = base::replace(.metric, .metric=="accuracy", "accuracy_optimal")) %>%
+    dplyr::mutate(.metric = base::replace(.metric, .metric=="f_meas", "f_optimal"))
+  res <- rbind(res, res_opt)
   res <- res[order(res$.metric),]
 
-  data.table::setnames(tbl_pred_target,sig,paste0("prob.",sig))
+  data.table::setnames(tbl_pred_target, sig, paste0("prob.", sig))
 
-  return(list(results=res,table=tbl_pred_target[]))
+  return(list(results=res, table=tbl_pred_target[]))
 }
 
 
@@ -583,7 +580,6 @@ find_best_predictors <- function(
 
   # Compute delta sigma space (diffmeans, sumvars)
   dt_dmsv <- compute_diffmeans_sumvar(
-    #     data=train_set[,-ncol(train_set)],
     data = train_set[, -ncol(train_set), with=FALSE],
     target_vector = tru_v
   )
@@ -1441,6 +1437,7 @@ compute_diffmeans_sumvar <- function(data, target_vector) {
 
   id <- colnames(data)
 
+  # Rfast::colmeans and Rfast::colVars don't seem to be significantly faster at this time
   diff_means <-
     matrixStats::colMeans2(data, rows=target_vector) - matrixStats::colMeans2(data, rows=!target_vector)
 
