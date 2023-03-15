@@ -70,16 +70,16 @@ do_cv <- function(
     dplyr::mutate(truth = stats::relevel(.data$truth, "positive_class")) %>%
     dplyr::mutate(prediction = stats::relevel(.data$prediction, "positive_class")) %>%
     dplyr::group_by(
-      .data$resample,
-      .data$predictor,
-      .data$type,
+      resample,
+      predictor,
+      type,
       dplyr::across(tidyselect::any_of("parab_param")),
       dplyr::across(tidyselect::any_of("diff_means"))
     ) %>%
     class_prob_metrics(
-      .data$truth,
-      .data$positive_prob,
-      estimate = .data$prediction
+      truth,
+      positive_prob,
+      estimate = prediction
     ) %>%
     dplyr::group_by(.data$predictor, .data$type, .data$.metric)
 
@@ -263,105 +263,151 @@ eval_test <- function(
 predict.CimpleG <- function(
   object,
   new_data,
-  idx=1,
-  meth=c("hypo", "hyper")
+  class_labels = NULL
 ){
 
   # due to NSE notes in R CMD check
-  prediction_optimal <- prediction_default <- optimal_bins <- .metric <- id <- pred_type <- NULL
+  prediction_optimal <- prediction_default <- NULL
+  optimal_bins <- .metric <- id <- pred_type <- NULL
 
   # assume object is cpg or CimpleG obj
-  assertthat::assert_that(is.CimpleG(object))
-  assertthat::assert_that(is.data.frame(new_data))
-
-  # check if feature is in new data
-  assertthat::assert_that(object$signatures[idx] %in% colnames(new_data))
-
-  # check if last column is target
-  assertthat::assert_that(
-    (new_data[, ncol(new_data)] |> as.factor() |> levels() |> length()) == 2,
-    msg = "The last column of the new_data object does not have 2 classes/labels."
-  )
-  assertthat::assert_that(all(new_data[, ncol(new_data)] %in% c(0, 1)))
-
-  if(!data.table::is.data.table(new_data)){
-    new_data <- data.table::copy(new_data)
-    data.table::setDT(new_data)
+  # if it isnt, then it should be a character vector with the probes to test
+  if (is.CimpleG(object)) {
+    # check if feature is in new data
+    assertthat::assert_that(
+      any(object$signatures %in% colnames(new_data)),
+      msg = "No signatures in CimpleG object present in new_data."
+    )
+    sigs <- object$signatures
+  } else {
+    assertthat::assert_that(is.character(object))
+    assertthat::assert_that(all(stringr::str_length(object) > 0))
+    assertthat::assert_that(any(is.element(object, colnames(new_data))))
+    sigs <- object
   }
 
-  # get sig to predict
-  sig <- object$signatures[idx]
+  # new_data asserts
+  assertthat::assert_that(is.data.frame(new_data))
 
-  # assume last col in new_data is target/class column
-  target_name <- names(new_data)[ncol(new_data)]
+  if (is.null(class_labels)) {
+    # check if last column is target
+    assertthat::assert_that(
+      (new_data[, ncol(new_data)] |> as.factor() |> levels() |> length()) == 2,
+      msg = paste0(
+        "The last column of the new_data ",
+        "object does not have 2 classes/labels."
+      )
+    )
+    assertthat::assert_that(all(new_data[, ncol(new_data)] %in% c(0, 1)))
+  } else {
+    assertthat::assert_that(
+      class_labels |> as.factor() |> levels() |> length() == 2,
+      msg = paste0(
+        "The provided class labels do not have ",
+        "exactly 2 distinct groups (1 and 0)."
+      )
+    )
+    assertthat::assert_that(length(class_labels) == nrow(new_data))
+    assertthat::assert_that(all(class_labels %in% c(0, 1)))
+  }
 
-  get_cols <- c(sig, target_name)
-  tbl_pred_target <- new_data[, .SD, .SDcols = get_cols]
+  # turn new_data into DT
+  new_data <- data.table::copy(new_data)
+  data.table::setDT(new_data)
 
-  tbl_pred_target[, (target_name) := lapply(
-    .SD,
-    function(vf){
-      ret_var <- as.factor(paste0("X",vf))
-      ret_var <- stats::relevel(ret_var, "X1")
-      return(ret_var)
+  sigs_not_present <- setdiff(sigs, colnames(new_data))
+  sigs <- sigs[is.element(sigs, colnames(new_data))]
+
+  message(
+    paste0(
+      ifelse(
+        length(sigs_not_present) == 1,
+        "The following signature is not present in the data:\n",
+        "The following signatures are not present in the data:\n"
+      ),
+      paste0(sigs_not_present, collapse = ", ")
+    )
+  )
+
+  pred_res <- purrr::map(
+    .x=seq_along(sigs),
+    function(sig_id){
+
+      sig <- sigs[sig_id]
+      name_sig <- names(sigs)[sig_id]
+      # assume last col in new_data is target/class column
+      target_name <- names(new_data)[ncol(new_data)]
+      get_cols <- c(sig, target_name)
+      tbl_pred_target <- new_data[, .SD, .SDcols = get_cols]
+
+      tbl_pred_target[, (target_name) := lapply(
+        .SD,
+        function(vf){
+          ret_var <- as.factor(paste0("X",vf))
+          ret_var <- stats::relevel(ret_var, "X1")
+          return(ret_var)
+        }
+        ), .SDcols = target_name]
+
+      # get meth status of signature
+      is_hyper <-
+        object$results[[name_sig]]$train_res$train_results %>%
+        dplyr::filter(id == sig) %>% dplyr::pull(pred_type)
+
+      # if hypo, invert values
+      if(!is_hyper) tbl_pred_target[, (sig) := 1 - .SD, .SDcols=sig]
+
+      # Class prediction with optimal binning from information gain
+      tbl_pred_target[, prediction_optimal:= OneR::optbin(.SD, method="infogain")[[1]], ]
+      tbl_pred_target[, optimal_bins := prediction_optimal ]
+      levels(tbl_pred_target$prediction_optimal) <- c("X0", "X1")
+      tbl_pred_target$prediction_optimal <- stats::relevel(tbl_pred_target$prediction_optimal, "X1")
+
+      # Default class prediction, hypermethylated if over 0.5, hypomethylated otherwise
+      tbl_pred_target[, prediction_default := factor(ifelse(.SD >= 0.5, "X1", "X0"),levels=c("X1","X0")),.SDcols=sig]
+
+      # method that we use in training is: prroc_prauc_vec(estimate = 1 - x, truth = true_v)
+      class_prob_metrics <- yardstick::metric_set(
+        yardstick::pr_auc,
+        yardstick::roc_auc,
+        yardstick::accuracy,
+        yardstick::f_meas
+      )
+
+      opt_metrics <- yardstick::metric_set(
+        yardstick::accuracy,
+        yardstick::f_meas
+      )
+
+      res <- class_prob_metrics(
+        data = tbl_pred_target,
+        truth = !! rlang::enquo(target_name),
+        sig, ## prob
+        estimate = prediction_default, ## class
+        estimator = "binary"
+      )[, c(".metric", ".estimate")]
+      
+      res_opt <- opt_metrics(
+        data = tbl_pred_target,
+        truth = !! rlang::enquo(target_name),
+        estimate = prediction_optimal, ## class
+        estimator = "binary"
+      )[, c(".metric", ".estimate")]
+
+      res_opt <-
+        res_opt %>%
+        dplyr::mutate(.metric = base::replace(.metric, .metric=="accuracy", "accuracy_optimal")) %>%
+        dplyr::mutate(.metric = base::replace(.metric, .metric=="f_meas", "f_optimal"))
+      res <- rbind(res, res_opt)
+      res <- res[order(res$.metric),]
+
+      data.table::setnames(tbl_pred_target, sig, paste0("prob.", sig))
+
+      return(list(results=res, table=tbl_pred_target[]))
     }
-    ), .SDcols = target_name]
-
-  # get meth status of signature
-  is_hyper <-
-    object$results[[names(sig)]]$train_res$train_results %>%
-    dplyr::filter(id == sig) %>% dplyr::pull(pred_type)
-
-  # if hypo, invert values
-  if(!is_hyper) tbl_pred_target[, (sig) := 1 - .SD, .SDcols=sig]
-
-  # Class prediction with optimal binning from information gain
-  tbl_pred_target[, prediction_optimal:= OneR::optbin(.SD, method="infogain")[[1]], ]
-  tbl_pred_target[, optimal_bins := prediction_optimal ]
-  levels(tbl_pred_target$prediction_optimal) <- c("X0", "X1")
-  tbl_pred_target$prediction_optimal <- stats::relevel(tbl_pred_target$prediction_optimal, "X1")
-
-  # Default class prediction, hypermethylated if over 0.5, hypomethylated otherwise
-  tbl_pred_target[, prediction_default := factor(ifelse(.SD >= 0.5, "X1", "X0"),levels=c("X1","X0")),.SDcols=sig]
-
-  # method that we use in training is: prroc_prauc_vec(estimate = 1 - x, truth = true_v)
-  class_prob_metrics <- yardstick::metric_set(
-    yardstick::pr_auc,
-    yardstick::roc_auc,
-    yardstick::accuracy,
-    yardstick::f_meas
   )
-
-  opt_metrics <- yardstick::metric_set(
-    yardstick::accuracy,
-    yardstick::f_meas
-  )
-
-  res <- class_prob_metrics(
-    data = tbl_pred_target,
-    truth = !! rlang::enquo(target_name),
-    sig, ## prob
-    estimate = prediction_default, ## class
-    estimator = "binary"
-  )[, c(".metric", ".estimate")]
-  
-  res_opt <- opt_metrics(
-    data = tbl_pred_target,
-    truth = !! rlang::enquo(target_name),
-    estimate = prediction_optimal, ## class
-    estimator = "binary"
-  )[, c(".metric", ".estimate")]
-
-  res_opt <-
-    res_opt %>%
-    dplyr::mutate(.metric = base::replace(.metric, .metric=="accuracy", "accuracy_optimal")) %>%
-    dplyr::mutate(.metric = base::replace(.metric, .metric=="f_meas", "f_optimal"))
-  res <- rbind(res, res_opt)
-  res <- res[order(res$.metric),]
-
-  data.table::setnames(tbl_pred_target, sig, paste0("prob.", sig))
-
-  return(list(results=res, table=tbl_pred_target[]))
+  names(pred_res) <- names(sigs)
+  return(pred_res)
 }
 
 
@@ -733,10 +779,9 @@ find_predictors <- function(
         ) %>%
         dplyr::summarise(dplyr::across(
             .cols = tidyselect::vars_select_helpers$where(is.numeric),
-            .fns = function(x,truth){
-            prroc_prauc_vec(truth = truth, estimate = x)
-          },
-          truth = train_set$target
+            .fns = function(x,truth = train_set$target){
+              prroc_prauc_vec(truth = truth, estimate = x)
+            }
         )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id") %>%
         magrittr::set_colnames(c(".id", "AUPR")) %>%
         # attach mean diff, will be used to scale AUPR
@@ -761,10 +806,9 @@ find_predictors <- function(
         dplyr::select(df_dMean_sVar[which(!df_dMean_sVar$pred_type), "id"]) %>%
         dplyr::summarise(dplyr::across(
             .cols=tidyselect::vars_select_helpers$where(is.numeric),
-            .fns = function(x,truth){
+            .fns = function(x,truth = train_set$target){
             prroc_prauc_vec(truth = truth, estimate = 1 - x)
-          },
-          truth = train_set$target
+          }
         )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id")%>%
         magrittr::set_colnames(c(".id", "AUPR"))%>%
         # attach mean diff, will be used to scale AUPR
@@ -880,35 +924,35 @@ train_general_model <- function(
 
   tictoc::tic(paste("Training for target '",target_name,"' with ",model_type," has finished."))
   # making stratified folds, rsample doesnt seem to work properly
-  cv_index = caret::createFolds(
+  cv_index <- caret::createFolds(
     train_data$target,
     k = k_folds,
     returnTrain = TRUE,
-    list=TRUE
+    list = TRUE
   )
   tc <- caret::trainControl(
     index = cv_index,
     indexOut = purrr::map(
       cv_index,
       function(x){
-        setdiff(seq_len(nrow(train_data)),x)
+        setdiff(seq_len(nrow(train_data)), x)
       }
     ),
     method = 'cv',
     number = k_folds
   )
 
-  f_data = rsample::caret2rsample(ctrl=tc,data = train_data)
+  f_data <- rsample::caret2rsample(ctrl = tc, data = train_data)
 
   # adding split id within the splits
   for(i in seq_len(length(f_data$splits))){
-    f_data$splits[[i]]$id = tibble::tibble(id=sprintf("Fold%02d",i))
+    f_data$splits[[i]]$id <- tibble::tibble(id = sprintf("Fold%02d", i))
   }
 
   cimpleg_recipe <- recipes::recipe(
-    x=head(train_data,0),
-    vars=colnames(train_data),
-    roles=c(rep("predictor",ncol(train_data)-1),"outcome")
+    x = head(train_data, 0),
+    vars = colnames(train_data),
+    roles = c(rep("predictor", ncol(train_data) - 1), "outcome")
   )
 
   if(model_type == "logistic_reg"){
@@ -1559,7 +1603,7 @@ is.CimpleG <- function(x) inherits(x, "CimpleG")
 prediction_stats <- function(expected_values, predicted_values){
   # helper function to compute R2, RMSE and AIC when evaluating predictions vs observed values
   # correct usage and formula of R2, see https://doi.org/10.2307/2683704 and https://doi.org/10.1021%2Facs.jcim.5b00206
-  r_squared <- function(vals, preds){1 - (sum((vals - preds) ^ 2) / sum((vals - mean(preds)) ^ 2))}
+  r_squared <- function(vals, preds){1 - (sum((vals - preds) ^ 2) / sum((vals - mean(vals)) ^ 2))}
   rsq <- r_squared(expected_values, predicted_values)
   aic_res <- stats::AIC(stats::lm(predicted_values ~ expected_values))
   rmse <- sqrt(mean((expected_values - predicted_values)^2))
