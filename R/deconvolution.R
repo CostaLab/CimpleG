@@ -167,10 +167,12 @@ deconvolution_nmf_annls <- function(
 deconvolution_epidish <- function(
   ref_mat,
   new_data,
-  epidish_method=c("CBS", "RPC", "CP"),
+  epidish_method="CBS",
   epidish_nuv=seq(.1,1,.1),
   epidish_maxit=10000
 ){
+
+  epidish_method <- match.arg(epidish_method, choices = c("CBS", "RPC", "CP"))
 
   epidish_res <- EpiDISH::epidish(
     ref.m=ref_mat,
