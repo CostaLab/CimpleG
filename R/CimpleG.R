@@ -634,7 +634,7 @@ CimpleG_main <- function(
   if(deconvolution_reference){
 
     # select targets of interest
-    targets_oi <- train_targets %>% dplyr::select(target_columns)
+    targets_oi <- train_targets %>% dplyr::select(dplyr::all_of(target_columns))
     # define which samples were not part of the training process
     non_train_samples <- targets_oi %>% {rowSums(.) < 1} %>% which()
     # create a vector the size of n_samples where each value will be the

@@ -822,7 +822,7 @@ signature_plot.CimpleG <- function(
       sample_id = !!ggplot2::sym(sample_id_column),
       true_label = !!ggplot2::sym(true_label_column)
     ) %>%
-    dplyr::select(.data$sample_id, .data$true_label)
+    dplyr::select(sample_id, true_label)
 
   plt_dat <- data[,cpg_obj$signatures] %>% as.data.frame()
 
@@ -875,7 +875,7 @@ signature_plot.character <- function(
       sample_id = !!ggplot2::sym(sample_id_column),
       true_label = !!ggplot2::sym(true_label_column)
     ) %>%
-    dplyr::select(.data$sample_id, .data$true_label)
+    dplyr::select(sample_id, true_label)
 
   plt_dat <- data[,names(sig_vec)] %>% as.data.frame()
 
@@ -930,7 +930,7 @@ signature_plot.list <- function(
       sample_id = !!ggplot2::sym(sample_id_column),
       true_label = !!ggplot2::sym(true_label_column)
     ) %>%
-    dplyr::select(.data$sample_id, .data$true_label)
+    dplyr::select(sample_id, true_label)
 
   plt_dat <- data[,names(sig_vec)] %>% as.data.frame()
 
@@ -970,10 +970,10 @@ signature_plot_base <- function(
 
   dat <- plot_data %>%
     dplyr::left_join(meta_data, by = "sample_id") %>%
-    dplyr::arrange(.data$true_label, .data$sample_id) %>%
-    tidyr::pivot_longer(cols = !.data$sample_id & !.data$true_label, names_to = "signatures") %>%
+    dplyr::arrange(true_label, sample_id) %>%
+    tidyr::pivot_longer(cols = !sample_id & !true_label, names_to = "signatures") %>%
     dplyr::mutate(sig_set = dplyr::recode(.data$signatures, !!!sig_vec)) %>%
-    dplyr::group_by(.data$sig_set)
+    dplyr::group_by(sig_set)
 
   if(is.null(color_dict)){
     n_color <- (dat$sig_set %>% unique %>% length)
