@@ -1603,7 +1603,9 @@ is.CimpleG <- function(x) inherits(x, "CimpleG")
 prediction_stats <- function(expected_values, predicted_values){
   # helper function to compute R2, RMSE and AIC when evaluating predictions vs observed values
   # correct usage and formula of R2, see https://doi.org/10.2307/2683704 and https://doi.org/10.1021%2Facs.jcim.5b00206
-  r_squared <- function(vals, preds){1 - (sum((vals - preds) ^ 2) / sum((vals - mean(vals)) ^ 2))}
+  r_squared <- function(vals, preds){
+    1 - (sum((vals - preds) ^ 2) / sum((vals - mean(vals)) ^ 2))
+  }
   rsq <- r_squared(expected_values, predicted_values)
   aic_res <- stats::AIC(stats::lm(predicted_values ~ expected_values))
   rmse <- sqrt(mean((expected_values - predicted_values)^2))
