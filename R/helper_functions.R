@@ -8,6 +8,9 @@ do_cv <- function(
   verbose=1
 ) {
 
+  resample <- predictor <- type <- NULL
+  truth <- positive_prob <- prediction <- NULL
+
   assertthat::assert_that("target" %in% colnames(train_data))
   assertthat::assert_that(is.factor(train_data[, "target"]))
 
@@ -258,7 +261,7 @@ eval_test <- function(
 #' @param object CimpleG object.
 #' @param new_data Data to be predicted, samples should be in rows and features in columns.
 #'  Last column of `new_data` should have the target/class labels coded as 0 or 1.
-#' @param idx An integer, the numerical index of the signature in the CimpleG result you want to predict for.
+#' @param class_labels Class labels of new data if these are not provided directly with it.
 #' @export
 predict.CimpleG <- function(
   object,
@@ -1086,15 +1089,16 @@ train_general_model <- function(
 
   # Training model
   # defining tuning grid
-  cimpleg_res <- cimpleg_workflow %>%
+  tune_res <- cimpleg_workflow %>%
     tune::tune_grid(
       resamples = f_data,
       grid = grid_n,
       metrics = yardstick::metric_set(
         yardstick::pr_auc
       )
-    ) %>%
-    tune::select_best(metric = "pr_auc")
+    )
+
+  cimpleg_res <- tune_res %>% tune::select_best(metric = "pr_auc")
 
   # model fitting
   cimpleg_final_model <- cimpleg_workflow %>%
@@ -1116,6 +1120,8 @@ train_general_model <- function(
       #       butcher::axe_fitted()
   }
 
+  cimpleg_final_model$cv_results <- tune::collect_metrics(tune_res, summarize = FALSE)
+  cimpleg_final_model$best_params <- cimpleg_res
 
   print_timings(verbose < 1)
   return(cimpleg_final_model)
