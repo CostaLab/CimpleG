@@ -40,9 +40,9 @@ do_cv <- function(
   f_data <- rsample::caret2rsample(ctrl = tc, data = train_data)
 
   # adding split id within the splits
-  for(i in seq_len(length(f_data$splits))){
-    f_data$splits[[i]]$id <- tibble::tibble(id = sprintf("Fold%02d", i))
-  }
+  # for(i in seq_len(length(f_data$splits))){
+  #   f_data$splits[[i]]$id <- tibble::tibble(id = sprintf("Fold%02d", i))
+  # }
 
   f_data$results <- purrr::map(
     .x = f_data$splits,
@@ -503,9 +503,9 @@ cv_loop <- function(
   f_data <- rsample::caret2rsample(ctrl = tc, data = train_data)
 
   # adding split id within the splits
-  for(i in seq_len(length(f_data$splits))){
-    f_data$splits[[i]]$id <- tibble::tibble(id = sprintf("Fold%02d", i))
-  }
+  # for(i in seq_len(length(f_data$splits))){
+  #   f_data$splits[[i]]$id <- tibble::tibble(id = sprintf("Fold%02d", i))
+  # }
 
   # TODO: implement parallel cv loop
   f_data$results <- purrr::map(
@@ -943,11 +943,11 @@ train_general_model <- function(
   )
 
   f_data <- rsample::caret2rsample(ctrl = tc, data = train_data)
-
+  #print(f_data)
   # adding split id within the splits
-  for(i in seq_len(length(f_data$splits))){
-    f_data$splits[[i]]$id <- tibble::tibble(id = sprintf("Fold%02d", i))
-  }
+  # for(i in seq_len(length(f_data$splits))){
+  #   f_data$splits[[i]]$id <- tibble::tibble(id = sprintf("Fold%02d", i))
+  # }
 
   cimpleg_recipe <- recipes::recipe(
     x = head(train_data, 0),
@@ -1088,9 +1088,9 @@ train_general_model <- function(
   # defining tuning grid
   cimpleg_res <- cimpleg_workflow %>%
     tune::tune_grid(
-      resamples=f_data,
-      grid=grid_n,
-      metrics=yardstick::metric_set(
+      resamples = f_data,
+      grid = grid_n,
+      metrics = yardstick::metric_set(
         yardstick::pr_auc
       )
     ) %>%
