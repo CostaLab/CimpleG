@@ -10,7 +10,7 @@ deconv_pred_obs_plot <- function(
   # TODO customizable color palettes
   # TODO customizable limits
   augmented <- .fitted <- metrics <- glanced <- NULL
-  rmse <- adj.r.squared <- r_squared <- NULL
+  rmse <- adj.r.squared <- r_squared <- AIC <- NULL
 
   dec_dat <- make_deconv_pred_obs_data(
     deconv_df,
@@ -42,8 +42,8 @@ deconv_pred_obs_plot <- function(
           x = Inf, y = 0,
           label = paste0(
             "RMSE = ", round(rmse, 2),"\n",
-            "R²(fit) = ", round(adj.r.squared, 2),"\n",
-            "R² = ", round(r_squared, 2)
+            "Rsq(fit) = ", round(adj.r.squared, 2),"\n",
+            "Rsq = ", round(r_squared, 2)
           )
         ),
         vjust = "inward", hjust = "inward", size = 5

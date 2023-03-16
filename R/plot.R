@@ -804,6 +804,8 @@ signature_plot.CimpleG <- function(
   ...
 ){
 
+  sample_id <- true_label <- NULL
+
   assertthat::assert_that(is.CimpleG(cpg_obj))
   assertthat::assert_that(
     cpg_obj$method %in% c("CimpleG", "CimpleG_parab", "brute_force")
@@ -862,6 +864,7 @@ signature_plot.character <- function(
   base_size = 14,
   ...
 ){
+  sample_id <- true_label <- NULL
 
   assertthat::assert_that(!is.null(names(cpg_obj)))
   assertthat::assert_that(all(cpg_obj %in% colnames(data)))
@@ -916,6 +919,8 @@ signature_plot.list <- function(
   ...
 ){
 
+  sample_id <- true_label <- NULL
+
   cpg_obj <- unlist(cpg_obj,recursive = TRUE, use.names = TRUE)
 
   assertthat::assert_that(!is.null(names(cpg_obj)))
@@ -967,6 +972,7 @@ signature_plot_base <- function(
   base_size = 14,
   ...
 ){
+  sample_id <- true_label <- sig_set <- NULL
 
   dat <- plot_data %>%
     dplyr::left_join(meta_data, by = "sample_id") %>%

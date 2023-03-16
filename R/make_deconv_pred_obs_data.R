@@ -39,7 +39,7 @@ make_deconv_pred_obs_data <- function(
           glanced = purrr::map(dfit, broom::glance),
           augmented = purrr::map(dfit, broom::augment),
           # metrics (RMSE, R2, AIC)
-          metrics = purrr::map_dfr(data, ~ CimpleG:::prediction_stats(
+          metrics = purrr::map_dfr(data, ~ prediction_stats(
             expected_values = .x[[true_values_col]],
             predicted_values = .x[[pcol]]
           ))

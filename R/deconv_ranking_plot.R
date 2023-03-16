@@ -39,9 +39,9 @@ deconv_ranking_plot <- function(
     function(mm){
 
       ptitle <- mm |> 
-        gsub(pattern = "r_squared", replacement = "R²", fixed = TRUE) |>
+        gsub(pattern = "r_squared", replacement = "Rsq", fixed = TRUE) |>
         gsub(pattern = "rmse", replacement = "RMSE", fixed = TRUE) |>
-        gsub(pattern = "adj.r.squared", replacement = "R²(fit)", fixed = TRUE)
+        gsub(pattern = "adj.r.squared", replacement = "Rsq(fit)", fixed = TRUE)
 
       to_maximize <- any(mm %in% c("rmse", "AIC"))
 
@@ -81,9 +81,9 @@ deconv_ranking_plot <- function(
     purrr::map(metrics, function(mm){
 
       ptitle <- mm |>
-        gsub(pattern = "r_squared", replacement = "R²", fixed = TRUE) |>
+        gsub(pattern = "r_squared", replacement = "Rsq", fixed = TRUE) |>
         gsub(pattern = "rmse", replacement = "RMSE", fixed = TRUE) |>
-        gsub(pattern = "adj.r.squared", replacement = "R²(fit)", fixed = TRUE)
+        gsub(pattern = "adj.r.squared", replacement = "Rsq(fit)", fixed = TRUE)
 
       to_maximize <- any(mm %in% c("rmse","AIC"))
 
