@@ -7,7 +7,7 @@
 deconvolution_epidish(
   ref_mat,
   new_data,
-  epidish_method = c("CBS", "RPC", "CP"),
+  epidish_method = "CBS",
   epidish_nuv = seq(0.1, 1, 0.1),
   epidish_maxit = 10000
 )

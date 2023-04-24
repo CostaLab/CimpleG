@@ -4,7 +4,7 @@
 \alias{predict.CimpleG}
 \title{Predict outcome from a CimpleG signatures on new data}
 \usage{
-\method{predict}{CimpleG}(object, new_data, idx = 1, meth = c("hypo", "hyper"))
+\method{predict}{CimpleG}(object, new_data, class_labels = NULL)
 }
 \arguments{
 \item{object}{CimpleG object.}
@@ -12,7 +12,7 @@
 \item{new_data}{Data to be predicted, samples should be in rows and features in columns.
 Last column of `new_data` should have the target/class labels coded as 0 or 1.}
 
-\item{idx}{An integer, the numerical index of the signature in the CimpleG result you want to predict for.}
+\item{class_labels}{Class labels of new data if these are not provided directly with it.}
 }
 \description{
 Predict outcome from a CimpleG signatures on new data
