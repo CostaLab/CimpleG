@@ -152,6 +152,9 @@ to train for.}
 \item{param_p}{An even number in `sigma / (delta^param_p)`. Tunes how much weight will be
 given to delta when doing feature selection. Default is \code{2}.}
 
+\item{n_sigs}{Number of signatures to be saved for classification and used in deconvolution.
+Default is \code{1}.}
+
 \item{quantile_threshold}{A number between 0 and 1.
 Determines how many features will be kept. Default is \code{0.005}.}
 
