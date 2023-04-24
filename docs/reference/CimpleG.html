@@ -18,7 +18,7 @@ for the given target data."><meta property="og:image" content="/logo.png"><!-- m
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9031</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9046</span>
       </span>
     </div>
 
@@ -27,7 +27,7 @@ for the given target data."><meta property="og:image" content="/logo.png"><!-- m
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -62,80 +62,80 @@ for the given target data.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">CimpleG</span><span class="op">(</span>
-  <span class="va">train_data</span>,
-  train_targets <span class="op">=</span> <span class="cn">NULL</span>,
-  target_columns <span class="op">=</span> <span class="cn">NULL</span>,
-  test_data <span class="op">=</span> <span class="cn">NULL</span>,
-  test_targets <span class="op">=</span> <span class="cn">NULL</span>,
-  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CimpleG"</span>, <span class="st">"CimpleG_parab"</span>, <span class="st">"brute_force"</span>, <span class="st">"logistic_reg"</span>,
-    <span class="st">"decision_tree"</span>, <span class="st">"boost_tree"</span>, <span class="st">"mlp"</span>, <span class="st">"rand_forest"</span><span class="op">)</span>,
-  pred_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"hypo"</span>, <span class="st">"hyper"</span><span class="op">)</span>,
-  engine <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"glmnet"</span>, <span class="st">"xgboost"</span>, <span class="st">"nnet"</span>, <span class="st">"ranger"</span><span class="op">)</span>,
-  rank_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ac_rank"</span>, <span class="st">"a_rank"</span>, <span class="st">"c_rank"</span><span class="op">)</span>,
-  k_folds <span class="op">=</span> <span class="fl">10</span>,
-  grid_n <span class="op">=</span> <span class="fl">10</span>,
-  param_p <span class="op">=</span> <span class="fl">2</span>,
-  quantile_threshold <span class="op">=</span> <span class="fl">0.005</span>,
-  train_only <span class="op">=</span> <span class="cn">FALSE</span>,
-  split_data <span class="op">=</span> <span class="cn">FALSE</span>,
-  run_parallel <span class="op">=</span> <span class="cn">FALSE</span>,
-  deconvolution_reference <span class="op">=</span> <span class="cn">TRUE</span>,
-  save_dir <span class="op">=</span> <span class="cn">NULL</span>,
-  save_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zstd"</span>, <span class="st">"lz4"</span>, <span class="st">"gzip"</span>, <span class="st">"bzip2"</span>, <span class="st">"xz"</span>, <span class="st">"nocomp"</span><span class="op">)</span>,
-  verbose <span class="op">=</span> <span class="fl">1</span>,
-  targets <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="fu">cimpleg</span><span class="op">(</span>
-  <span class="va">train_data</span>,
-  train_targets <span class="op">=</span> <span class="cn">NULL</span>,
-  target_columns <span class="op">=</span> <span class="cn">NULL</span>,
-  test_data <span class="op">=</span> <span class="cn">NULL</span>,
-  test_targets <span class="op">=</span> <span class="cn">NULL</span>,
-  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CimpleG"</span>, <span class="st">"CimpleG_parab"</span>, <span class="st">"brute_force"</span>, <span class="st">"logistic_reg"</span>,
-    <span class="st">"decision_tree"</span>, <span class="st">"boost_tree"</span>, <span class="st">"mlp"</span>, <span class="st">"rand_forest"</span><span class="op">)</span>,
-  pred_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"hypo"</span>, <span class="st">"hyper"</span><span class="op">)</span>,
-  engine <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"glmnet"</span>, <span class="st">"xgboost"</span>, <span class="st">"nnet"</span>, <span class="st">"ranger"</span><span class="op">)</span>,
-  rank_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ac_rank"</span>, <span class="st">"a_rank"</span>, <span class="st">"c_rank"</span><span class="op">)</span>,
-  k_folds <span class="op">=</span> <span class="fl">10</span>,
-  grid_n <span class="op">=</span> <span class="fl">10</span>,
-  param_p <span class="op">=</span> <span class="fl">2</span>,
-  quantile_threshold <span class="op">=</span> <span class="fl">0.005</span>,
-  train_only <span class="op">=</span> <span class="cn">FALSE</span>,
-  split_data <span class="op">=</span> <span class="cn">FALSE</span>,
-  run_parallel <span class="op">=</span> <span class="cn">FALSE</span>,
-  deconvolution_reference <span class="op">=</span> <span class="cn">TRUE</span>,
-  save_dir <span class="op">=</span> <span class="cn">NULL</span>,
-  save_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zstd"</span>, <span class="st">"lz4"</span>, <span class="st">"gzip"</span>, <span class="st">"bzip2"</span>, <span class="st">"xz"</span>, <span class="st">"nocomp"</span><span class="op">)</span>,
-  verbose <span class="op">=</span> <span class="fl">1</span>,
-  targets <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span>
-
-<span class="fu">cpg</span><span class="op">(</span>
-  <span class="va">train_data</span>,
-  train_targets <span class="op">=</span> <span class="cn">NULL</span>,
-  target_columns <span class="op">=</span> <span class="cn">NULL</span>,
-  test_data <span class="op">=</span> <span class="cn">NULL</span>,
-  test_targets <span class="op">=</span> <span class="cn">NULL</span>,
-  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CimpleG"</span>, <span class="st">"CimpleG_parab"</span>, <span class="st">"brute_force"</span>, <span class="st">"logistic_reg"</span>,
-    <span class="st">"decision_tree"</span>, <span class="st">"boost_tree"</span>, <span class="st">"mlp"</span>, <span class="st">"rand_forest"</span><span class="op">)</span>,
-  pred_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"hypo"</span>, <span class="st">"hyper"</span><span class="op">)</span>,
-  engine <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"glmnet"</span>, <span class="st">"xgboost"</span>, <span class="st">"nnet"</span>, <span class="st">"ranger"</span><span class="op">)</span>,
-  rank_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ac_rank"</span>, <span class="st">"a_rank"</span>, <span class="st">"c_rank"</span><span class="op">)</span>,
-  k_folds <span class="op">=</span> <span class="fl">10</span>,
-  grid_n <span class="op">=</span> <span class="fl">10</span>,
-  param_p <span class="op">=</span> <span class="fl">2</span>,
-  quantile_threshold <span class="op">=</span> <span class="fl">0.005</span>,
-  train_only <span class="op">=</span> <span class="cn">FALSE</span>,
-  split_data <span class="op">=</span> <span class="cn">FALSE</span>,
-  run_parallel <span class="op">=</span> <span class="cn">FALSE</span>,
-  deconvolution_reference <span class="op">=</span> <span class="cn">TRUE</span>,
-  save_dir <span class="op">=</span> <span class="cn">NULL</span>,
-  save_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zstd"</span>, <span class="st">"lz4"</span>, <span class="st">"gzip"</span>, <span class="st">"bzip2"</span>, <span class="st">"xz"</span>, <span class="st">"nocomp"</span><span class="op">)</span>,
-  verbose <span class="op">=</span> <span class="fl">1</span>,
-  targets <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">CimpleG</span><span class="op">(</span></span>
+<span>  <span class="va">train_data</span>,</span>
+<span>  train_targets <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  target_columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  test_data <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  test_targets <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CimpleG"</span>, <span class="st">"CimpleG_parab"</span>, <span class="st">"brute_force"</span>, <span class="st">"logistic_reg"</span>, <span class="st">"decision_tree"</span>,</span>
+<span>    <span class="st">"boost_tree"</span>, <span class="st">"mlp"</span>, <span class="st">"rand_forest"</span><span class="op">)</span>,</span>
+<span>  pred_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"hypo"</span>, <span class="st">"hyper"</span><span class="op">)</span>,</span>
+<span>  engine <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"glmnet"</span>, <span class="st">"xgboost"</span>, <span class="st">"nnet"</span>, <span class="st">"ranger"</span><span class="op">)</span>,</span>
+<span>  rank_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ac_rank"</span>, <span class="st">"a_rank"</span>, <span class="st">"c_rank"</span><span class="op">)</span>,</span>
+<span>  k_folds <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  grid_n <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  param_p <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  quantile_threshold <span class="op">=</span> <span class="fl">0.005</span>,</span>
+<span>  train_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  split_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  run_parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  deconvolution_reference <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  save_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  save_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zstd"</span>, <span class="st">"lz4"</span>, <span class="st">"gzip"</span>, <span class="st">"bzip2"</span>, <span class="st">"xz"</span>, <span class="st">"nocomp"</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  targets <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">cimpleg</span><span class="op">(</span></span>
+<span>  <span class="va">train_data</span>,</span>
+<span>  train_targets <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  target_columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  test_data <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  test_targets <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CimpleG"</span>, <span class="st">"CimpleG_parab"</span>, <span class="st">"brute_force"</span>, <span class="st">"logistic_reg"</span>, <span class="st">"decision_tree"</span>,</span>
+<span>    <span class="st">"boost_tree"</span>, <span class="st">"mlp"</span>, <span class="st">"rand_forest"</span><span class="op">)</span>,</span>
+<span>  pred_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"hypo"</span>, <span class="st">"hyper"</span><span class="op">)</span>,</span>
+<span>  engine <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"glmnet"</span>, <span class="st">"xgboost"</span>, <span class="st">"nnet"</span>, <span class="st">"ranger"</span><span class="op">)</span>,</span>
+<span>  rank_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ac_rank"</span>, <span class="st">"a_rank"</span>, <span class="st">"c_rank"</span><span class="op">)</span>,</span>
+<span>  k_folds <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  grid_n <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  param_p <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  quantile_threshold <span class="op">=</span> <span class="fl">0.005</span>,</span>
+<span>  train_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  split_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  run_parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  deconvolution_reference <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  save_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  save_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zstd"</span>, <span class="st">"lz4"</span>, <span class="st">"gzip"</span>, <span class="st">"bzip2"</span>, <span class="st">"xz"</span>, <span class="st">"nocomp"</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  targets <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">cpg</span><span class="op">(</span></span>
+<span>  <span class="va">train_data</span>,</span>
+<span>  train_targets <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  target_columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  test_data <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  test_targets <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CimpleG"</span>, <span class="st">"CimpleG_parab"</span>, <span class="st">"brute_force"</span>, <span class="st">"logistic_reg"</span>, <span class="st">"decision_tree"</span>,</span>
+<span>    <span class="st">"boost_tree"</span>, <span class="st">"mlp"</span>, <span class="st">"rand_forest"</span><span class="op">)</span>,</span>
+<span>  pred_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"hypo"</span>, <span class="st">"hyper"</span><span class="op">)</span>,</span>
+<span>  engine <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"glmnet"</span>, <span class="st">"xgboost"</span>, <span class="st">"nnet"</span>, <span class="st">"ranger"</span><span class="op">)</span>,</span>
+<span>  rank_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ac_rank"</span>, <span class="st">"a_rank"</span>, <span class="st">"c_rank"</span><span class="op">)</span>,</span>
+<span>  k_folds <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  grid_n <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  param_p <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  quantile_threshold <span class="op">=</span> <span class="fl">0.005</span>,</span>
+<span>  train_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  split_data <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  run_parallel <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  deconvolution_reference <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  save_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  save_format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zstd"</span>, <span class="st">"lz4"</span>, <span class="st">"gzip"</span>, <span class="st">"bzip2"</span>, <span class="st">"xz"</span>, <span class="st">"nocomp"</span><span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  targets <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -145,6 +145,8 @@ for the given target data.</p>
 A matrix (s x f) with methylation data (Beta values)
 that will be used to train/find the predictors.
 Samples (s) must be in rows while features/CpGs (f) must be in columns.</p></dd>
+
+
 <dt>train_targets</dt>
 <dd><p>A data frame with the training target samples one-hot encoded.
 A data frame with at least 1 column,
@@ -152,6 +154,8 @@ with as many rows and in the same order as `train_data`.
 Target columns need to be one-hot encoded, meaning that, for that column
 the target samples should be encoded as `1` while every other sample
 should be encoded as `0`.</p></dd>
+
+
 <dt>target_columns</dt>
 <dd><p>A string specifying the name of the column in `train_targets`
 to be used for training.
@@ -160,6 +164,8 @@ to be used for training.
 If this argument is a character vector, CimpleG will search for the
 best predictors for each target sequentially or in parallel depending on the
 value of `run_parallel`</p></dd>
+
+
 <dt>test_data</dt>
 <dd><p>Testing dataset.
 A matrix (s x f) with methylation data (Beta values)
@@ -168,6 +174,8 @@ Samples (s) must be in rows while features/CpGs (f) must be in columns.
 If `test_data` *OR* `test_targets` are NULL, CimpleG will generate a
 stratified test dataset based on `train_targets` by removing 25<!-- % of the -->
 samples from `train_data` and `train_targets`.</p></dd>
+
+
 <dt>test_targets</dt>
 <dd><p>A data frame with the testing target samples one-hot encoded.
 A data frame with at least 1 column,
@@ -178,6 +186,8 @@ should be encoded as `0`.
 If `test_data` *OR* `test_targets` are NULL, CimpleG will generate a
 stratified test dataset based on `train_targets` by removing 25<!-- % of the -->
 samples from `train_data` and `train_targets`.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>A string specifying the method or type of machine learning
 model/algorithm to be used for training.
@@ -186,37 +196,57 @@ These are divided in two main groups.
 `CimpleG` (default), `brute_force`, `CimpleG_unscaled` or `oner`;
 * the complex models (classifiers that use several features),
 `logistic_reg`, `decision_tree`, `boost_tree`, `mlp` or `rand_forest`.</p></dd>
+
+
 <dt>pred_type</dt>
 <dd><p>A string specifying the type of predictor/CpG to be
 searched for during training. Only used for simple models.
 One of `both` (default), `hypo` or `hyper`.
 If `hypo`, only hypomethylated predictors will be considered.
 If `hyper`, only hypermethylated predictors will be considered.</p></dd>
+
+
 <dt>engine</dt>
 <dd><p>A string specifying the
 machine learning engine behind `method`. Only used for complex models.
 Currently not in use.</p></dd>
+
+
 <dt>rank_method</dt>
 <dd><p>A string specifying the ranking strategy to rank the features during training.</p></dd>
+
+
 <dt>k_folds</dt>
 <dd><p>An integer specifying the number of folds (K) to be used
 in training for the stratified K-fold cross-validation procedure.</p></dd>
+
+
 <dt>grid_n</dt>
 <dd><p>An integer specifying the number of hyperparameter combinations
 to train for.</p></dd>
+
+
 <dt>param_p</dt>
 <dd><p>An even number in `sigma / (delta^param_p)`. Tunes how much weight will be
 given to delta when doing feature selection. Default is <code>2</code>.</p></dd>
+
+
 <dt>quantile_threshold</dt>
 <dd><p>A number between 0 and 1.
 Determines how many features will be kept. Default is <code>0.005</code>.</p></dd>
+
+
 <dt>train_only</dt>
 <dd><p>A boolean, if TRUE, CimpleG will only train (find predictors)
 but not test them against a test dataset.</p></dd>
+
+
 <dt>split_data</dt>
 <dd><p>A boolean, if `TRUE`, it will subset the train data provided,
 creating a smaller test set that will be used to test the models after training.
 This parameter is experimental. Default is `FALSE`.</p></dd>
+
+
 <dt>run_parallel</dt>
 <dd><p>A boolean, if `FALSE`, the default, it will search
 for predictors for multiple targets sequentially.
@@ -224,56 +254,69 @@ If `TRUE` it will search for predictors for multiple targets
 at the same time (parallel processing) in order to save
 in computational time. You need to set up `future::plan()` before running
 this function.</p></dd>
+
+
 <dt>deconvolution_reference</dt>
 <dd><p>A boolean, if `TRUE`, it will create 
 a deconvolution reference matrix based on the training data.
 This can later be used to perform deconvolution. Default is `FALSE`.</p></dd>
+
+
 <dt>save_dir</dt>
 <dd><p>If defined it will save the resulting model to the given directory.
 Default is <code>NULL</code>.</p></dd>
+
+
 <dt>save_format</dt>
 <dd><p>Only used if <code>save_dir</code> is not <code>NULL</code>.
 One of "zstd", "lz4", "gzip", "bzip2","xz", "nocomp".
 <code>zstd</code> is the best option, fast compression and loading times, low space usage.</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>How verbose you want CimpleG to be while it is running.
 At 0, no message is displayed, at 3 every message is displayed.
 Default is <code>1</code>.</p></dd>
+
+
 <dt>targets</dt>
 <dd><p>DEPRECATED use `target_columns`.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A CimpleG object with the results per target class.</p>
+    
+
+<p>A CimpleG object with the results per target class.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/CostaLab/CimpleG" class="external-link">"CimpleG"</a></span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># read data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_data</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_targets</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_data</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_targets</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># run CimpleG</span></span>
-<span class="r-in"><span class="va">cimpleg_result</span> <span class="op">&lt;-</span> <span class="fu">CimpleG</span><span class="op">(</span></span>
-<span class="r-in">  train_data <span class="op">=</span> <span class="va">train_data</span>,</span>
-<span class="r-in">  train_targets <span class="op">=</span> <span class="va">train_targets</span>,</span>
-<span class="r-in">  test_data <span class="op">=</span> <span class="va">test_data</span>,</span>
-<span class="r-in">  test_targets <span class="op">=</span> <span class="va">test_targets</span>,</span>
-<span class="r-in">  method <span class="op">=</span> <span class="st">"CimpleG"</span>,</span>
-<span class="r-in">  target_columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CELL_TYPE_MSCORFIBRO"</span>,<span class="st">"CELL_TYPE_NEURONS"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Training for target 'CELL_TYPE_MSCORFIBRO' with 'CimpleG' has finished.: 1.633 sec elapsed</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Training for target 'CELL_TYPE_NEURONS' with 'CimpleG' has finished.: 0.41 sec elapsed</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># check signatures</span></span>
-<span class="r-in"><span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/CostaLab/CimpleG" class="external-link">"CimpleG"</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># read data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_data</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_targets</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_data</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_targets</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># run CimpleG</span></span></span>
+<span class="r-in"><span><span class="va">cimpleg_result</span> <span class="op">&lt;-</span> <span class="fu">CimpleG</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  train_data <span class="op">=</span> <span class="va">train_data</span>,</span></span>
+<span class="r-in"><span>  train_targets <span class="op">=</span> <span class="va">train_targets</span>,</span></span>
+<span class="r-in"><span>  test_data <span class="op">=</span> <span class="va">test_data</span>,</span></span>
+<span class="r-in"><span>  test_targets <span class="op">=</span> <span class="va">test_targets</span>,</span></span>
+<span class="r-in"><span>  method <span class="op">=</span> <span class="st">"CimpleG"</span>,</span></span>
+<span class="r-in"><span>  target_columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CELL_TYPE_MSCORFIBRO"</span>,<span class="st">"CELL_TYPE_NEURONS"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Training for target 'CELL_TYPE_MSCORFIBRO' with 'CimpleG' has finished.: 1.653 sec elapsed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Training for target 'CELL_TYPE_NEURONS' with 'CimpleG' has finished.: 0.349 sec elapsed</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># check signatures</span></span></span>
+<span class="r-in"><span><span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CELL_TYPE_MSCORFIBRO    CELL_TYPE_NEURONS </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         "cg03369247"         "cg24548498" </span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -288,7 +331,7 @@ Default is <code>1</code>.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

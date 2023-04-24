@@ -26,7 +26,7 @@ bottom right of this plot."><meta property="og:image" content="/logo.png"><!-- m
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9031</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9046</span>
       </span>
     </div>
 
@@ -35,7 +35,7 @@ bottom right of this plot."><meta property="og:image" content="/logo.png"><!-- m
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -75,29 +75,29 @@ bottom right of this plot.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">diffmeans_sumvariance_plot</span><span class="op">(</span>
-  <span class="va">data</span>,
-  xcol <span class="op">=</span> <span class="st">"diff_means"</span>,
-  ycol <span class="op">=</span> <span class="st">"sum_variance"</span>,
-  feature_id_col <span class="op">=</span> <span class="st">"id"</span>,
-  is_feature_selected_col <span class="op">=</span> <span class="cn">NULL</span>,
-  label_var1 <span class="op">=</span> <span class="st">"Target"</span>,
-  label_var2 <span class="op">=</span> <span class="st">"Others"</span>,
-  target_vector <span class="op">=</span> <span class="cn">NULL</span>,
-  mean_cutoff <span class="op">=</span> <span class="cn">NULL</span>,
-  var_cutoff <span class="op">=</span> <span class="cn">NULL</span>,
-  threshold_func <span class="op">=</span> <span class="cn">NULL</span>,
-  func_factor <span class="op">=</span> <span class="cn">NULL</span>,
-  feats_to_highlight <span class="op">=</span> <span class="cn">NULL</span>,
-  cpg_ranking_df <span class="op">=</span> <span class="cn">NULL</span>,
-  color_all_points <span class="op">=</span> <span class="cn">NULL</span>,
-  pltDensity <span class="op">=</span> <span class="cn">TRUE</span>,
-  density_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"density"</span>, <span class="st">"histogram"</span>, <span class="st">"boxplot"</span>, <span class="st">"violin"</span>, <span class="st">"densigram"</span><span class="op">)</span>,
-  plot_dir <span class="op">=</span> <span class="cn">NULL</span>,
-  id_tag <span class="op">=</span> <span class="cn">NULL</span>,
-  file_tag <span class="op">=</span> <span class="cn">NULL</span>,
-  custom_mods <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">diffmeans_sumvariance_plot</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  xcol <span class="op">=</span> <span class="st">"diff_means"</span>,</span>
+<span>  ycol <span class="op">=</span> <span class="st">"sum_variance"</span>,</span>
+<span>  feature_id_col <span class="op">=</span> <span class="st">"id"</span>,</span>
+<span>  is_feature_selected_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label_var1 <span class="op">=</span> <span class="st">"Target"</span>,</span>
+<span>  label_var2 <span class="op">=</span> <span class="st">"Others"</span>,</span>
+<span>  target_vector <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  mean_cutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  var_cutoff <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  threshold_func <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  func_factor <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  feats_to_highlight <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  cpg_ranking_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  color_all_points <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pltDensity <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  density_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"density"</span>, <span class="st">"histogram"</span>, <span class="st">"boxplot"</span>, <span class="st">"violin"</span>, <span class="st">"densigram"</span><span class="op">)</span>,</span>
+<span>  plot_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  id_tag <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  file_tag <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  custom_mods <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -108,101 +108,148 @@ Either a data.frame with `xcol`,`ycol` and `feature_id_col` or, if
 `target_vector` is not `NULL` a matrix with beta values from which,
 given the target, the difference in means between the target and others,
 and the sum of variances within the target and others will be calculated.</p></dd>
+
+
 <dt>xcol</dt>
 <dd><p>Column with x-axis data</p></dd>
+
+
 <dt>ycol</dt>
 <dd><p>Column with y-axis data</p></dd>
+
+
 <dt>feature_id_col</dt>
 <dd><p>Column with the feature ID</p></dd>
+
+
 <dt>is_feature_selected_col</dt>
 <dd><p>NULL or column with TRUE/FALSE for features which should be highlighted as selected</p></dd>
+
+
 <dt>label_var1</dt>
 <dd><p>Label of the target class</p></dd>
+
+
 <dt>label_var2</dt>
 <dd><p>Label of the other classes</p></dd>
+
+
 <dt>target_vector</dt>
 <dd><p>if not NULL a vector target class assignment, see data</p></dd>
+
+
 <dt>mean_cutoff</dt>
 <dd><p>a numeric draw mean cutoff at given position</p></dd>
+
+
 <dt>var_cutoff</dt>
 <dd><p>a numeric draw variance cutoff at given position</p></dd>
+
+
 <dt>threshold_func</dt>
 <dd><p>TODO</p></dd>
+
+
 <dt>func_factor</dt>
 <dd><p>TODO</p></dd>
+
+
 <dt>feats_to_highlight</dt>
 <dd><p>TODO</p></dd>
+
+
 <dt>cpg_ranking_df</dt>
 <dd><p>TODO</p></dd>
+
+
 <dt>color_all_points</dt>
 <dd><p>TODO</p></dd>
+
+
 <dt>pltDensity</dt>
 <dd><p>TODO</p></dd>
+
+
 <dt>density_type</dt>
 <dd><p>TODO</p></dd>
+
+
 <dt>plot_dir</dt>
 <dd><p>TODO</p></dd>
+
+
 <dt>id_tag</dt>
 <dd><p>TODO</p></dd>
+
+
 <dt>file_tag</dt>
 <dd><p>TODO</p></dd>
+
+
 <dt>custom_mods</dt>
 <dd><p>TODO</p></dd>
+
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/CostaLab/CimpleG" class="external-link">"CimpleG"</a></span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># read data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_data</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_targets</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># make basic plot</span></span>
-<span class="r-in"><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu">diffmeans_sumvariance_plot</span><span class="op">(</span></span>
-<span class="r-in">  <span class="va">train_data</span>,</span>
-<span class="r-in">  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span> <span class="op">==</span> <span class="fl">1</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># make plot with parabola, colored and highlighted features</span></span>
-<span class="r-in"><span class="va">df_dmeansvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="compute_diffmeans_sumvar.html">compute_diffmeans_sumvar</a></span><span class="op">(</span></span>
-<span class="r-in">  <span class="va">train_data</span>,</span>
-<span class="r-in">  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span><span class="op">==</span><span class="fl">1</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="va">parab_param</span> <span class="op">&lt;-</span> <span class="fl">.7</span></span>
-<span class="r-in"><span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">is_selected</span> <span class="op">&lt;-</span> <span class="fu"><a href="select_features.html">select_features</a></span><span class="op">(</span></span>
-<span class="r-in">    x <span class="op">=</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">diff_means</span>,</span>
-<span class="r-in">    y <span class="op">=</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">sum_variance</span>,</span>
-<span class="r-in">    a <span class="op">=</span> <span class="va">parab_param</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu">diffmeans_sumvariance_plot</span><span class="op">(</span></span>
-<span class="r-in">  data<span class="op">=</span><span class="va">df_dmeansvar</span>,</span>
-<span class="r-in">  label_var1<span class="op">=</span><span class="st">"MSC"</span>,</span>
-<span class="r-in">  color_all_points<span class="op">=</span><span class="st">"red"</span>,</span>
-<span class="r-in">  is_feature_selected_col<span class="op">=</span><span class="st">"is_selected"</span>,</span>
-<span class="r-in">  feats_to_highlight<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cg24192660"</span><span class="op">)</span>,</span>
-<span class="r-in">  threshold_func<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">a</span><span class="op">)</span> <span class="op">(</span><span class="va">a</span><span class="op">*</span><span class="va">x</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>,</span>
-<span class="r-in">  func_factor<span class="op">=</span><span class="va">parab_param</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use of `sp_df$x` is discouraged. Use `x` instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use of `sp_df$x` is discouraged. Use `x` instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 10 row(s) containing missing values (geom_path).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 rows containing missing values (geom_label).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 rows containing missing values (geom_label_repel).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use of `sp_df$x` is discouraged. Use `x` instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 10 row(s) containing missing values (geom_path).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 rows containing missing values (geom_label).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 rows containing missing values (geom_label_repel).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use of `sp_df$x` is discouraged. Use `x` instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use of `sp_df$x` is discouraged. Use `x` instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 10 row(s) containing missing values (geom_path).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 rows containing missing values (geom_label_repel).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use of `sp_df$x` is discouraged. Use `x` instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 10 row(s) containing missing values (geom_path).</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 rows containing missing values (geom_label_repel).</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/CostaLab/CimpleG" class="external-link">"CimpleG"</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># read data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_data</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_targets</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># make basic plot</span></span></span>
+<span class="r-in"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu">diffmeans_sumvariance_plot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">train_data</span>,</span></span>
+<span class="r-in"><span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span> <span class="op">==</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># make plot with parabola, colored and highlighted features</span></span></span>
+<span class="r-in"><span><span class="va">df_dmeansvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="compute_diffmeans_sumvar.html">compute_diffmeans_sumvar</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">train_data</span>,</span></span>
+<span class="r-in"><span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_MSCORFIBRO</span><span class="op">==</span><span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">parab_param</span> <span class="op">&lt;-</span> <span class="fl">.7</span></span></span>
+<span class="r-in"><span><span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">is_selected</span> <span class="op">&lt;-</span> <span class="fu"><a href="select_features.html">select_features</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    x <span class="op">=</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">diff_means</span>,</span></span>
+<span class="r-in"><span>    y <span class="op">=</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">sum_variance</span>,</span></span>
+<span class="r-in"><span>    a <span class="op">=</span> <span class="va">parab_param</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu">diffmeans_sumvariance_plot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  data<span class="op">=</span><span class="va">df_dmeansvar</span>,</span></span>
+<span class="r-in"><span>  label_var1<span class="op">=</span><span class="st">"MSC"</span>,</span></span>
+<span class="r-in"><span>  color_all_points<span class="op">=</span><span class="st">"red"</span>,</span></span>
+<span class="r-in"><span>  is_feature_selected_col<span class="op">=</span><span class="st">"is_selected"</span>,</span></span>
+<span class="r-in"><span>  feats_to_highlight<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"cg24192660"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  threshold_func<span class="op">=</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">a</span><span class="op">)</span> <span class="op">(</span><span class="va">a</span><span class="op">*</span><span class="va">x</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>,</span></span>
+<span class="r-in"><span>  func_factor<span class="op">=</span><span class="va">parab_param</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use of `sp_df$x` is discouraged.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use `x` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use of `sp_df$x` is discouraged.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use `x` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 10 rows containing missing values (`geom_line()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 rows containing missing values (`geom_label()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 rows containing missing values (`geom_label_repel()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use of `sp_df$x` is discouraged.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use `x` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 10 rows containing missing values (`geom_line()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 rows containing missing values (`geom_label()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 rows containing missing values (`geom_label_repel()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use of `sp_df$x` is discouraged.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use `x` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use of `sp_df$x` is discouraged.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use `x` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 10 rows containing missing values (`geom_line()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 rows containing missing values (`geom_label_repel()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Use of `sp_df$x` is discouraged.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Use `x` instead.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 10 rows containing missing values (`geom_line()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 1 rows containing missing values (`geom_label_repel()`).</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="diffmeans_sumvariance_plot-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
@@ -218,7 +265,7 @@ and the sum of variances within the target and others will be calculated.</p></d
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

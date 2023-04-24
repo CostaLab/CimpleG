@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9031</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9046</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -60,30 +60,39 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">deconvolution_epidish</span><span class="op">(</span>
-  <span class="va">ref_mat</span>,
-  <span class="va">new_data</span>,
-  epidish_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CBS"</span>, <span class="st">"RPC"</span>, <span class="st">"CP"</span><span class="op">)</span>,
-  epidish_nuv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">1</span>, <span class="fl">0.1</span><span class="op">)</span>,
-  epidish_maxit <span class="op">=</span> <span class="fl">10000</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">deconvolution_epidish</span><span class="op">(</span></span>
+<span>  <span class="va">ref_mat</span>,</span>
+<span>  <span class="va">new_data</span>,</span>
+<span>  epidish_method <span class="op">=</span> <span class="st">"CBS"</span>,</span>
+<span>  epidish_nuv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">1</span>, <span class="fl">0.1</span><span class="op">)</span>,</span>
+<span>  epidish_maxit <span class="op">=</span> <span class="fl">10000</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>ref_mat</dt>
 <dd><p>Reference matrix.</p></dd>
+
+
 <dt>new_data</dt>
 <dd><p>New data matrix.</p></dd>
+
+
 <dt>epidish_method</dt>
 <dd><p>One of `CBS` (Cibersort), `RPC` (Robust Partial Correlations), `CP` (Constrained Projection).
 Default is `CBS`. See `EpiDISH` documentation for more information.</p></dd>
+
+
 <dt>epidish_nuv</dt>
 <dd><p>A vector of candidate values used for svm. Only used when epidish_method is set to `CBS`.
 See `EpiDISH` documentation for more information.</p></dd>
+
+
 <dt>epidish_maxit</dt>
 <dd><p>Integer with the number of max iterations for IWLS (Iterative Weighted Least Squares).
 Only used when epidish_method is set to `RPC`.</p></dd>
+
 </dl></div>
 
   </div>
@@ -98,7 +107,7 @@ Only used when epidish_method is set to `RPC`.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

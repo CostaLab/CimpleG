@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9031</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9046</span>
       </span>
     </div>
 
@@ -50,7 +50,7 @@
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -89,78 +89,77 @@
 </h2>
 <p>CimpleG, an R package to find (simple) CpG signatures.</p>
 <!-- badges: start -->
-
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Install directly from github:</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"costalab/CimpleG"</span><span class="op">)</span>
-
-<span class="co"># Alternatively, downloading it and install it from a local source:</span>
-<span class="co">#  - ie navigating through your system</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"source"</span><span class="op">)</span>
-<span class="co">#  - ie given a path to a local source</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"~/Downloads/CimpleG_0.0.4.9002.tar.gz"</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"source"</span><span class="op">)</span>
-<span class="co"># or</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/remote-reexports.html" class="external-link">install_local</a></span><span class="op">(</span><span class="st">"~/Downloads/CimpleG_0.0.4.9002.tar.gz"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Install directly from github:</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"costalab/CimpleG"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Alternatively, downloading it and install it from a local source:</span></span>
+<span><span class="co">#  - ie navigating through your system</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"source"</span><span class="op">)</span></span>
+<span><span class="co">#  - ie given a path to a local source</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"~/Downloads/CimpleG_0.0.4.9002.tar.gz"</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"source"</span><span class="op">)</span></span>
+<span><span class="co"># or</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">install_local</a></span><span class="op">(</span><span class="st">"~/Downloads/CimpleG_0.0.4.9002.tar.gz"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/CostaLab/CimpleG" class="external-link">"CimpleG"</a></span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_data</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_targets</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_data</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_targets</span><span class="op">)</span>
-
-<span class="co"># check the train_targets table to see</span>
-<span class="co"># what other columns can be used as targets</span>
-<span class="co"># colnames(train_targets)</span>
-
-<span class="co"># mini example with just 4 target signatures</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span>
-<span class="va">cimpleg_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/CimpleG.html">CimpleG</a></span><span class="op">(</span>
-  train_data <span class="op">=</span> <span class="va">train_data</span>,
-  train_targets <span class="op">=</span> <span class="va">train_targets</span>,
-  test_data <span class="op">=</span> <span class="va">test_data</span>,
-  test_targets <span class="op">=</span> <span class="va">test_targets</span>,
-  method <span class="op">=</span> <span class="st">"CimpleG"</span>,
-  target_columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>
-    <span class="st">"CELL_TYPE_NEURONS"</span>,
-    <span class="st">"CELL_TYPE_GLIA"</span>,
-    <span class="st">"CELL_TYPE_BLOOD.CELLS"</span>,
-    <span class="st">"CELL_TYPE_FIBROBLASTS"</span>
-  <span class="op">)</span>
-<span class="op">)</span>
-
-<span class="va">cimpleg_result</span><span class="op">$</span><span class="va">results</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/CostaLab/CimpleG" class="external-link">"CimpleG"</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">train_targets</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">test_targets</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># check the train_targets table to see</span></span>
+<span><span class="co"># what other columns can be used as targets</span></span>
+<span><span class="co"># colnames(train_targets)</span></span>
+<span></span>
+<span><span class="co"># mini example with just 4 target signatures</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
+<span><span class="va">cimpleg_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/CimpleG.html">CimpleG</a></span><span class="op">(</span></span>
+<span>  train_data <span class="op">=</span> <span class="va">train_data</span>,</span>
+<span>  train_targets <span class="op">=</span> <span class="va">train_targets</span>,</span>
+<span>  test_data <span class="op">=</span> <span class="va">test_data</span>,</span>
+<span>  test_targets <span class="op">=</span> <span class="va">test_targets</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"CimpleG"</span>,</span>
+<span>  target_columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"CELL_TYPE_NEURONS"</span>,</span>
+<span>    <span class="st">"CELL_TYPE_GLIA"</span>,</span>
+<span>    <span class="st">"CELL_TYPE_BLOOD.CELLS"</span>,</span>
+<span>    <span class="st">"CELL_TYPE_FIBROBLASTS"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cimpleg_result</span><span class="op">$</span><span class="va">results</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># check generated signatures</span>
-<span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span>
-<span class="co">#&gt;     CELL_TYPE_NEURONS        CELL_TYPE_GLIA CELL_TYPE_BLOOD.CELLS </span>
-<span class="co">#&gt;          "cg24548498"          "cg14501977"          "cg04785083" </span>
-<span class="co">#&gt; CELL_TYPE_FIBROBLASTS </span>
-<span class="co">#&gt;          "cg03369247"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># check generated signatures</span></span>
+<span><span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span></span>
+<span><span class="co">#&gt;     CELL_TYPE_NEURONS        CELL_TYPE_GLIA CELL_TYPE_BLOOD.CELLS </span></span>
+<span><span class="co">#&gt;          "cg24548498"          "cg14501977"          "cg04785083" </span></span>
+<span><span class="co">#&gt; CELL_TYPE_FIBROBLASTS </span></span>
+<span><span class="co">#&gt;          "cg03369247"</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="plot-generated-signatures">Plot generated signatures<a class="anchor" aria-label="anchor" href="#plot-generated-signatures"></a>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># adjust target names to match signature names</span>
-<span class="va">train_targets</span><span class="op">$</span><span class="va">targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"CELL_TYPE_"</span>,<span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE</span><span class="op">)</span>
-
-<span class="co"># check generated signatures</span>
-<span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/signature_plot.html">signature_plot</a></span><span class="op">(</span>
-  <span class="va">cimpleg_result</span>,
-  <span class="va">train_data</span>,
-  <span class="va">train_targets</span>,
-  sample_id_column <span class="op">=</span> <span class="st">"GSM"</span>,
-  true_label_column <span class="op">=</span> <span class="st">"targets"</span>
-<span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># adjust target names to match signature names</span></span>
+<span><span class="va">train_targets</span><span class="op">$</span><span class="va">targets</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"CELL_TYPE_"</span>,<span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># check generated signatures</span></span>
+<span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/signature_plot.html">signature_plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">cimpleg_result</span>,</span>
+<span>  <span class="va">train_data</span>,</span>
+<span>  <span class="va">train_targets</span>,</span>
+<span>  sample_id_column <span class="op">=</span> <span class="st">"GSM"</span>,</span>
+<span>  true_label_column <span class="op">=</span> <span class="st">"targets"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-5-1.png"><!-- --></p>
 </div>
 </div>
@@ -171,50 +170,50 @@
 <h3 id="basic-plot">basic plot<a class="anchor" aria-label="anchor" href="#basic-plot"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span>
-  data <span class="op">=</span> <span class="va">train_data</span>,
-  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_NEURONS</span> <span class="op">==</span> <span class="fl">1</span>
-<span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">train_data</span>,</span>
+<span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_NEURONS</span> <span class="op">==</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-6-1.png"><!-- --></p>
 </div>
 <div class="section level3">
 <h3 id="adding-color-highlighting-selected-features">adding color, highlighting selected features<a class="anchor" aria-label="anchor" href="#adding-color-highlighting-selected-features"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">df_dmeansvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_diffmeans_sumvar.html">compute_diffmeans_sumvar</a></span><span class="op">(</span>
-  data <span class="op">=</span> <span class="va">train_data</span>,
-  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_NEURONS</span> <span class="op">==</span> <span class="fl">1</span>
-<span class="op">)</span>
-
-<span class="va">parab_param</span> <span class="op">&lt;-</span> <span class="fl">.7</span>
-
-<span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">is_selected</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/select_features.html">select_features</a></span><span class="op">(</span>
-    x <span class="op">=</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">diff_means</span>,
-    y <span class="op">=</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">sum_variance</span>,
-    a <span class="op">=</span> <span class="va">parab_param</span>
-<span class="op">)</span>
-
-<span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span>
-  data <span class="op">=</span> <span class="va">df_dmeansvar</span>,
-  label_var1 <span class="op">=</span> <span class="st">"Neurons"</span>,
-  color_all_points <span class="op">=</span> <span class="st">"purple"</span>,
-  threshold_func <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">a</span><span class="op">)</span> <span class="op">(</span><span class="va">a</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span> <span class="op">^</span> <span class="fl">2</span>,
-  is_feature_selected_col <span class="op">=</span> <span class="st">"is_selected"</span>,
-  func_factor <span class="op">=</span> <span class="va">parab_param</span>
-<span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">df_dmeansvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_diffmeans_sumvar.html">compute_diffmeans_sumvar</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">train_data</span>,</span>
+<span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">CELL_TYPE_NEURONS</span> <span class="op">==</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">parab_param</span> <span class="op">&lt;-</span> <span class="fl">.7</span></span>
+<span></span>
+<span><span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">is_selected</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/select_features.html">select_features</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">diff_means</span>,</span>
+<span>    y <span class="op">=</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">sum_variance</span>,</span>
+<span>    a <span class="op">=</span> <span class="va">parab_param</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">df_dmeansvar</span>,</span>
+<span>  label_var1 <span class="op">=</span> <span class="st">"Neurons"</span>,</span>
+<span>  color_all_points <span class="op">=</span> <span class="st">"purple"</span>,</span>
+<span>  threshold_func <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">a</span><span class="op">)</span> <span class="op">(</span><span class="va">a</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span> <span class="op">^</span> <span class="fl">2</span>,</span>
+<span>  is_feature_selected_col <span class="op">=</span> <span class="st">"is_selected"</span>,</span>
+<span>  func_factor <span class="op">=</span> <span class="va">parab_param</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-7-1.png"><!-- --></p>
 </div>
 <div class="section level3">
 <h3 id="labeling-specific-features">labeling specific features<a class="anchor" aria-label="anchor" href="#labeling-specific-features"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span>
-  data <span class="op">=</span> <span class="va">df_dmeansvar</span>,
-  feats_to_highlight <span class="op">=</span> <span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span>
-<span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">df_dmeansvar</span>,</span>
+<span>  feats_to_highlight <span class="op">=</span> <span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-8-1.png"><!-- --></p>
 </div>
 </div>
@@ -225,18 +224,18 @@
 <h3 id="mini-example-with-just-4-signatures">mini example with just 4 signatures<a class="anchor" aria-label="anchor" href="#mini-example-with-just-4-signatures"></a>
 </h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">deconv_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span>
-  cpg_obj <span class="op">=</span> <span class="va">cimpleg_result</span>,
-  new_data <span class="op">=</span> <span class="va">test_data</span>
-<span class="op">)</span>
-
-<span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/deconvolution_barplot.html">deconvolution_barplot</a></span><span class="op">(</span>
-  deconvoluted_data <span class="op">=</span> <span class="va">deconv_result</span>,
-  meta_data <span class="op">=</span> <span class="va">test_targets</span> |&gt; <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>CELL_TYPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"CELL_TYPE_"</span>, <span class="va">CELL_TYPE</span><span class="op">)</span><span class="op">)</span>,
-  sample_id <span class="op">=</span> <span class="st">"GSM"</span>,
-  true_label <span class="op">=</span> <span class="st">"CELL_TYPE"</span>
-<span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">deconv_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
+<span>  cpg_obj <span class="op">=</span> <span class="va">cimpleg_result</span>,</span>
+<span>  new_data <span class="op">=</span> <span class="va">test_data</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/deconvolution_barplot.html">deconvolution_barplot</a></span><span class="op">(</span></span>
+<span>  deconvoluted_data <span class="op">=</span> <span class="va">deconv_result</span>,</span>
+<span>  meta_data <span class="op">=</span> <span class="va">test_targets</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>CELL_TYPE <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"CELL_TYPE_"</span>, <span class="va">CELL_TYPE</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  sample_id <span class="op">=</span> <span class="st">"GSM"</span>,</span>
+<span>  true_label <span class="op">=</span> <span class="st">"CELL_TYPE"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-9-1.png"><!-- --></p>
 </div>
 </div>
@@ -293,7 +292,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>

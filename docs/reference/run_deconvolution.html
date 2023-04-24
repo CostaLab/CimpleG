@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CimpleG</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9031</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.0.4.9046</span>
       </span>
     </div>
 
@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -60,28 +60,37 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">run_deconvolution</span><span class="op">(</span>
-  cpg_obj <span class="op">=</span> <span class="cn">NULL</span>,
-  new_data <span class="op">=</span> <span class="cn">NULL</span>,
-  ref_mat <span class="op">=</span> <span class="cn">NULL</span>,
-  deconvolution_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NNLS"</span>, <span class="st">"EpiDISH"</span>, <span class="st">"NMF"</span><span class="op">)</span>,
-  <span class="va">...</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">run_deconvolution</span><span class="op">(</span></span>
+<span>  cpg_obj <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  new_data <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ref_mat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  deconvolution_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"NNLS"</span>, <span class="st">"EpiDISH"</span>, <span class="st">"NMF"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>cpg_obj</dt>
 <dd><p>A CimpleG object. When creating/training CimpleG the parameter `deconvolution_reference` should be set to `TRUE`.</p></dd>
+
+
 <dt>new_data</dt>
 <dd><p>Matrix or data.frame that should have the samples you want to perform deconvolution on.
 Samples should be in rows and probes/CpGs in columns.</p></dd>
+
+
 <dt>ref_mat</dt>
 <dd><p>If the CimpleG object does not have the reference matrix, you can provide it here instead. See `make_deconv_ref_matrix`</p></dd>
+
+
 <dt>deconvolution_method</dt>
 <dd><p>Deconvolution method to be used. One of #TODO</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Extra parameters only used when deconvolution_method is set to `NMF`. The most relevant parameter are probably `method` and `beta`.</p></dd>
+
 </dl></div>
 
   </div>
@@ -96,7 +105,7 @@ Samples should be in rows and probes/CpGs in columns.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
