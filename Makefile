@@ -38,7 +38,7 @@ githubactions_pkgdown_site:
 	Rscript -e 'usethis::use_github_action("pkgdown")'
 
 githubactions_check:
-	Rscript -e 'usethis::use_github_action("check-standard")'
+	Rscript -e 'usethis::use_github_action("check-release")'
 
 codetoolscheck:
 	Rscript -e "library(CimpleG)" \
