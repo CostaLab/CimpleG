@@ -8,7 +8,7 @@ make_deconv_pred_obs_data <- function(
   group_col # group col should be a factor, otherwise the function will make it a factor
   # returns tibble with nested fields
 ){
-  dfit <- NULL
+  dfit <- data <- NULL
 
   assertthat::assert_that(is.data.frame(dat))
   assertthat::assert_that(

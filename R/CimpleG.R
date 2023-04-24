@@ -468,7 +468,7 @@ CimpleG_main <- function(
   start_o_time <- Sys.time()
 
   # due to NSE notes in R CMD check
-  id <- train_rank <- NULL
+  id <- train_rank <- value <- name <- NULL
 
   is_simple_method <- method %in% c("CimpleG_parab", "brute_force")
   is_cimpleg <- method %in% "CimpleG"

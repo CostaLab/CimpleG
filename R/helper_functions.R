@@ -8,7 +8,7 @@ do_cv <- function(
   verbose=1
 ) {
 
-  resample <- predictor <- type <- NULL
+  resample <- predictor <- type <- target <- NULL
   truth <- positive_prob <- prediction <- NULL
 
   assertthat::assert_that("target" %in% colnames(train_data))
@@ -736,6 +736,9 @@ find_predictors <- function(
   .pred_type=c("both","hypo","hyper"),
   verbose=1
 ) {
+
+
+  pred_type <- target <- id <- train_aupr <- df_dMean_sVar <- NULL
 
   tictoc::tic(split_train_set$id %>% unlist())
 

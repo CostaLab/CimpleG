@@ -12,6 +12,7 @@ deconv_ranking_plot <- function(
 ){
 
   glanced <- method <- cdmin <- cdmax <- means <- NULL
+  AIC <- NULL
 
   # at least 2 distinct predictions should be in the df
   assertthat::assert_that(length(predicted_cols) >= 2)
