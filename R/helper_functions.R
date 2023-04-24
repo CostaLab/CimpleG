@@ -12,7 +12,7 @@ do_cv <- function(
   truth <- positive_prob <- prediction <- NULL
 
   assertthat::assert_that("target" %in% colnames(train_data))
-  assertthat::assert_that(is.factor(train_data[, "target"]))
+  assertthat::assert_that(is.factor(train_data[,target]))
 
 
   tictoc::tic(paste0("Training for target '",target_name,"' with '",method,"' has finished."))
@@ -52,7 +52,7 @@ do_cv <- function(
     .f = find_predictors,
     method = method,
     scale_scores = any(grepl("CimpleG_parab", method, fixed = TRUE)),
-    pred_type = pred_type,
+    .pred_type = pred_type,
     verbose = verbose
   )
   print_timings(verbose<1)
@@ -733,138 +733,173 @@ find_predictors <- function(
   p_class = "positive_class",
   method,
   scale_scores=FALSE,
-  pred_type=c("both","hypo","hyper"),
+  .pred_type=c("both","hypo","hyper"),
   verbose=1
 ) {
 
   tictoc::tic(split_train_set$id %>% unlist())
 
-  train_set <- rsample::analysis(split_train_set)
-
+  # Train data
+  train_set <- data.table::copy(split_train_set$data[split_train_set$in_id,])
+  # Truth labels
   tru_v <- train_set$target == p_class
 
-  dt_dMean_sVar <- compute_diffmeans_sumvar(
-    data=train_set[,-ncol(train_set)],
+  # Compute delta sigma space (diffmeans, sumvars)
+  dt_dmsv <- compute_diffmeans_sumvar(
+    data = train_set[, -ncol(train_set), with=FALSE],
     target_vector = tru_v
   )
 
-  if(pred_type!="both"){
-    if(pred_type=="hypo") dt_dMean_sVar <- dt_dMean_sVar[pred_type==FALSE]
-    if(pred_type=="hyper") dt_dMean_sVar <- dt_dMean_sVar[pred_type==TRUE]
-  }
-
-  df_dMean_sVar <- as.data.frame(dt_dMean_sVar)
+  # If we only search for one type of probe, we can discard the rest
+  dt_dmsv <- dt_dmsv[
+    .pred_type == "both" |
+    (pred_type & .pred_type == "hyper") |
+    (!pred_type & .pred_type == "hypo"),
+  ]
 
   if (method == "brute_force" | grepl("CimpleG",method)) {
 
     if (grepl("CimpleG",method)) {
 
       parab_res <- parabola_iter_loop(
-        df_diffmean_sumvar=df_dMean_sVar,
+        df_diffmean_sumvar=dt_dmsv,
         init_step=init_step,
         step_increment=step_increment,
         min_feat_search=min_feat_search,
-        pred_type=pred_type,
+        pred_type=.pred_type,
         verbose=verbose
       )
-      df_dMean_sVar <- parab_res$df_diffmean_sumvar
+      dt_dmsv <- parab_res$df_diffmean_sumvar
 
     }
 
-    hyperM_predictors <- data.frame(.id=character(), AUPR=double())
-    hypoM_predictors <- data.frame(.id=character(), AUPR=double())
-
-    if(any(df_dMean_sVar$pred_type)){
-      # get PRAUC for hyper methylated cpgs
-      hyperM_predictors <- train_set %>%
-        dplyr::select(
-          df_dMean_sVar[which(df_dMean_sVar$pred_type), "id"]
-        ) %>%
-        dplyr::summarise(dplyr::across(
-            .cols = tidyselect::vars_select_helpers$where(is.numeric),
-            .fns = function(x,truth = train_set$target){
-              prroc_prauc_vec(truth = truth, estimate = x)
-            }
-        )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id") %>%
-        magrittr::set_colnames(c(".id", "AUPR")) %>%
-        # attach mean diff, will be used to scale AUPR
-        dplyr::mutate(pred_type = "hyper") %>%
-        dplyr::left_join(
-          df_dMean_sVar[,c("id","diff_means","sum_variance")],
-          by=c(".id"="id")
-        )
-
-
-      if(scale_scores){
-        hyperM_predictors$DiffScaledAUPR <- scales::rescale(
-          abs(hyperM_predictors$diff_means),
-          to=c(0,1)
-        ) * hyperM_predictors$AUPR
-      }
-
+    # Metrics on train data
+    hyper_aupr <- train_set[,
+      lapply(X = .SD, true_v = target, FUN = function(x, true_v) {
+        prroc_prauc_vec(estimate = x, truth = true_v)
+      }),
+      .SDcols = dt_dmsv[pred_type == TRUE, id]]
+ 
+    hypo_aupr <- train_set[,
+      lapply(X = .SD, true_v = target, FUN = function(x, true_v) {
+        prroc_prauc_vec(estimate = 1 - x, truth = true_v)
+      }),
+      .SDcols = dt_dmsv[pred_type == FALSE, id]]
+ 
+    if(length(hyper_aupr) == 0){
+      hyper_aupr <- data.table::data.table(
+        id = character(),train_aupr = double(),key = "id"
+      )
+    }else{
+      hyper_aupr <- data.table::transpose(hyper_aupr, keep.names="id")
+      data.table::setnames(hyper_aupr, "V1", "train_aupr")
     }
-    if(any(!df_dMean_sVar$pred_type)){
-      # get PRAUC for hypo methylated cpgs
-      hypoM_predictors <- train_set %>%
-        dplyr::select(df_dMean_sVar[which(!df_dMean_sVar$pred_type), "id"]) %>%
-        dplyr::summarise(dplyr::across(
-            .cols=tidyselect::vars_select_helpers$where(is.numeric),
-            .fns = function(x,truth = train_set$target){
-            prroc_prauc_vec(truth = truth, estimate = 1 - x)
-          }
-        )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id")%>%
-        magrittr::set_colnames(c(".id", "AUPR"))%>%
-        # attach mean diff, will be used to scale AUPR
-        dplyr::mutate(pred_type = "hypo") %>%
-        dplyr::left_join(
-          df_dMean_sVar[,c("id","diff_means","sum_variance")],
-          by=c(".id"="id")
-        )
-
-    # scale AUPR by absolute mean difference between conditions/classes
-      if(scale_scores){
-        hypoM_predictors$DiffScaledAUPR <- scales::rescale(
-          abs(hypoM_predictors$diff_means),
-          to=c(0,1)
-        ) * hypoM_predictors$AUPR
-      }
-
+    if(length(hypo_aupr) == 0){
+      hypo_aupr <- data.table::data.table(
+        id = character(), train_aupr = double(), key = "id"
+      )
+    }else{
+      hypo_aupr <- data.table::transpose(hypo_aupr, keep.names = "id")
+      data.table::setnames(hypo_aupr, "V1", "train_aupr")
     }
 
-    meth_predictors <- rbind(
-      hyperM_predictors,
-      hypoM_predictors
-    ) %>%
-      dplyr::arrange(dplyr::desc(.data$AUPR))
+    dt_dmsv <- merge(dt_dmsv, rbind(hypo_aupr, hyper_aupr), by = "id")
+    data.table::setkeyv(dt_dmsv, "train_aupr")
+    data.table::setorder(dt_dmsv, -train_aupr)
+
+  # if(any(dt_dmsv$pred_type)){
+  #   # get PRAUC for hyper methylated cpgs
+  #   hyperM_predictors <- train_set %>%
+  #     dplyr::select(
+  #       dt_dmsv[which(dt_dmsv$pred_type), "id"]
+  #     ) %>%
+  #     dplyr::summarise(dplyr::across(
+  #         .cols = tidyselect::vars_select_helpers$where(is.numeric),
+  #         .fns = function(x,truth = train_set$target){
+  #           prroc_prauc_vec(truth = truth, estimate = x)
+  #         }
+  #     )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id") %>%
+  #     magrittr::set_colnames(c(".id", "AUPR")) %>%
+  #     # attach mean diff, will be used to scale AUPR
+  #     dplyr::mutate(pred_type = "hyper") %>%
+  #     dplyr::left_join(
+  #       dt_dmsv[,c("id","diff_means","sum_variance")],
+  #       by=c(".id"="id")
+  #     )
 
 
-    holdout_res <- rsample::assessment(split_train_set)
+  #   if(scale_scores){
+  #     hyperM_predictors$DiffScaledAUPR <- scales::rescale(
+  #       abs(hyperM_predictors$diff_means),
+  #       to=c(0,1)
+  #     ) * hyperM_predictors$AUPR
+  #   }
+  #   print(hyperM_predictors)
+  #   stop("@refactor")
+  # }
+  # if(any(!df_dMean_sVar$pred_type)){
+  #   # get PRAUC for hypo methylated cpgs
+  #   hypoM_predictors <- train_set %>%
+  #     dplyr::select(df_dMean_sVar[which(!df_dMean_sVar$pred_type), "id"]) %>%
+  #     dplyr::summarise(dplyr::across(
+  #         .cols=tidyselect::vars_select_helpers$where(is.numeric),
+  #         .fns = function(x,truth = train_set$target){
+  #         prroc_prauc_vec(truth = truth, estimate = 1 - x)
+  #       }
+  #     )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id")%>%
+  #     magrittr::set_colnames(c(".id", "AUPR"))%>%
+  #     # attach mean diff, will be used to scale AUPR
+  #     dplyr::mutate(pred_type = "hypo") %>%
+  #     dplyr::left_join(
+  #       df_dMean_sVar[,c("id","diff_means","sum_variance")],
+  #       by=c(".id"="id")
+  #     )
+
+  # # scale AUPR by absolute mean difference between conditions/classes
+  #   if(scale_scores){
+  #     hypoM_predictors$DiffScaledAUPR <- scales::rescale(
+  #       abs(hypoM_predictors$diff_means),
+  #       to=c(0,1)
+  #     ) * hypoM_predictors$AUPR
+  #   }
+
+  # }
+
+   #meth_predictors <- rbind(
+   #  hyperM_predictors,
+   #  hypoM_predictors
+   #) %>%
+   #  dplyr::arrange(dplyr::desc(.data$AUPR))
+
+
+    #holdout_res <- rsample::assessment(split_train_set)
+    holdout_res <- data.table::copy(split_train_set$data[split_train_set$out_id,])
     lvls <- levels(holdout_res$target)
 
-    apply_res = apply(
-      X = meth_predictors,
+    apply_res <- apply(
+      X = dt_dmsv,
       MARGIN = 1,
       FUN = function(x){
 
-        pred_type = x["pred_type"]
-        predictor = x[".id"]
-        diff_means = as.double(x["diff_means"])
+        pred_type <- ifelse(as.double(x["diff_means"]) >= 0,"hyper", "hypo")
+        predictor <- x["id"]
+        diff_means <- as.double(x["diff_means"])
 
         if (pred_type == "hyper") {
           pred_res <- factor(ifelse(
-            holdout_res[, predictor] >= .5,
+            holdout_res[[predictor]] >= .5,
             lvls[2], lvls[1]
           ), levels = lvls)
-          pred_prob <- holdout_res[, predictor]
+          pred_prob <- holdout_res[[predictor]]
         } else {
           pred_res <- factor(ifelse(
-            (1 - holdout_res[, predictor]) >= .5,
+            (1 - holdout_res[[predictor]]) >= .5,
             lvls[2], lvls[1]
           ), levels = lvls)
-          pred_prob <- 1 - holdout_res[, predictor]
+          pred_prob <- 1 - holdout_res[[predictor]]
         }
         return(data.frame(
-          samples=rownames(holdout_res),
+          #samples=rownames(holdout_res),
           predictor,
           truth=holdout_res$target,
           type=pred_type,
@@ -875,6 +910,9 @@ find_predictors <- function(
         ))
       }
     )%>% plyr::ldply() %>% tibble::as_tibble()
+
+    
+
 
     res_df <- apply_res %>%
       dplyr::mutate(resample = split_train_set$id %>% unlist())
