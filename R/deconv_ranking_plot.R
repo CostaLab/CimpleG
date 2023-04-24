@@ -67,7 +67,7 @@ deconv_ranking_plot <- function(
         ggplot2::geom_boxplot(show.legend = FALSE, width = 0.5, outlier.size = .5) +
         ggplot2::scale_fill_manual(values = custom_colours) +
         ggplot2::labs(x=ptitle,y="") +
-        ggplot2::theme_classic() +
+        ggplot2::theme_classic(base_size = 14) +
         ggplot2::theme(
           legend.position = "none",
           strip.background = ggplot2::element_blank(),#element_rect(colour="white", fill="#FFFFFF"),
@@ -103,8 +103,10 @@ deconv_ranking_plot <- function(
           names_from = method,
           id_cols = !!dplyr::sym(group_col)
         ) |> 
-        tibble::column_to_rownames(group_col) |>
+        tibble::column_to_rownames(group_col) %>%
+        dplyr::mutate_all(~ifelse(is.nan(.)|is.na(.), -Inf, .)) |>
         as.matrix()
+
       nemenyi_dat <- nemenyi_dat |>
         tsutils::nemenyi(
           plottype = "none",
