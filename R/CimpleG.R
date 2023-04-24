@@ -60,6 +60,9 @@
 #' @param param_p An even number in `sigma / (delta^param_p)`. Tunes how much weight will be
 #'  given to delta when doing feature selection. Default is \code{2}.
 #'
+#' @param n_sigs Number of signatures to be saved for classification and used in deconvolution.
+#'  Default is \code{1}.
+#'
 #' @param quantile_threshold A number between 0 and 1.
 #'  Determines how many features will be kept. Default is \code{0.005}.
 #'
@@ -151,6 +154,7 @@ CimpleG <- function(
   k_folds = 10,
   grid_n = 10,
   param_p = 2,
+  n_sigs = 1,
   quantile_threshold = 0.005,
   train_only = FALSE,
   split_data = FALSE,
@@ -187,6 +191,7 @@ CimpleG.matrix <- function(
   k_folds = 10,
   grid_n = 10,
   param_p = 2,
+  n_sigs = 1,
   quantile_threshold = 0.005,
   train_only = FALSE,
   split_data = FALSE,
@@ -233,6 +238,7 @@ CimpleG.matrix <- function(
     k_folds = k_folds,
     grid_n = grid_n,
     param_p = param_p,
+    n_sigs = n_sigs,
     quantile_threshold = quantile_threshold,
     train_only = train_only,
     run_parallel = run_parallel,
@@ -266,6 +272,7 @@ CimpleG.data.frame <- function(
   k_folds = 10,
   grid_n = 10,
   param_p = 2,
+  n_sigs = 1,
   quantile_threshold = 0.005,
   train_only = FALSE,
   split_data = FALSE,
@@ -312,6 +319,7 @@ CimpleG.data.frame <- function(
     k_folds = k_folds,
     grid_n = grid_n,
     param_p = param_p,
+    n_sigs = n_sigs,
     quantile_threshold = quantile_threshold,
     train_only = train_only,
     run_parallel = run_parallel,
@@ -345,6 +353,7 @@ CimpleG.SummarizedExperiment <- function(
   k_folds = 10,
   grid_n = 10,
   param_p = 2,
+  n_sigs = 1,
   quantile_threshold = 0.005,
   train_only = FALSE,
   split_data = FALSE,
@@ -403,6 +412,7 @@ CimpleG.SummarizedExperiment <- function(
     k_folds = k_folds,
     grid_n = grid_n,
     param_p = param_p,
+    n_sigs = n_sigs,
     quantile_threshold = quantile_threshold,
     train_only = train_only,
     run_parallel = run_parallel,
@@ -445,6 +455,7 @@ CimpleG_main <- function(
   k_folds = 10,
   grid_n = 10,
   param_p = 2,
+  n_sigs = 1,
   quantile_threshold = 0.005,
   train_only = FALSE,
   run_parallel = FALSE,
@@ -462,7 +473,7 @@ CimpleG_main <- function(
   is_simple_method <- method %in% c("CimpleG_parab", "brute_force")
   is_cimpleg <- method %in% "CimpleG"
 
-  if(is_cimpleg){
+  #if(is_cimpleg){
     # TODO: ensure other methods can run off of data.table so that I can remove is_cimpleg
     if(is.matrix(train_data)){
       train_data <- as.data.frame(train_data)
@@ -482,10 +493,10 @@ CimpleG_main <- function(
         data.table::setDT(test_data)
       }
     }
-  }else{
-    train_data <- as.data.frame(train_data)
-    if(!train_only) test_data <- as.data.frame(test_data)
-  }
+  #}else{
+  #  train_data <- as.data.frame(train_data)
+  #  if(!train_only) test_data <- as.data.frame(test_data)
+  #}
 
   work_helper <- function(target) {
 
@@ -504,13 +515,13 @@ CimpleG_main <- function(
           ), levels = c("positive_class", "negative_class"))
     }
 
-    if(is_cimpleg){
+    #if(is_cimpleg){
       train_data[,target := train_target_vec]
       if(!train_only) test_data[,target := test_target_vec]
-    }else{
-      train_data$target <- train_target_vec
-      if(!train_only) test_data$target <- test_target_vec
-    }
+    #}else{
+    #  train_data$target <- train_target_vec
+    #  if(!train_only) test_data$target <- test_target_vec
+    #}
 
     rv_tbl <- table(train_data[, "target"])
 
@@ -607,12 +618,18 @@ CimpleG_main <- function(
 
   if(is_cimpleg | is_simple_method){
     # cimpleg | parab | brute force
-    signatures <- purrr::map_chr(
-      res,
-      function(cg_res){
-        cg_res$train_res$train_results[train_rank == 1, id]
-      }
-    )
+    # TODO solve issue for when different targets come up with a different max ranks
+    # ex. sigA ranks 1:5 but sigB only 1:3
+    signatures <-
+      purrr::map_df(
+        res,
+        function(cg_res){
+          cg_res$train_res$train_results[train_rank <= n_sigs, id]
+        }
+      ) %>%
+      tidyr::pivot_longer(colnames(.)) %>%
+      dplyr::pull(value, name)
+
     final_res <- list(
       signatures = signatures,
       results = res,
@@ -644,6 +661,7 @@ CimpleG_main <- function(
     # even if these are present in the targets_oi (should not happen)
     target_vector[non_train_samples] <- "others"
 
+    # TODO better to just return the result rather than doing the if
     if(any(grepl("target", colnames(train_data), fixed=TRUE))){
       train_data <- train_data[, 1:(ncol(train_data) - 1)]
     }

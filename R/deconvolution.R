@@ -35,6 +35,11 @@ run_deconvolution.CimpleG <- function(
 
   deconv_res <- NULL
 
+  has_missing_data <- length(setdiff(cpg_obj$signatures, colnames(new_data))) > 0
+
+  if(has_missing_data){
+    new_data <- mean_imput(cpg_obj$signatures, new_data)
+  }
 
   ml_methods <- c("logistic_reg", "decision_tree", "boost_tree","mlp","rand_forest")
 
@@ -90,11 +95,11 @@ deconvolution_nnls <- function(dt, compute_cols, ref_mat){
   cell_type <- NULL # R CMD check pass
 
   # For each computable column, run nnls, normalize/transform into proportion 0-1, add and sort by label
-  dt[, (compute_cols) := lapply(.SD, function(x) nnls::nnls(A = as.matrix(ref_mat), b = x)$x), .SDcols = compute_cols][,
-    (compute_cols) := lapply(.SD, function(x) x / sum(x)),.SDcols = compute_cols][,
-    cell_type := colnames(ref_mat)][gtools::mixedorder(cell_type),]
+  dt1 <- dt[, lapply(.SD, function(x) nnls::nnls(A = as.matrix(ref_mat), b = x)$x), .SDcols = compute_cols][,
+    lapply(.SD, function(x) x / sum(x)),.SDcols = compute_cols][,
+    cell_type := colnames(ref_mat)][gtools::mixedorder(cell_type),][]
 
-  return(dt)
+  return(dt1)
 }
 
 #' NMF deconvolution
@@ -332,7 +337,7 @@ deconv_ml <- function(
     data = dt_res,
     value.name = "proportion",
     variable.name = "sample_id",
-    id = c("model_id","cell_type")
+    id = "cell_type"
   )
 
   return(dt_res)
@@ -406,7 +411,7 @@ deconv_cpg <- function(
     data = dt_res,
     value.name = "proportion",
     variable.name = "sample_id",
-    id = c("cpg_id","cell_type")
+    id = "cell_type"
   )
 
   return(dt_res)
