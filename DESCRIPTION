@@ -1,8 +1,8 @@
 Package: CimpleG
 Type: Package
 Title: CimpleG - Individual/Single CpG sites For Classification and Deconvolution
-Date: 2022-08-23
-Version: 0.0.4.9031
+Date: 2023-03-16
+Version: 0.0.4.9046
 Authors@R:
     person("Tiago","F.V. Maié",email="tiagomaie@hotmail.com",role=c("aut","cre"))
 Maintainer: Tiago Maié <tiagomaie@hotmail.com>
@@ -12,7 +12,7 @@ URL: https://github.com/CostaLab/CimpleG
 BugReports: https://github.com/CostaLab/CimpleG/issues
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.2
 Depends:
     R (>= 4.0)
 Imports:
@@ -41,15 +41,15 @@ Imports:
     stats,
     utils,
     butcher,
-    data.table
-Suggests:
-    PMCMRplus,
-    furrr,
-    future,
-    reshape2,
+    data.table,
+    devtools,
+    withr,
     stringr,
-    testthat (>= 3.0.0),
-    xgboost (>= 1.3.2.1),
+    reshape2,
+    future,
+    furrr,
+    PMCMRplus,
+    xgboost,
     glmnet,
     C50,
     ranger,
@@ -59,31 +59,31 @@ Suggests:
     ggrepel,
     circlize,
     NMF,
+    gtools,
+    nnls,
     RColorBrewer,
     forcats,
     future.apply,
     ggbeeswarm,
     ggsci,
+    patchwork,
     ggsignif,
-    minfi (>= 1.40.0),
+    plyr,
+    minfi (>= 1.44.0),
     mltools,
-    SummarizedExperiment (>= 1.24.0),
+    SummarizedExperiment (>= 1.28.0),
     archive,
     Rfast,
-    EpiDISH (>= 2.10.0),
-    ComplexHeatmap (>= 2.10.0),
-    Biobase (>= 2.54.0),
     GEOquery,
-    gtools,
-    nnls,
-    plyr,
+    biomaRt,
+    EpiDISH (>= 2.14.1),
+    ComplexHeatmap (>= 2.14.0),
+    Biobase (>= 2.58.0)
+Suggests:
+    testthat (>= 3.0.0),
     knitr,
     rmarkdown,
-    spelling,
-    biomaRt,
-    devtools,
-    patchwork,
-    withr
+    spelling
 Remotes: 
     bioc::release/Biobase,
     bioc::release/EpiDISH,
