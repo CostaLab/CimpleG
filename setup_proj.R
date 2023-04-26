@@ -76,17 +76,17 @@ usethis::use_package("future.apply", import_tag)
 usethis::use_package("ggbeeswarm", import_tag)
 usethis::use_package("ggsignif", import_tag)
 usethis::use_package("plyr",import_tag) # only used in a single place, check to rm
-usethis::use_dev_package("minfi", import_tag, remote="bioc::release/minfi")
 usethis::use_package("mltools", import_tag)
-usethis::use_dev_package("SummarizedExperiment", import_tag, remote="bioc::release/SummarizedExperiment")
 usethis::use_package("Rfast",import_tag)
 usethis::use_package("GEOquery",import_tag)
 usethis::use_package("biomaRt",import_tag)
 
 # remotes
- usethis::use_dev_package("EpiDISH", import_tag, "bioc::release/EpiDISH")
- usethis::use_dev_package("ComplexHeatmap", import_tag, "bioc::release/ComplexHeatmap")
- usethis::use_dev_package("Biobase", import_tag, "bioc::release/Biobase")
+usethis::use_dev_package("Biobase", import_tag, "bioc::release/Biobase")
+usethis::use_dev_package("SummarizedExperiment", import_tag, remote="bioc::release/SummarizedExperiment")
+usethis::use_dev_package("minfi", import_tag, remote="bioc::release/minfi")
+usethis::use_dev_package("EpiDISH", import_tag, "bioc::release/EpiDISH")
+usethis::use_dev_package("ComplexHeatmap", import_tag, "bioc::release/ComplexHeatmap")
 
 # import from
 usethis::use_package_doc()

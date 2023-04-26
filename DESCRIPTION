@@ -52,10 +52,6 @@ Imports:
     utils,
     workflows,
     yardstick
-Config/testthat/edition: 3
-Config/testthat/parallel: true
-VignetteBuilder: knitr
-Language: en-US
 Suggests: 
     Biobase (>= 2.58.0),
     biomaRt,
@@ -93,3 +89,7 @@ Remotes:
     bioc::release/EpiDISH,
     bioc::release/ComplexHeatmap,
     bioc::release/Biobase
+Config/testthat/edition: 3
+Config/testthat/parallel: true
+VignetteBuilder: knitr
+Language: en-US
