@@ -22,9 +22,9 @@ devtools::install_github("costalab/CimpleG")
 #  - ie navigating through your system
 install.packages(file.choose(), repos = NULL, type = "source")
 #  - ie given a path to a local source
-install.packages("~/Downloads/CimpleG_0.0.4.9002.tar.gz", repos = NULL, type = "source")
+install.packages("~/Downloads/CimpleG_0.0.4.XXXX.tar.gz", repos = NULL, type = "source")
 # or
-devtools::install_local("~/Downloads/CimpleG_0.0.4.9002.tar.gz")
+devtools::install_local("~/Downloads/CimpleG_0.0.4.XXXX.tar.gz")
 ```
 
 ## Getting started
@@ -162,4 +162,121 @@ plt <- deconvolution_barplot(
 print(plt$plot)
 ```
 
-![](man/figures/README-unnamed-chunk-9-1.png)<!-- -->
+![](man/figures/README-unnamed-chunk-9-1.png)<!-- --> \#\#\# this
+example is a little more advanced
+
+#### first lets create additional deconvolution results so that we can compare them
+
+In this example, we’ll create two additional models made with CimpleG.
+One using only hypermethylated signatures, and the other using 3 CpGs
+per signature instead of just one.
+
+``` r
+set.seed(42)
+cimpleg_hyper <- CimpleG(
+  train_data = train_data,
+  train_targets = train_targets,
+  test_data = test_data,
+  test_targets = test_targets,
+  method = "CimpleG",
+  pred_type = "hyper",
+  target_columns = c(
+    "CELL_TYPE_NEURONS",
+    "CELL_TYPE_GLIA",
+    "CELL_TYPE_BLOOD.CELLS",
+    "CELL_TYPE_FIBROBLASTS"
+  )
+)
+#> Training for target 'CELL_TYPE_NEURONS' with 'CimpleG' has finished.: 0.486 sec elapsed
+#> Training for target 'CELL_TYPE_GLIA' with 'CimpleG' has finished.: 0.275 sec elapsed
+#> Training for target 'CELL_TYPE_BLOOD.CELLS' with 'CimpleG' has finished.: 0.295 sec elapsed
+#> Training for target 'CELL_TYPE_FIBROBLASTS' with 'CimpleG' has finished.: 0.245 sec elapsed
+
+deconv_hyper <- run_deconvolution(
+  cpg_obj = cimpleg_hyper,
+  new_data = test_data
+)
+
+
+set.seed(42)
+cimpleg_3sigs <- CimpleG(
+  train_data = train_data,
+  train_targets = train_targets,
+  test_data = test_data,
+  test_targets = test_targets,
+  method = "CimpleG",
+  n_sigs = 3,
+  target_columns = c(
+    "CELL_TYPE_NEURONS",
+    "CELL_TYPE_GLIA",
+    "CELL_TYPE_BLOOD.CELLS",
+    "CELL_TYPE_FIBROBLASTS"
+  )
+)
+#> Training for target 'CELL_TYPE_NEURONS' with 'CimpleG' has finished.: 0.36 sec elapsed
+#> Training for target 'CELL_TYPE_GLIA' with 'CimpleG' has finished.: 0.378 sec elapsed
+#> Training for target 'CELL_TYPE_BLOOD.CELLS' with 'CimpleG' has finished.: 0.366 sec elapsed
+#> Training for target 'CELL_TYPE_FIBROBLASTS' with 'CimpleG' has finished.: 0.511 sec elapsed
+
+deconv_3sigs <- run_deconvolution(
+  cpg_obj = cimpleg_3sigs,
+  new_data = test_data
+)
+```
+
+#### let’s also create some fake true values just so that we can compare all the results
+
+#### remember this is just an example, the results themselves are meaningless!
+
+``` r
+deconv_3sigs$prop_3sigs <- deconv_3sigs$proportion
+deconv_hyper$prop_hyper <- deconv_hyper$proportion
+deconv_result$prop_cimpleg <- deconv_result$proportion
+
+dummy_deconvolution_data <-
+  deconv_result |> 
+  dplyr::mutate(true_vals = proportion + runif(nrow(deconv_result), min=-0.1,max=0.1)) |>
+  dplyr::select(cell_type,sample_id,prop_cimpleg,true_vals) |>
+  dplyr::left_join(deconv_hyper |> dplyr::select(-proportion), by=c("sample_id","cell_type")) |>
+  dplyr::left_join(deconv_3sigs |> dplyr::select(-proportion), by=c("sample_id","cell_type")) |>
+  dplyr::mutate_if(is.numeric, function(x){ifelse(x<0,0,x)}) |>
+  dplyr::mutate_if(is.numeric, function(x){ifelse(x>1,1,x)}) |> 
+  tibble::as_tibble()
+```
+
+#### let’s now make use of some plotting functions designed to compare deconvolution results
+
+#### first we can check how the true values compare against the predicted values
+
+``` r
+scatter_plts <- CimpleG:::deconv_pred_obs_plot(
+  deconv_df = dummy_deconvolution_data,
+  true_values_col = "true_vals",
+  predicted_cols = c("prop_cimpleg","prop_hyper","prop_3sigs"),
+  sample_id_col = "sample_id",
+  group_col= "cell_type"
+)
+scatter_panel <- scatter_plts |> patchwork::wrap_plots(ncol=1)
+
+print(scatter_panel)
+```
+
+![](man/figures/README-unnamed-chunk-12-1.png)<!-- -->
+
+#### now, more interestingly, we can see in detail and rank one of the measures used to evaluate the deconvolution results
+
+``` r
+rank_plts <- CimpleG:::deconv_ranking_plot(
+  deconv_df = dummy_deconvolution_data,
+  true_values_col = "true_vals",
+  predicted_cols = c("prop_cimpleg","prop_hyper","prop_3sigs"),
+  sample_id_col = "sample_id",
+  group_col= "cell_type",
+  metrics = "rmse"
+)
+rank_panel <- list(rank_plts$perf_boxplt[[1]],rank_plts$nemenyi_plt[[1]]) |> patchwork::wrap_plots()
+
+print(rank_panel)
+```
+
+![](man/figures/README-unnamed-chunk-13-1.png)<!-- -->

@@ -1,8 +1,8 @@
 Package: CimpleG
 Type: Package
 Title: CimpleG - Individual/Single CpG sites For Classification and Deconvolution
-Date: 2023-04-24
-Version: 0.0.4.9053
+Date: 2023-04-26
+Version: 0.0.4.9056
 Authors@R:
     person("Tiago","F.V. Maié",email="tiagomaie@hotmail.com",role=c("aut","cre"))
 Maintainer: Tiago Maié <tiagomaie@hotmail.com>
@@ -12,85 +12,84 @@ URL: https://github.com/CostaLab/CimpleG
 BugReports: https://github.com/CostaLab/CimpleG/issues
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.2
+RoxygenNote: 7.2.3
 Depends:
     R (>= 4.0)
 Imports:
-    rsample,
-    yardstick,
-    tictoc,
-    caret,
-    OneR,
-    dplyr,
-    tibble,
-    parsnip,
-    matrixStats,
-    magrittr,
+    archive,
     assertthat,
+    butcher,
+    caret,
+    data.table,
+    devtools,
+    dplyr,
+    forcats,
+    ggExtra,
+    ggplot2,
+    ggrepel,
+    ggsci,
+    grDevices,
+    gtools,
+    magrittr,
+    matrixStats,
+    methods,
+    nnls,
+    OneR,
+    parsnip,
+    patchwork,
     PRROC,
     purrr,
     recipes,
-    tune,
-    workflows,
-    tidyr,
     rlang,
+    rsample,
     scales,
-    tidyselect,
-    grDevices,
-    methods,
     stats,
+    tibble,
+    tictoc,
+    tidyr,
+    tidyselect,
+    tune,
     utils,
-    butcher,
-    data.table,
-    devtools,
-    withr,
-    stringr,
-    reshape2,
-    future,
-    furrr,
-    PMCMRplus,
-    xgboost,
-    glmnet,
-    C50,
-    ranger,
-    nnet,
-    ggplot2,
-    ggExtra,
-    ggrepel,
-    circlize,
-    NMF,
-    gtools,
-    nnls,
-    RColorBrewer,
-    forcats,
-    future.apply,
-    ggbeeswarm,
-    ggsci,
-    patchwork,
-    ggsignif,
-    plyr,
-    minfi (>= 1.44.0),
-    mltools,
-    SummarizedExperiment (>= 1.28.0),
-    archive,
-    Rfast,
-    GEOquery,
-    biomaRt,
-    EpiDISH (>= 2.14.1),
-    ComplexHeatmap (>= 2.14.0),
-    Biobase (>= 2.58.0)
-Suggests:
-    testthat (>= 3.0.0),
-    knitr,
-    rmarkdown,
-    spelling
-Remotes: 
-    bioc::release/Biobase,
-    bioc::release/EpiDISH,
-    bioc::release/ComplexHeatmap,
-    bioc::release/minfi,
-    bioc::release/SummarizedExperiment
+    workflows,
+    yardstick
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 VignetteBuilder: knitr
 Language: en-US
+Suggests: 
+    Biobase (>= 2.58.0),
+    biomaRt,
+    C50,
+    circlize,
+    ComplexHeatmap (>= 2.14.0),
+    EpiDISH (>= 2.14.1),
+    furrr,
+    future,
+    future.apply,
+    GEOquery,
+    ggbeeswarm,
+    ggsignif,
+    glmnet,
+    knitr,
+    minfi (>= 1.44.0),
+    mltools,
+    NMF,
+    nnet,
+    plyr,
+    PMCMRplus,
+    ranger,
+    RColorBrewer,
+    reshape2,
+    Rfast,
+    rmarkdown,
+    stringr,
+    SummarizedExperiment (>= 1.28.0),
+    testthat (>= 3.0.0),
+    withr,
+    xgboost
+Remotes: 
+    bioc::release/minfi,
+    bioc::release/SummarizedExperiment,
+    bioc::release/EpiDISH,
+    bioc::release/ComplexHeatmap,
+    bioc::release/Biobase
