@@ -1,18 +1,17 @@
-Package: CimpleG
 Type: Package
-Title: CimpleG - Individual/Single CpG sites For Classification and Deconvolution
-Date: 2023-04-26
+Package: CimpleG
+Title: CimpleG - Individual/Single CpG sites For Classification and
+    Deconvolution
 Version: 0.0.4.9056
+Date: 2023-04-26
 Authors@R:
-    person("Tiago","F.V. Maié",email="tiagomaie@hotmail.com",role=c("aut","cre"))
+    person("Tiago", "F.V. Maié", , "tiagomaie@hotmail.com", role = c("aut", "cre"))
 Maintainer: Tiago Maié <tiagomaie@hotmail.com>
-Description: CimpleG is a simple package to find single-CpG based signatures for use in classification and deconvolution.
+Description: CimpleG is a simple package to find single-CpG based
+    signatures for use in classification and deconvolution.
 License: GPL (>= 3)
 URL: https://github.com/CostaLab/CimpleG
 BugReports: https://github.com/CostaLab/CimpleG/issues
-Encoding: UTF-8
-LazyData: true
-RoxygenNote: 7.2.3
 Depends:
     R (>= 4.0)
 Imports:
@@ -83,13 +82,17 @@ Suggests:
     testthat (>= 3.0.0),
     withr,
     xgboost
+VignetteBuilder: 
+    knitr
 Remotes: 
-    bioc::release/minfi,
-    bioc::release/SummarizedExperiment,
-    bioc::release/EpiDISH,
-    bioc::release/ComplexHeatmap,
-    bioc::release/Biobase
+    bioc::Biobase,
+    bioc::ComplexHeatmap,
+    bioc::EpiDISH,
+    bioc::minfi,
+    bioc::SummarizedExperiment
 Config/testthat/edition: 3
 Config/testthat/parallel: true
-VignetteBuilder: knitr
+Encoding: UTF-8
 Language: en-US
+LazyData: true
+RoxygenNote: 7.2.3

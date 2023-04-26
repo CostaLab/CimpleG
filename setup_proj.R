@@ -82,11 +82,14 @@ usethis::use_package("GEOquery",import_tag)
 usethis::use_package("biomaRt",import_tag)
 
 # remotes
-usethis::use_dev_package("Biobase", import_tag, "bioc::release/Biobase")
-usethis::use_dev_package("SummarizedExperiment", import_tag, remote="bioc::release/SummarizedExperiment")
-usethis::use_dev_package("minfi", import_tag, remote="bioc::release/minfi")
-usethis::use_dev_package("EpiDISH", import_tag, "bioc::release/EpiDISH")
-usethis::use_dev_package("ComplexHeatmap", import_tag, "bioc::release/ComplexHeatmap")
+usethis::use_dev_package("Biobase", import_tag, "bioc::Biobase")
+usethis::use_dev_package("SummarizedExperiment", import_tag, remote="bioc::SummarizedExperiment")
+usethis::use_dev_package("minfi", import_tag, remote="bioc::minfi")
+usethis::use_dev_package("EpiDISH", import_tag, "bioc::EpiDISH")
+usethis::use_dev_package("ComplexHeatmap", import_tag, "bioc::ComplexHeatmap")
+
+# fixed standard
+usethis::use_tidy_description()
 
 # import from
 usethis::use_package_doc()
