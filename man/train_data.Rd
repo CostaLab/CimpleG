@@ -5,7 +5,7 @@
 \alias{train_data}
 \title{Cell line train data}
 \format{
-A matrix with 1000 CpGs/features/variables as columns and 409 samples as rows
+A matrix with beta values for 1000 CpGs. Features/variables as columns and 409 samples as rows
 }
 \usage{
 train_data

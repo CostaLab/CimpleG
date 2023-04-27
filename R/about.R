@@ -11,7 +11,7 @@ about <- function() {
 
   msg <-
     paste0(
-      "A package to find simple CpG signatures."
+      "A package to find small CpG signatures."
     )
 
   message(msg)

@@ -5,7 +5,7 @@
 \alias{test_data}
 \title{Cell line test data}
 \format{
-A matrix with 1000 CpGs/features/variables as columns and 170 samples as rows
+A matrix with beta values for 1000 CpGs. Features/variables as columns and 170 samples as rows
 }
 \usage{
 test_data
