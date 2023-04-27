@@ -10,6 +10,7 @@ CimpleG, an R package to find (simple) CpG signatures.
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/tiagomaie/CimpleG/workflows/R-CMD-check/badge.svg)](https://github.com/tiagomaie/CimpleG/actions)
+[![R-CMD-check](https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 ## Installation
@@ -50,10 +51,10 @@ cimpleg_result <- CimpleG(
   test_targets = test_targets,
   method = "CimpleG",
   target_columns = c(
-    "CELL_TYPE_NEURONS",
-    "CELL_TYPE_GLIA",
-    "CELL_TYPE_BLOOD.CELLS",
-    "CELL_TYPE_FIBROBLASTS"
+    "neurons",
+    "glia",
+    "blood_cells",
+    "fibroblasts"
   )
 )
 
@@ -63,25 +64,22 @@ cimpleg_result$results
 ``` r
 # check generated signatures
 cimpleg_result$signatures
-#>     CELL_TYPE_NEURONS        CELL_TYPE_GLIA CELL_TYPE_BLOOD.CELLS 
-#>          "cg24548498"          "cg14501977"          "cg04785083" 
-#> CELL_TYPE_FIBROBLASTS 
-#>          "cg03369247"
+#>      neurons         glia  blood_cells  fibroblasts 
+#> "cg24548498" "cg14501977" "cg04785083" "cg03369247"
 ```
 
 ### Plot generated signatures
 
 ``` r
 # adjust target names to match signature names
-train_targets$targets <- paste0("CELL_TYPE_",train_targets$CELL_TYPE)
 
 # check generated signatures
 plt <- signature_plot(
   cimpleg_result,
   train_data,
   train_targets,
-  sample_id_column = "GSM",
-  true_label_column = "targets"
+  sample_id_column = "gsm",
+  true_label_column = "cell_type"
 )
 print(plt$plot)
 ```
@@ -95,7 +93,7 @@ print(plt$plot)
 ``` r
 plt <- diffmeans_sumvariance_plot(
   data = train_data,
-  target_vector = train_targets$CELL_TYPE_NEURONS == 1
+  target_vector = train_targets$neurons == 1
 )
 print(plt)
 ```
@@ -107,7 +105,7 @@ print(plt)
 ``` r
 df_dmeansvar <- compute_diffmeans_sumvar(
   data = train_data,
-  target_vector = train_targets$CELL_TYPE_NEURONS == 1
+  target_vector = train_targets$neurons == 1
 )
 
 parab_param <- .7
@@ -155,9 +153,9 @@ deconv_result <- run_deconvolution(
 
 plt <- deconvolution_barplot(
   deconvoluted_data = deconv_result,
-  meta_data = test_targets |> dplyr::mutate(CELL_TYPE = paste0("CELL_TYPE_", CELL_TYPE)),
-  sample_id = "GSM",
-  true_label = "CELL_TYPE"
+  meta_data = test_targets,
+  sample_id = "gsm",
+  true_label = "cell_type"
 )
 print(plt$plot)
 ```
@@ -181,16 +179,16 @@ cimpleg_hyper <- CimpleG(
   method = "CimpleG",
   pred_type = "hyper",
   target_columns = c(
-    "CELL_TYPE_NEURONS",
-    "CELL_TYPE_GLIA",
-    "CELL_TYPE_BLOOD.CELLS",
-    "CELL_TYPE_FIBROBLASTS"
+    "neurons",
+    "glia",
+    "blood_cells",
+    "fibroblasts"
   )
 )
-#> Training for target 'CELL_TYPE_NEURONS' with 'CimpleG' has finished.: 0.486 sec elapsed
-#> Training for target 'CELL_TYPE_GLIA' with 'CimpleG' has finished.: 0.275 sec elapsed
-#> Training for target 'CELL_TYPE_BLOOD.CELLS' with 'CimpleG' has finished.: 0.295 sec elapsed
-#> Training for target 'CELL_TYPE_FIBROBLASTS' with 'CimpleG' has finished.: 0.245 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.485 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.264 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.306 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.263 sec elapsed
 
 deconv_hyper <- run_deconvolution(
   cpg_obj = cimpleg_hyper,
@@ -207,16 +205,16 @@ cimpleg_3sigs <- CimpleG(
   method = "CimpleG",
   n_sigs = 3,
   target_columns = c(
-    "CELL_TYPE_NEURONS",
-    "CELL_TYPE_GLIA",
-    "CELL_TYPE_BLOOD.CELLS",
-    "CELL_TYPE_FIBROBLASTS"
+    "neurons",
+    "glia",
+    "blood_cells",
+    "fibroblasts"
   )
 )
-#> Training for target 'CELL_TYPE_NEURONS' with 'CimpleG' has finished.: 0.36 sec elapsed
-#> Training for target 'CELL_TYPE_GLIA' with 'CimpleG' has finished.: 0.378 sec elapsed
-#> Training for target 'CELL_TYPE_BLOOD.CELLS' with 'CimpleG' has finished.: 0.366 sec elapsed
-#> Training for target 'CELL_TYPE_FIBROBLASTS' with 'CimpleG' has finished.: 0.511 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.406 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.379 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.403 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.576 sec elapsed
 
 deconv_3sigs <- run_deconvolution(
   cpg_obj = cimpleg_3sigs,

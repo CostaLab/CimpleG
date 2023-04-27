@@ -61,10 +61,10 @@ cimpleg_result <- CimpleG(
   test_targets = test_targets,
   method = "CimpleG",
   target_columns = c(
-    "CELL_TYPE_NEURONS",
-    "CELL_TYPE_GLIA",
-    "CELL_TYPE_BLOOD.CELLS",
-    "CELL_TYPE_FIBROBLASTS"
+    "neurons",
+    "glia",
+    "blood_cells",
+    "fibroblasts"
   )
 )
 
@@ -80,15 +80,14 @@ cimpleg_result$signatures
 ```{r, eval = TRUE, echo = TRUE, message=FALSE, warning=FALSE}
 
 # adjust target names to match signature names
-train_targets$targets <- paste0("CELL_TYPE_",train_targets$CELL_TYPE)
 
 # check generated signatures
 plt <- signature_plot(
   cimpleg_result,
   train_data,
   train_targets,
-  sample_id_column = "GSM",
-  true_label_column = "targets"
+  sample_id_column = "gsm",
+  true_label_column = "cell_type"
 )
 print(plt$plot)
 ```
@@ -101,7 +100,7 @@ print(plt$plot)
 ```{r, eval = TRUE, echo = TRUE, message=FALSE, warning=FALSE}
 plt <- diffmeans_sumvariance_plot(
   data = train_data,
-  target_vector = train_targets$CELL_TYPE_NEURONS == 1
+  target_vector = train_targets$neurons == 1
 )
 print(plt)
 ```
@@ -111,7 +110,7 @@ print(plt)
 ```{r, eval = TRUE, echo = TRUE, message=FALSE, warning=FALSE}
 df_dmeansvar <- compute_diffmeans_sumvar(
   data = train_data,
-  target_vector = train_targets$CELL_TYPE_NEURONS == 1
+  target_vector = train_targets$neurons == 1
 )
 
 parab_param <- .7
@@ -155,9 +154,9 @@ deconv_result <- run_deconvolution(
 
 plt <- deconvolution_barplot(
   deconvoluted_data = deconv_result,
-  meta_data = test_targets |> dplyr::mutate(CELL_TYPE = paste0("CELL_TYPE_", CELL_TYPE)),
-  sample_id = "GSM",
-  true_label = "CELL_TYPE"
+  meta_data = test_targets,
+  sample_id = "gsm",
+  true_label = "cell_type"
 )
 print(plt$plot)
 
@@ -180,10 +179,10 @@ cimpleg_hyper <- CimpleG(
   method = "CimpleG",
   pred_type = "hyper",
   target_columns = c(
-    "CELL_TYPE_NEURONS",
-    "CELL_TYPE_GLIA",
-    "CELL_TYPE_BLOOD.CELLS",
-    "CELL_TYPE_FIBROBLASTS"
+    "neurons",
+    "glia",
+    "blood_cells",
+    "fibroblasts"
   )
 )
 
@@ -202,10 +201,10 @@ cimpleg_3sigs <- CimpleG(
   method = "CimpleG",
   n_sigs = 3,
   target_columns = c(
-    "CELL_TYPE_NEURONS",
-    "CELL_TYPE_GLIA",
-    "CELL_TYPE_BLOOD.CELLS",
-    "CELL_TYPE_FIBROBLASTS"
+    "neurons",
+    "glia",
+    "blood_cells",
+    "fibroblasts"
   )
 )
 

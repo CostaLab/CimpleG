@@ -63,7 +63,7 @@ Running CimpleG can be quite simple. You just need to run the CimpleG function w
 cimpleg_result <- CimpleG(
   train_data,
   train_targets,
-  target_columns = c("CELL_TYPE_BLOOD.CELLS","CELL_TYPE_HEPATOCYTES"),
+  target_columns = c("blood_cells","hepatocytes"),
   train_only = TRUE
 )
 ```
@@ -74,14 +74,13 @@ Here we are generating signatures to find leukocytes and hepatocytes.
 We can quickly visualize how our signature is able to separate the data.
 
 ```{r plot_cimpleg}
-train_targets$targets <- paste0("CELL_TYPE_",train_targets$CELL_TYPE)
 
 signature_plot(
   cimpleg_result,
   train_data,
   train_targets,
-  sample_id_column = "GSM",
-  true_label_column = "targets"
+  sample_id_column = "gsm",
+  true_label_column = "cell_type"
 )
 ```
 

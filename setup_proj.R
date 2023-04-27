@@ -55,6 +55,9 @@ usethis::use_package("ggrepel")
 usethis::use_package("gtools")
 usethis::use_package("forcats")
 usethis::use_package("archive")
+usethis::use_package("tsutils")
+usethis::use_package("stats")
+usethis::use_package("methods")
 
 # suggested
 import_tag <- "suggests" # "Imports" "suggests"
@@ -88,9 +91,6 @@ usethis::use_dev_package("minfi", import_tag, remote="bioc::minfi")
 usethis::use_dev_package("EpiDISH", import_tag, "bioc::EpiDISH")
 usethis::use_dev_package("ComplexHeatmap", import_tag, "bioc::ComplexHeatmap")
 
-# fixed standard
-usethis::use_tidy_description()
-
 # import from
 usethis::use_package_doc()
 usethis::use_import_from("grDevices", c("colorRampPalette", "dev.off", "pdf", "png"))
@@ -105,3 +105,9 @@ usethis::use_data_table()
 usethis::use_testthat(parallel = TRUE)
 usethis::use_test("CimpleG")
 usethis::use_gpl_license()
+
+# fixed standard
+usethis::use_tidy_description()
+
+
+
