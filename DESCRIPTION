@@ -36,7 +36,6 @@ Imports:
     OneR,
     parsnip,
     patchwork,
-    PRROC,
     purrr,
     recipes,
     rlang,
@@ -57,7 +56,6 @@ Suggests:
     biomaRt,
     C50,
     circlize,
-    ComplexHeatmap (>= 2.14.0),
     EpiDISH (>= 2.14.1),
     furrr,
     future,
@@ -72,7 +70,6 @@ Suggests:
     NMF,
     nnet,
     plyr,
-    PMCMRplus,
     ranger,
     RColorBrewer,
     reshape2,
@@ -87,7 +84,6 @@ VignetteBuilder:
     knitr
 Remotes: 
     bioc::Biobase,
-    bioc::ComplexHeatmap,
     bioc::EpiDISH,
     bioc::minfi,
     bioc::SummarizedExperiment

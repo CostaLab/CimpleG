@@ -57,10 +57,7 @@ do_cv <- function(
   )
   print_timings(verbose<1)
 
-  # FIXME pproc not working
-  prroc_prauc <- yardstick::new_prob_metric(prroc_prauc, "maximize")
   class_prob_metrics <- yardstick::metric_set(
-    # prroc_prauc,
     yardstick::pr_auc,
     yardstick::roc_auc,
     yardstick::accuracy,
@@ -220,13 +217,13 @@ eval_test <- function(
 
   hyper_aupr <- test_data[,
     lapply(X = .SD, true_v = target, FUN = function(x, true_v){
-      prroc_prauc_vec(estimate = x, truth = true_v)
+      yardstick::pr_auc_vec(estimate = x, truth = true_v)
     }),
     .SDcols = train_results[pred_type == TRUE, id]]
 
   hypo_aupr <- test_data[,
     lapply(X = .SD, true_v = target, FUN = function(x, true_v){
-      prroc_prauc_vec(estimate = 1 - x, truth = true_v)
+      yardstick::pr_auc_vec(estimate = 1 - x, truth = true_v)
     }),
     .SDcols = train_results[pred_type == FALSE, id]]
 
@@ -369,7 +366,6 @@ predict.CimpleG <- function(
       # Default class prediction, hypermethylated if over 0.5, hypomethylated otherwise
       tbl_pred_target[, prediction_default := factor(ifelse(.SD >= 0.5, "X1", "X0"),levels=c("X1","X0")),.SDcols=sig]
 
-      # method that we use in training is: prroc_prauc_vec(estimate = 1 - x, truth = true_v)
       class_prob_metrics <- yardstick::metric_set(
         yardstick::pr_auc,
         yardstick::roc_auc,
@@ -650,13 +646,13 @@ find_best_predictors <- function(
   # Metrics on train data
   hyper_aupr <- train_set[,
     lapply(X = .SD, true_v = target, FUN = function(x, true_v) {
-      prroc_prauc_vec(estimate = x, truth = true_v)
+      yardstick::pr_auc_vec(estimate = x, truth = true_v)
     }),
     .SDcols = dt_dmsv[pred_type == TRUE, id]]
 
   hypo_aupr <- train_set[,
     lapply(X = .SD, true_v = target, FUN = function(x, true_v) {
-      prroc_prauc_vec(estimate = 1 - x, truth = true_v)
+      yardstick::pr_auc_vec(estimate = 1 - x, truth = true_v)
     }),
     .SDcols = dt_dmsv[pred_type == FALSE, id]]
 
@@ -687,13 +683,13 @@ find_best_predictors <- function(
   # Metrics on validation data
   hyper_aupr <- holdout_set[,
     lapply(X = .SD, true_v = target, FUN = function(x, true_v) {
-      prroc_prauc_vec(estimate = x, truth = true_v)
+      yardstick::pr_auc_vec(estimate = x, truth = true_v)
     }),
     .SDcols = dt_dmsv[pred_type == TRUE, id]]
 
   hypo_aupr <- holdout_set[,
     lapply(X = .SD, true_v = target, FUN = function(x, true_v) {
-      prroc_prauc_vec(estimate = 1 - x, truth = true_v)
+      yardstick::pr_auc_vec(estimate = 1 - x, truth = true_v)
     }),
     .SDcols = dt_dmsv[pred_type == FALSE, id]]
 
@@ -779,13 +775,13 @@ find_predictors <- function(
     # Metrics on train data
     hyper_aupr <- train_set[,
       lapply(X = .SD, true_v = target, FUN = function(x, true_v) {
-        prroc_prauc_vec(estimate = x, truth = true_v)
+        yardstick::pr_auc_vec(estimate = x, truth = true_v)
       }),
       .SDcols = dt_dmsv[pred_type == TRUE, id]]
  
     hypo_aupr <- train_set[,
       lapply(X = .SD, true_v = target, FUN = function(x, true_v) {
-        prroc_prauc_vec(estimate = 1 - x, truth = true_v)
+        yardstick::pr_auc_vec(estimate = 1 - x, truth = true_v)
       }),
       .SDcols = dt_dmsv[pred_type == FALSE, id]]
  
@@ -810,72 +806,6 @@ find_predictors <- function(
     data.table::setkeyv(dt_dmsv, "train_aupr")
     data.table::setorder(dt_dmsv, -train_aupr)
 
-  # if(any(dt_dmsv$pred_type)){
-  #   # get PRAUC for hyper methylated cpgs
-  #   hyperM_predictors <- train_set %>%
-  #     dplyr::select(
-  #       dt_dmsv[which(dt_dmsv$pred_type), "id"]
-  #     ) %>%
-  #     dplyr::summarise(dplyr::across(
-  #         .cols = tidyselect::vars_select_helpers$where(is.numeric),
-  #         .fns = function(x,truth = train_set$target){
-  #           prroc_prauc_vec(truth = truth, estimate = x)
-  #         }
-  #     )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id") %>%
-  #     magrittr::set_colnames(c(".id", "AUPR")) %>%
-  #     # attach mean diff, will be used to scale AUPR
-  #     dplyr::mutate(pred_type = "hyper") %>%
-  #     dplyr::left_join(
-  #       dt_dmsv[,c("id","diff_means","sum_variance")],
-  #       by=c(".id"="id")
-  #     )
-
-
-  #   if(scale_scores){
-  #     hyperM_predictors$DiffScaledAUPR <- scales::rescale(
-  #       abs(hyperM_predictors$diff_means),
-  #       to=c(0,1)
-  #     ) * hyperM_predictors$AUPR
-  #   }
-  #   print(hyperM_predictors)
-  #   stop("@refactor")
-  # }
-  # if(any(!df_dMean_sVar$pred_type)){
-  #   # get PRAUC for hypo methylated cpgs
-  #   hypoM_predictors <- train_set %>%
-  #     dplyr::select(df_dMean_sVar[which(!df_dMean_sVar$pred_type), "id"]) %>%
-  #     dplyr::summarise(dplyr::across(
-  #         .cols=tidyselect::vars_select_helpers$where(is.numeric),
-  #         .fns = function(x,truth = train_set$target){
-  #         prroc_prauc_vec(truth = truth, estimate = 1 - x)
-  #       }
-  #     )) %>% t() %>% as.data.frame %>% tibble::rownames_to_column(".id")%>%
-  #     magrittr::set_colnames(c(".id", "AUPR"))%>%
-  #     # attach mean diff, will be used to scale AUPR
-  #     dplyr::mutate(pred_type = "hypo") %>%
-  #     dplyr::left_join(
-  #       df_dMean_sVar[,c("id","diff_means","sum_variance")],
-  #       by=c(".id"="id")
-  #     )
-
-  # # scale AUPR by absolute mean difference between conditions/classes
-  #   if(scale_scores){
-  #     hypoM_predictors$DiffScaledAUPR <- scales::rescale(
-  #       abs(hypoM_predictors$diff_means),
-  #       to=c(0,1)
-  #     ) * hypoM_predictors$AUPR
-  #   }
-
-  # }
-
-   #meth_predictors <- rbind(
-   #  hyperM_predictors,
-   #  hypoM_predictors
-   #) %>%
-   #  dplyr::arrange(dplyr::desc(.data$AUPR))
-
-
-    #holdout_res <- rsample::assessment(split_train_set)
     holdout_res <- data.table::copy(split_train_set$data[split_train_set$out_id,])
     lvls <- levels(holdout_res$target)
 
@@ -1317,61 +1247,6 @@ fix_oner_boundaries <- function(oner_mod){
   return(oner_mod)
 }
 
-# defining PRROC PRAUC
-prroc_prauc_vec <- function(
-  truth, estimate, estimator = "binary", na_rm = TRUE, ...
-) {
-  prroc_prauc_impl <- function(truth, estimate, event_level) {
-    res <- PRROC::pr.curve(
-      scores.class0 = estimate,
-      weights.class0 = ifelse(truth == "positive_class", 1, 0),
-      curve = FALSE,
-      max.compute = FALSE,
-      min.compute = FALSE,
-      rand.compute = FALSE,
-      dg.compute = FALSE
-    )$auc.integral
-    return(res)
-  }
-  yardstick::metric_vec_template(
-    metric_impl = prroc_prauc_impl,
-    truth = truth,
-    estimate = estimate,
-    estimator = estimator,
-    na_rm = na_rm,
-    cls = c("factor", "numeric"),
-    ...
-  )
-}
-
-#
-prroc_prauc <- function(data, ...) {
-  UseMethod("prroc_prauc")
-}
-
-
-#
-prroc_prauc.data.frame <- function(
-  data,
-  truth,
-  estimate,
-  estimator = "binary",
-  na_rm = TRUE,
-  event_level = "first",
-  ...
-) {
-  yardstick::metric_summarizer(
-    metric_nm = "prroc_prauc",
-    metric_fn = prroc_prauc_vec,
-    data = data,
-    truth = !!rlang::enquo(truth),
-    estimate = !!rlang::enquo(estimate),
-    na_rm = na_rm,
-    estimator = estimator,
-    event_level = event_level,
-    ...
-  )
-}
 
 # timing func
 print_timings <- function(quiet = FALSE) {

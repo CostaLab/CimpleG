@@ -21,16 +21,6 @@ save_different_plot_format <- function(
       if (save_device == "ggplot") {
         ggplot2::ggsave(filename = f_path_fmt, plot = plt, device = fmt, units = units, width = width, height = height, ...)
       }
-      if (save_device == "complexheatmap") {
-        save_f <- get(fmt)
-        if (fmt == "png" | fmt == "tiff") {
-          save_f(f_path_fmt, width = width, height = height, units = "in", res = 300, ...)
-        } else {
-          save_f(f_path_fmt, width = width, height = height)
-        }
-        ComplexHeatmap::draw(plt)
-        grDevices::dev.off()
-      }
     }
   }
 }
