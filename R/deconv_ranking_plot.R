@@ -1,13 +1,24 @@
 
 
+#' Boxplot and rankings of deconvolution metrics for deconvolution results.
+#'
+#' Produces data with varied deconvolution performance metrics. Produces one boxplot and one ranking plot with the for each metric.
+#' @param deconv_df A data.frame with meta.data, true values and predictions for different methods as columns. Each row should be a prediction for a given sample and a given group/cell type.
+#' @param true_values_col A string with the name of the column with the true values in `deconv_df`.
+#' @param predicted_cols A vector of strings with the name of the columns with the predictions for different methods in `deconv_df`.
+#' @param sample_id_col A string with the name of the column with the sample name or ID in `deconv_df`.
+#' @param group_col A string with the name of the column containing the cell types or groups in `deconv_df`.
+#' @param metrics A list with two entries, `x` and `y`, defining the limits of the x and y axis of the plot.
+#' @param custom_colours A named vector with colours, where the names are the values defined in `predicted_cols`. If `NULL`, default colours will be used.
+#' @export
 deconv_ranking_plot <- function(
-  deconv_df, 
+  deconv_df,
   true_values_col,
   predicted_cols,
   sample_id_col,
   group_col,
   #highlight_method = NULL,
-  metrics = c("r_squared", "rmse", "adj.r.squared","AIC"), # supported metrics currently
+  metrics = c("rmse", "r_squared", "adj.r.squared","AIC"), # supported metrics currently
   custom_colours = NULL # named vec (predicted_cols) with colors or NULL
 ){
 
@@ -20,6 +31,8 @@ deconv_ranking_plot <- function(
   assertthat::assert_that(length(metrics) >= 1)
   # at least 2 distinct groups should be in the data in group_col
   assertthat::assert_that(length(unique(deconv_df[[group_col]])) >= 2)
+
+  deconv_df <- as.data.frame(deconv_df)
 
   dec_dat <- make_deconv_pred_obs_data(
     deconv_df,

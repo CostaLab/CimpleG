@@ -1,4 +1,14 @@
 
+#' Scatter plots of observed (true) vs predicted values for deconvolution.
+#'
+#' Produces one plot panel per number of methods with predictions. Each plot panel has one plot per cell type.
+#' @param deconv_df A data.frame with meta.data, true values and predictions for different methods as columns. Each row should be a prediction for a given sample and a given group/cell type.
+#' @param true_values_col A string with the name of the column with the true values in `deconv_df`.
+#' @param predicted_cols A vector of strings with the name of the columns with the predictions for different methods in `deconv_df`.
+#' @param sample_id_col A string with the name of the column with the sample name or ID in `deconv_df`.
+#' @param group_col A string with the name of the column containing the cell types or groups in `deconv_df`.
+#' @param axis_lims A list with two entries, `x` and `y`, defining the limits of the x and y axis of the plot.
+#' @export
 deconv_pred_obs_plot <- function(
   deconv_df,# data.frame with predictions as columns, each row should be a prediction for a given sample and given group/celltype
   true_values_col,
@@ -11,6 +21,8 @@ deconv_pred_obs_plot <- function(
   # TODO customizable limits
   augmented <- .fitted <- metrics <- glanced <- NULL
   rmse <- adj.r.squared <- r_squared <- AIC <- NULL
+
+  deconv_df <- as.data.frame(deconv_df)
 
   dec_dat <- make_deconv_pred_obs_data(
     deconv_df,
