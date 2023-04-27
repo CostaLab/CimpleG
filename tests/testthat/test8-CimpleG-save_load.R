@@ -6,7 +6,7 @@ cimpleg_result <- CimpleG(
   test_data = test_data,
   test_targets = test_targets,
   method = "CimpleG",
-  target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+  target_columns = c("blood_cells", "neurons"),
   save_dir=".",
   save_format="zstd",
   verbose=0

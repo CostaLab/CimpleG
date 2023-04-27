@@ -7,20 +7,18 @@ res <- CimpleG(
   test_data = test_data,
   test_targets = test_targets,
   method = "CimpleG",
-  target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+  target_columns = c("blood_cells", "neurons"),
   verbose=0
 )
 
-test_targets$targets <- paste0("CELL_TYPE_",test_targets$CELL_TYPE)
-
-sig_vec <- c(CELL_TYPE_MSCORFIBRO="cg03369247", CELL_TYPE_NEURONS="cg24548498")
-sig_list <-list(CELL_TYPE_MSCORFIBRO="cg03369247", CELL_TYPE_NEURONS="cg24548498")
+sig_vec <- c(blood_cells="cg04785083", neurons="cg24548498")
+sig_list <-list(blood_cells="cg04785083", neurons="cg24548498")
 
 test_that("signature_plot works with CimpleG, character vectors and lists", {
 
-  plt_res <- signature_plot(res, test_data, test_targets, "GSM", "targets")
-  plt_vec <- signature_plot(sig_vec, test_data, test_targets, "GSM", "targets")
-  plt_list <- signature_plot(sig_list, test_data, test_targets, "GSM", "targets")
+  plt_res <- signature_plot(res, test_data, test_targets, "gsm", "cell_type")
+  plt_vec <- signature_plot(sig_vec, test_data, test_targets, "gsm", "cell_type")
+  plt_list <- signature_plot(sig_list, test_data, test_targets, "gsm", "cell_type")
 
   expect_s3_class(plt_res$plot, "ggplot")
   expect_s3_class(plt_vec$plot, "ggplot")

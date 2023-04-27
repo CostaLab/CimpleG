@@ -16,13 +16,13 @@ test_that("parallel processing works",{
     test_data = test_data,
     test_targets = test_targets,
     method="CimpleG",
-    target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+    target_columns = c("blood_cells", "neurons"),
     verbose=0,
     run_parallel=TRUE
   )
   future::plan(future::sequential)
 
-  expect_identical(res$signatures, c(CELL_TYPE_MSCORFIBRO="cg03369247", CELL_TYPE_NEURONS="cg24548498"))
+  expect_identical(res$signatures, c(blood_cells="cg04785083", neurons="cg24548498"))
 })
 future::plan(future::sequential)
 

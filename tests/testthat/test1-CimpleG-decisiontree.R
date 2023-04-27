@@ -7,12 +7,12 @@ test_that("signatures are generated w/ decision_tree", {
     test_data = test_data[,1:100],
     test_targets = test_targets,
     method = "decision_tree",
-    target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+    target_columns = c("blood_cells", "neurons"),
     verbose=0
   ))
   res <- c(
-    res$results$CELL_TYPE_MSCORFIBRO$test_perf$accuracy,
-    res$results$CELL_TYPE_NEURONS$test_perf$accuracy
+    res$results$blood_cells$test_perf$accuracy,
+    res$results$neurons$test_perf$accuracy
   )
-  expect_equal(res, c(0.71,0.98), tolerance=0.01)
+  expect_equal(res, c(0.77,0.98), tolerance=0.01)
 })

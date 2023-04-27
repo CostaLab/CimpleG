@@ -7,12 +7,12 @@ test_that("signatures are generated w/ nnet", {
     test_data = test_data[,1:100],
     test_targets = test_targets,
     method = "mlp",
-    target_columns = c("CELL_TYPE_MSCORFIBRO","CELL_TYPE_NEURONS"),
+    target_columns = c("blood_cells", "neurons"),
     verbose=0
   ))
   res <- c(
-    res$results$CELL_TYPE_MSCORFIBRO$test_perf$accuracy,
-    res$results$CELL_TYPE_NEURONS$test_perf$accuracy
+    res$results$blood_cells$test_perf$accuracy,
+    res$results$neurons$test_perf$accuracy
   )
-  expect_equal(res, c(0.888235294,0.9882353), tolerance=0.001)
+  expect_equal(res, c(0.9176471,0.9882353), tolerance=0.001)
 })
