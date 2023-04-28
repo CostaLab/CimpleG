@@ -35,7 +35,9 @@ githubactions_pkgdown_site:
 	Rscript -e "usethis::use_pkgdown()"
 	Rscript -e "pkgdown::build_site()"
 	Rscript -e "pkgdown::build_favicons()"
+	Rscript -e 'usethis::use_github_pages(path="/docs")'
 	Rscript -e 'usethis::use_pkgdown_github_pages()'
+	Rscript -e 'usethis::use_github_action("pkgdown")'
 
 githubactions_check:
 	# Rscript -e 'usethis::use_github_action("check-release")'
