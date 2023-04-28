@@ -160,6 +160,7 @@ plt <- deconvolution_barplot(
 print(plt$plot)
 
 ```
+
 ### this example is a little more advanced
 
 #### first lets create additional deconvolution results so that we can compare them

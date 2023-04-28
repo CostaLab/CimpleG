@@ -159,8 +159,9 @@ plt <- deconvolution_barplot(
 print(plt$plot)
 ```
 
-![](man/figures/README-unnamed-chunk-9-1.png)<!-- --> \#\#\# this
-example is a little more advanced
+![](man/figures/README-unnamed-chunk-9-1.png)<!-- -->
+
+### this example is a little more advanced
 
 #### first lets create additional deconvolution results so that we can compare them
 
@@ -184,10 +185,10 @@ cimpleg_hyper <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.416 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.359 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.385 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.354 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.403 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.371 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.404 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.36 sec elapsed
 
 deconv_hyper <- run_deconvolution(
   cpg_obj = cimpleg_hyper,
@@ -210,10 +211,10 @@ cimpleg_3sigs <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.326 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.336 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.453 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.309 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.316 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.313 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.449 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.305 sec elapsed
 
 deconv_3sigs <- run_deconvolution(
   cpg_obj = cimpleg_3sigs,
