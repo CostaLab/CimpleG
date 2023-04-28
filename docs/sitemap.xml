@@ -1,105 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/404.html</loc>
+    <loc>https://costalab.github.io/CimpleG/404.html</loc>
   </url>
   <url>
-    <loc>/LICENSE.html</loc>
+    <loc>https://costalab.github.io/CimpleG/LICENSE.html</loc>
   </url>
   <url>
-    <loc>/articles/generate-signatures.html</loc>
+    <loc>https://costalab.github.io/CimpleG/articles/generate-signatures.html</loc>
   </url>
   <url>
-    <loc>/articles/index.html</loc>
+    <loc>https://costalab.github.io/CimpleG/articles/index.html</loc>
   </url>
   <url>
-    <loc>/authors.html</loc>
+    <loc>https://costalab.github.io/CimpleG/authors.html</loc>
   </url>
   <url>
-    <loc>/index.html</loc>
+    <loc>https://costalab.github.io/CimpleG/index.html</loc>
   </url>
   <url>
-    <loc>/reference/CimpleG-package.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/CimpleG-package.html</loc>
   </url>
   <url>
-    <loc>/reference/CimpleG.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/CimpleG.html</loc>
   </url>
   <url>
-    <loc>/reference/compute_ax.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/compute_ax.html</loc>
   </url>
   <url>
-    <loc>/reference/compute_diffmeans_sumvar.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/compute_diffmeans_sumvar.html</loc>
   </url>
   <url>
-    <loc>/reference/darken.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/darken.html</loc>
   </url>
   <url>
-    <loc>/reference/deconvolution.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/deconv_pred_obs_plot.html</loc>
   </url>
   <url>
-    <loc>/reference/deconvolution_barplot.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/deconv_ranking_plot.html</loc>
   </url>
   <url>
-    <loc>/reference/deconvolution_epidish.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/deconvolution.html</loc>
   </url>
   <url>
-    <loc>/reference/deconvolution_nmf.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/deconvolution_barplot.html</loc>
   </url>
   <url>
-    <loc>/reference/deconvolution_nnls.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/deconvolution_epidish.html</loc>
   </url>
   <url>
-    <loc>/reference/diffmeans_sumvariance_plot.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/deconvolution_nmf.html</loc>
   </url>
   <url>
-    <loc>/reference/dmsv_plot.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/deconvolution_nnls.html</loc>
   </url>
   <url>
-    <loc>/reference/eval_test_data.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/diffmeans_sumvariance_plot.html</loc>
   </url>
   <url>
-    <loc>/reference/index.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/dmsv_plot.html</loc>
   </url>
   <url>
-    <loc>/reference/lighten.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/eval_test_data.html</loc>
   </url>
   <url>
-    <loc>/reference/load_object.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/index.html</loc>
   </url>
   <url>
-    <loc>/reference/make_color_palette.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/lighten.html</loc>
   </url>
   <url>
-    <loc>/reference/make_deconv_ref_matrix.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/load_object.html</loc>
   </url>
   <url>
-    <loc>/reference/plot_deconvolution.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/make_color_palette.html</loc>
   </url>
   <url>
-    <loc>/reference/predict.CimpleG.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/make_deconv_ref_matrix.html</loc>
   </url>
   <url>
-    <loc>/reference/run_deconvolution.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/plot_deconvolution.html</loc>
   </url>
   <url>
-    <loc>/reference/save_object.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/predict.CimpleG.html</loc>
   </url>
   <url>
-    <loc>/reference/select_features.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/run_deconvolution.html</loc>
   </url>
   <url>
-    <loc>/reference/signature_plot.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/save_object.html</loc>
   </url>
   <url>
-    <loc>/reference/test_data.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/select_features.html</loc>
   </url>
   <url>
-    <loc>/reference/test_targets.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/signature_plot.html</loc>
   </url>
   <url>
-    <loc>/reference/train_data.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/test_data.html</loc>
   </url>
   <url>
-    <loc>/reference/train_targets.html</loc>
+    <loc>https://costalab.github.io/CimpleG/reference/test_targets.html</loc>
+  </url>
+  <url>
+    <loc>https://costalab.github.io/CimpleG/reference/train_data.html</loc>
+  </url>
+  <url>
+    <loc>https://costalab.github.io/CimpleG/reference/train_targets.html</loc>
   </url>
 </urlset>

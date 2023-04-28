@@ -12,6 +12,7 @@ CimpleG is a simple package to find single-CpG based signatures for use in class
 Useful links:
 \itemize{
   \item \url{https://github.com/CostaLab/CimpleG}
+  \item \url{https://costalab.github.io/CimpleG/}
   \item Report bugs at \url{https://github.com/CostaLab/CimpleG/issues}
 }
 

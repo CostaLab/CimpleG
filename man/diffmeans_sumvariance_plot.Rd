@@ -94,14 +94,14 @@ data(train_targets)
 # make basic plot
 plt <- diffmeans_sumvariance_plot(
   train_data,
-  target_vector = train_targets$CELL_TYPE_MSCORFIBRO == 1
+  target_vector = train_targets$blood_cells == 1
 )
 print(plt)
 
 # make plot with parabola, colored and highlighted features
 df_dmeansvar <- compute_diffmeans_sumvar(
   train_data,
-  target_vector = train_targets$CELL_TYPE_MSCORFIBRO==1
+  target_vector = train_targets$blood_cells==1
 )
 parab_param <- .7
 df_dmeansvar$is_selected <- select_features(
@@ -112,10 +112,10 @@ df_dmeansvar$is_selected <- select_features(
 
 plt <- diffmeans_sumvariance_plot(
   data=df_dmeansvar,
-  label_var1="MSC",
+  label_var1="Leukocytes",
   color_all_points="red",
   is_feature_selected_col="is_selected",
-  feats_to_highlight=c("cg24192660"),
+  feats_to_highlight=c("cg10456121"),
   threshold_func=function(x,a) (a*x)^2,
   func_factor=parab_param
 )

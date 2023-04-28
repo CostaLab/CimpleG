@@ -73,7 +73,7 @@ data(train_targets)
 # make basic plot straight from the data
 plt <- dmsv_plot(
   dat = train_data,
-  target_vector = train_targets$CELL_TYPE_MSCORFIBRO == 1
+  target_vector = train_targets$blood_cells == 1
 )
 print(plt)
 
@@ -81,7 +81,7 @@ print(plt)
 # first create a diffmeans sumvar data frame from the data
 df_dmeansvar <- compute_diffmeans_sumvar(
   train_data,
-  target_vector = train_targets$CELL_TYPE_MSCORFIBRO==1
+  target_vector = train_targets$blood_cells==1
 )
 # adding a column to this data frame \code{hl_col} with random CpGs
 # selected (as TRUE) or not (as FALSE) to be highlighted and displayed.
@@ -92,7 +92,7 @@ plt <- dmsv_plot(
   dat=df_dmeansvar,
   highlight_var="hl_col",
   display_var="dp_col",
-  label_var1="MSC",
+  label_var1="Leukocytes",
   point_color="red",
   subtitle="method: CimpleG"
 )
