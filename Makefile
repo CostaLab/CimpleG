@@ -36,8 +36,15 @@ githubactions_pkgdown_site:
 	Rscript -e "pkgdown::build_site()"
 	Rscript -e "pkgdown::build_favicons()"
 	Rscript -e 'usethis::use_github_pages(path="/docs")'
-	Rscript -e 'usethis::use_pkgdown_github_pages()'
+	#Rscript -e 'usethis::use_pkgdown_github_pages()'
 	Rscript -e 'usethis::use_github_action("pkgdown")'
+
+sync_ghpages:
+	git checkout gh-pages // go to the gh-pages branch
+	git rebase main // bring gh-pages up to date with master
+	git push origin gh-pages // commit the changes
+	git checkout main // return to the master branch
+
 
 githubactions_check:
 	# Rscript -e 'usethis::use_github_action("check-release")'

@@ -185,10 +185,10 @@ cimpleg_hyper <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.417 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.378 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.393 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.368 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.449 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.395 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.413 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.371 sec elapsed
 
 deconv_hyper <- run_deconvolution(
   cpg_obj = cimpleg_hyper,
@@ -211,10 +211,10 @@ cimpleg_3sigs <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.336 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.331 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.483 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.319 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.349 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.336 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.495 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.379 sec elapsed
 
 deconv_3sigs <- run_deconvolution(
   cpg_obj = cimpleg_3sigs,
