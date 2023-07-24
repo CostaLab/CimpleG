@@ -18,9 +18,6 @@ knitr::opts_chunk$set(
 
 CimpleG, an R package to find (simple) CpG signatures.
 
-<!-- badges: start -->
-[![R-CMD-check](https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml)
-<!-- badges: end -->
 
 ## Installation
 
@@ -28,13 +25,13 @@ CimpleG, an R package to find (simple) CpG signatures.
 # Install directly from github:
 devtools::install_github("costalab/CimpleG")
 
-# Alternatively, downloading it and install it from a local source:
+# Alternatively, downloading from our release page and installing it from a local source:
 #  - ie navigating through your system
 install.packages(file.choose(), repos = NULL, type = "source")
 #  - ie given a path to a local source
-install.packages("~/Downloads/CimpleG_0.0.4.XXXX.tar.gz", repos = NULL, type = "source")
+install.packages("~/Downloads/CimpleG_0.0.5.XXXX.tar.gz", repos = NULL, type = "source")
 # or
-devtools::install_local("~/Downloads/CimpleG_0.0.4.XXXX.tar.gz")
+devtools::install_local("~/Downloads/CimpleG_0.0.5.XXXX.tar.gz")
 ```
 
 ## Getting started
