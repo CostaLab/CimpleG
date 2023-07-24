@@ -7,24 +7,19 @@
 
 CimpleG, an R package to find (simple) CpG signatures.
 
-<!-- badges: start -->
-
-[![R-CMD-check](https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml)
-<!-- badges: end -->
-
 ## Installation
 
 ``` r
 # Install directly from github:
 devtools::install_github("costalab/CimpleG")
 
-# Alternatively, downloading it and install it from a local source:
+# Alternatively, downloading from our release page and installing it from a local source:
 #  - ie navigating through your system
 install.packages(file.choose(), repos = NULL, type = "source")
 #  - ie given a path to a local source
-install.packages("~/Downloads/CimpleG_0.0.4.XXXX.tar.gz", repos = NULL, type = "source")
+install.packages("~/Downloads/CimpleG_0.0.5.XXXX.tar.gz", repos = NULL, type = "source")
 # or
-devtools::install_local("~/Downloads/CimpleG_0.0.4.XXXX.tar.gz")
+devtools::install_local("~/Downloads/CimpleG_0.0.5.XXXX.tar.gz")
 ```
 
 ## Getting started
@@ -70,6 +65,7 @@ cimpleg_result$signatures
 ### Plot generated signatures
 
 ``` r
+
 # adjust target names to match signature names
 
 # check generated signatures
@@ -170,6 +166,7 @@ One using only hypermethylated signatures, and the other using 3 CpGs
 per signature instead of just one.
 
 ``` r
+
 set.seed(42)
 cimpleg_hyper <- CimpleG(
   train_data = train_data,
@@ -185,10 +182,10 @@ cimpleg_hyper <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.422 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.26 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.407 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.234 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 1.388 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.918 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 1.717 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.86 sec elapsed
 
 deconv_hyper <- run_deconvolution(
   cpg_obj = cimpleg_hyper,
@@ -211,10 +208,10 @@ cimpleg_3sigs <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.499 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.459 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.344 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.337 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 1.712 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 1.289 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 1.624 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 2.328 sec elapsed
 
 deconv_3sigs <- run_deconvolution(
   cpg_obj = cimpleg_3sigs,
@@ -224,7 +221,7 @@ deconv_3sigs <- run_deconvolution(
 
 #### let’s also create some fake true values just so that we can compare all the results
 
-#### remember this is just an example, the results themselves are meaningless!
+#### remember this is just an example, the results themselves are meaningless\!
 
 ``` r
 deconv_3sigs$prop_3sigs <- deconv_3sigs$proportion
