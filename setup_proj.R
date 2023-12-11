@@ -57,6 +57,7 @@ usethis::use_package("archive")
 usethis::use_package("tsutils")
 usethis::use_package("stats")
 usethis::use_package("methods")
+usethis::use_package("vroom")
 
 # suggested
 import_tag <- "suggests" # "Imports" "suggests"
@@ -94,6 +95,7 @@ usethis::use_import_from("grDevices", c("colorRampPalette", "dev.off", "pdf", "p
 usethis::use_import_from("methods", "is")
 usethis::use_import_from("stats", "predict")
 usethis::use_import_from("utils", "head")
+usethis::use_import_from("utils", "download.file")
 usethis::use_import_from("rlang", "abort")
 usethis::use_import_from("dplyr", "%>%")
 usethis::use_import_from("rlang", ".data")

@@ -23,6 +23,7 @@
 #' @importFrom rlang .data
 #' @importFrom rlang abort
 #' @importFrom stats predict
+#' @importFrom utils download.file
 #' @importFrom utils head
 ## usethis namespace: end
 NULL

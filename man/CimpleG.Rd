@@ -26,6 +26,7 @@ CimpleG(
   split_data = FALSE,
   run_parallel = FALSE,
   deconvolution_reference = TRUE,
+  has_annotation = FALSE,
   save_dir = NULL,
   save_format = c("zstd", "lz4", "gzip", "bzip2", "xz", "nocomp"),
   verbose = 1,
@@ -52,6 +53,7 @@ cimpleg(
   split_data = FALSE,
   run_parallel = FALSE,
   deconvolution_reference = TRUE,
+  has_annotation = FALSE,
   save_dir = NULL,
   save_format = c("zstd", "lz4", "gzip", "bzip2", "xz", "nocomp"),
   verbose = 1,
@@ -78,6 +80,7 @@ cpg(
   split_data = FALSE,
   run_parallel = FALSE,
   deconvolution_reference = TRUE,
+  has_annotation = FALSE,
   save_dir = NULL,
   save_format = c("zstd", "lz4", "gzip", "bzip2", "xz", "nocomp"),
   verbose = 1,
@@ -175,6 +178,9 @@ this function.}
 \item{deconvolution_reference}{A boolean, if `TRUE`, it will create 
 a deconvolution reference matrix based on the training data.
 This can later be used to perform deconvolution. Default is `FALSE`.}
+
+\item{has_annotation}{A boolean, if `TRUE`, it will get the CpG annotation from
+Illumina for the generated signature. Default is `FALSE`.}
 
 \item{save_dir}{If defined it will save the resulting model to the given directory.
 Default is \code{NULL}.}

@@ -103,6 +103,9 @@
 #'  a deconvolution reference matrix based on the training data.
 #'  This can later be used to perform deconvolution. Default is `FALSE`.
 #'
+#' @param has_annotation A boolean, if `TRUE`, it will get the CpG annotation from
+#'  Illumina for the generated signature. Default is `FALSE`.
+#'
 #' @param split_data A boolean, if `TRUE`, it will subset the train data provided,
 #'  creating a smaller test set that will be used to test the models after training.
 #'  This parameter is experimental. Default is `FALSE`.
@@ -160,6 +163,7 @@ CimpleG <- function(
   split_data = FALSE,
   run_parallel = FALSE,
   deconvolution_reference = TRUE,
+  has_annotation = FALSE,
   save_dir = NULL,
   save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
   verbose=1,
@@ -197,6 +201,7 @@ CimpleG.matrix <- function(
   split_data = FALSE,
   run_parallel = FALSE,
   deconvolution_reference = TRUE,
+  has_annotation = FALSE,
   save_dir = NULL,
   save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
   verbose=1,
@@ -243,6 +248,7 @@ CimpleG.matrix <- function(
     train_only = train_only,
     run_parallel = run_parallel,
     deconvolution_reference = deconvolution_reference,
+    has_annotation = has_annotation,
     save_dir = save_dir,
     save_format = save_format,
     verbose = verbose
@@ -278,6 +284,7 @@ CimpleG.data.frame <- function(
   split_data = FALSE,
   run_parallel = FALSE,
   deconvolution_reference = TRUE,
+  has_annotation = FALSE,
   save_dir = NULL,
   save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
   verbose=1,
@@ -359,6 +366,7 @@ CimpleG.SummarizedExperiment <- function(
   split_data = FALSE,
   run_parallel = FALSE,
   deconvolution_reference = TRUE,
+  has_annotation = FALSE,
   save_dir = NULL,
   save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
   verbose=1,
@@ -460,6 +468,7 @@ CimpleG_main <- function(
   train_only = FALSE,
   run_parallel = FALSE,
   deconvolution_reference = TRUE,
+  has_annotation = FALSE,
   save_dir = NULL,
   save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
   verbose=1
@@ -636,6 +645,11 @@ CimpleG_main <- function(
       overall_time = o_time,
       method = method
     )
+
+    if(has_annotation){
+      ls_annot <- list(annotation = get_cpg_annotation(signatures))
+      final_res <- append(final_res, ls_annot)
+    }
   }else{
     # ML models
     final_res <- list(
@@ -675,6 +689,7 @@ CimpleG_main <- function(
     final_res <- append(final_res,ref_mat)
     class(final_res) <- "CimpleG"
   }
+
 
   if(!is.null(save_dir)){
 

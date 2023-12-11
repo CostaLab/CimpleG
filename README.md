@@ -70,6 +70,7 @@ cimpleg_result$signatures
 ### Plot generated signatures
 
 ``` r
+
 # adjust target names to match signature names
 
 # check generated signatures
@@ -170,6 +171,7 @@ One using only hypermethylated signatures, and the other using 3 CpGs
 per signature instead of just one.
 
 ``` r
+
 set.seed(42)
 cimpleg_hyper <- CimpleG(
   train_data = train_data,
@@ -185,10 +187,10 @@ cimpleg_hyper <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.422 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.26 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.407 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.234 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.406 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.53 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.372 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.332 sec elapsed
 
 deconv_hyper <- run_deconvolution(
   cpg_obj = cimpleg_hyper,
@@ -211,10 +213,10 @@ cimpleg_3sigs <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.499 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.459 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.344 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.337 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.637 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.602 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.441 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.44 sec elapsed
 
 deconv_3sigs <- run_deconvolution(
   cpg_obj = cimpleg_3sigs,
@@ -224,7 +226,7 @@ deconv_3sigs <- run_deconvolution(
 
 #### let’s also create some fake true values just so that we can compare all the results
 
-#### remember this is just an example, the results themselves are meaningless!
+#### remember this is just an example, the results themselves are meaningless\!
 
 ``` r
 deconv_3sigs$prop_3sigs <- deconv_3sigs$proportion
