@@ -15,6 +15,7 @@ usethis::use_build_ignore(c(
 
 # vignettes
 usethis::use_vignette("generate-signatures","Generate signatures")
+usethis::use_vignette("save_load_objects","Quickly save and load (large) objects")
 
 # misc
 # usethis::use_citation()

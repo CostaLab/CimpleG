@@ -4,7 +4,7 @@ pkg_pipeline: update_setup update_version\
 	githubactions_pkgdown_site
 
 install_package:
-	Rscript -e "devtools::install('.')"
+	Rscript -e "pak::pkg_install('.')"
 
 check_package:
 	Rscript -e "devtools::check(error_on='error')"
@@ -33,16 +33,17 @@ update_version:
 
 githubactions_pkgdown_site:
 	Rscript -e "usethis::use_pkgdown()"
-	Rscript -e "pkgdown::build_site()"
+	sed -i '/docs/d' .gitignore
+	Rscript -e "pkgdown::build_site(lazy=TRUE)"
 	Rscript -e "pkgdown::build_favicons()"
 	# gitcreds::gitcreds_set() if creds are missing
 	#Rscript -e 'usethis::use_pkgdown_github_pages()'
-	Rscript -e 'usethis::use_github_pages(branch="main", path="/docs")'
+	#Rscript -e 'usethis::use_github_pages(branch="main", path="/docs")'
 	#Rscript -e 'usethis::use_github_action("pkgdown")'
 
-githubactions_check:
+#githubactions_check:
 	# Rscript -e 'usethis::use_github_action("check-release")'
-	Rscript -e 'usethis::use_github_actions()'
+	#Rscript -e 'usethis::use_github_actions()'
 
 codetoolscheck:
 	Rscript -e "library(CimpleG)" \
