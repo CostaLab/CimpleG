@@ -23,7 +23,8 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rcmdcheck
+          extra-packages: any::rcmdcheck, bioc::Biobase, bioc::EpiDISH, bioc::minfi, bioc::SummarizedExperiment
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
+    
