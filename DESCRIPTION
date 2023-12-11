@@ -85,10 +85,10 @@ Suggests:
 VignetteBuilder: 
     knitr
 Remotes: 
-    bioc::3:16/Biobase,
-    bioc::3:16/EpiDISH,
-    bioc::3:16/minfi,
-    bioc::3:16/SummarizedExperiment
+    bioc::Biobase,
+    bioc::EpiDISH,
+    bioc::minfi,
+    bioc::SummarizedExperiment
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 Encoding: UTF-8
