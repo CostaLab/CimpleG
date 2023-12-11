@@ -23,6 +23,8 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          cache: false
+          packages: 'bioc::Biobase'
           extra-packages: any::rcmdcheck
           needs: check
 
