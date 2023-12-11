@@ -54,11 +54,11 @@ Imports:
     workflows,
     yardstick
 Suggests: 
-    Biobase (>= 2.62.0),
+    Biobase,
     biomaRt,
     C50,
     circlize,
-    EpiDISH (>= 2.16.0),
+    EpiDISH,
     furrr,
     future,
     future.apply,
@@ -67,7 +67,7 @@ Suggests:
     ggsignif,
     glmnet,
     knitr,
-    minfi (>= 1.46.0),
+    minfi,
     mltools,
     NMF,
     nnet,
@@ -78,17 +78,17 @@ Suggests:
     Rfast,
     rmarkdown,
     stringr,
-    SummarizedExperiment (>= 1.30.2),
+    SummarizedExperiment,
     testthat (>= 3.0.0),
     withr,
     xgboost
 VignetteBuilder: 
     knitr
 Remotes: 
-    bioc::Biobase,
-    bioc::EpiDISH,
-    bioc::minfi,
-    bioc::SummarizedExperiment
+    bioc::3:16/Biobase,
+    bioc::3:16/EpiDISH,
+    bioc::3:16/minfi,
+    bioc::3:16/SummarizedExperiment
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 Encoding: UTF-8
