@@ -4,10 +4,12 @@
 \alias{predict.CimpleG}
 \title{Predict outcome from a CimpleG signatures on new data}
 \usage{
-\method{predict}{CimpleG}(object, new_data, class_labels = NULL)
+\method{predict}{CimpleG}(object, ..., new_data, class_labels = NULL)
 }
 \arguments{
 \item{object}{CimpleG object.}
+
+\item{...}{Not used at the moment.}
 
 \item{new_data}{Data to be predicted, samples should be in rows and features in columns.
 Last column of `new_data` should have the target/class labels coded as 0 or 1.}

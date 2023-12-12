@@ -59,6 +59,7 @@ usethis::use_package("tsutils")
 usethis::use_package("stats")
 usethis::use_package("methods")
 usethis::use_package("vroom")
+usethis::use_package("broom")
 
 # suggested
 import_tag <- "suggests" # "Imports" "suggests"
@@ -83,12 +84,13 @@ usethis::use_package("mltools", import_tag)
 usethis::use_package("Rfast",import_tag)
 usethis::use_package("GEOquery",import_tag)
 usethis::use_package("biomaRt",import_tag)
+usethis::use_package("spelling",import_tag)
 
 # remotes
-usethis::use_dev_package("Biobase", import_tag, "bioc::Biobase")
-usethis::use_dev_package("SummarizedExperiment", import_tag, remote="bioc::SummarizedExperiment")
-usethis::use_dev_package("minfi", import_tag, remote="bioc::minfi")
-usethis::use_dev_package("EpiDISH", import_tag, "bioc::EpiDISH")
+usethis::use_dev_package("Biobase", import_tag, "Biobase")
+usethis::use_dev_package("SummarizedExperiment", import_tag, remote="SummarizedExperiment")
+usethis::use_dev_package("minfi", import_tag, remote="minfi")
+usethis::use_dev_package("EpiDISH", import_tag, "EpiDISH")
 
 # import from
 usethis::use_package_doc()

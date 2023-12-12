@@ -18,6 +18,7 @@ Depends:
 Imports:
     archive,
     assertthat,
+    broom,
     butcher,
     caret,
     data.table,
@@ -54,11 +55,11 @@ Imports:
     workflows,
     yardstick
 Suggests: 
-    Biobase,
+    Biobase (>= 2.62.0),
     biomaRt,
     C50,
     circlize,
-    EpiDISH,
+    EpiDISH (>= 2.16.0),
     furrr,
     future,
     future.apply,
@@ -67,7 +68,7 @@ Suggests:
     ggsignif,
     glmnet,
     knitr,
-    minfi,
+    minfi (>= 1.46.0),
     mltools,
     NMF,
     nnet,
@@ -77,8 +78,9 @@ Suggests:
     reshape2,
     Rfast,
     rmarkdown,
+    spelling,
     stringr,
-    SummarizedExperiment,
+    SummarizedExperiment (>= 1.30.2),
     testthat (>= 3.0.0),
     withr,
     xgboost
