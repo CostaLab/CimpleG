@@ -9,6 +9,9 @@ install_package:
 check_package:
 	Rscript -e "devtools::check(error_on='error')"
 
+fastcheck_package:
+	Rscript -e "devtools::check(error_on='error', args = c('--timings', '--no-tests', '--no-examples'))"
+
 build_package:
 	Rscript -e "devtools::build('.')"
 
