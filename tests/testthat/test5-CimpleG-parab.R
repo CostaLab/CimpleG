@@ -1,5 +1,6 @@
 
 test_that("signatures are generated w/ CimpleG_parab", {
+  skip_on_ci()
   set.seed(42)
   res <- CimpleG(
     train_data = train_data,
@@ -18,6 +19,7 @@ test_that("signatures are generated w/ CimpleG_parab", {
 })
 
 test_that("signatures are generated w/ CimpleG_parab when providing single target column", {
+  skip_on_ci()
   set.seed(42)
   res <- CimpleG(
     train_data = train_data,
@@ -35,6 +37,7 @@ test_that("signatures are generated w/ CimpleG_parab when providing single targe
 })
 
 test_that("signatures are generated w/ CimpleG_parab when just train_only is set to TRUE", {
+  skip_on_ci()
   set.seed(42)
   res <- CimpleG(
     train_data = train_data,

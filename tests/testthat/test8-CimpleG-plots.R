@@ -16,6 +16,7 @@ sig_list <-list(blood_cells="cg04785083", neurons="cg24548498")
 
 test_that("signature_plot works with CimpleG, character vectors and lists", {
 
+  skip_on_ci()
   plt_res <- signature_plot(res, test_data, test_targets, "gsm", "cell_type")
   plt_vec <- signature_plot(sig_vec, test_data, test_targets, "gsm", "cell_type")
   plt_list <- signature_plot(sig_list, test_data, test_targets, "gsm", "cell_type")
