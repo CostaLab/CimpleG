@@ -20,7 +20,7 @@ usethis::use_vignette("save_load_objects","Quickly save and load (large) objects
 # misc
 # usethis::use_citation()
 # usethis::use_spell_check(vignettes = TRUE, lang = "en-US", error = FALSE) # run manually
-
+# spelling::spell_check_setup(".") # buggy behaviour at spelling:::parse_text_md
 
 # use pkg
 usethis::use_package("tictoc")
