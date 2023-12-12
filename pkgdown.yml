@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   generate-signatures: generate-signatures.html
   save_load_objects: save_load_objects.html
-last_built: 2023-12-12T10:45Z
+last_built: 2023-12-12T12:28Z
 urls:
   reference: https://costalab.github.io/CimpleG/reference
   article: https://costalab.github.io/CimpleG/articles
