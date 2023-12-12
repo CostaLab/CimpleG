@@ -1,5 +1,6 @@
 
 test_that("signatures are generated w/ brute_force", {
+  skip_on_ci()
   # skip("Skipping to speed up testing, brute_force takes too long.")
   set.seed(42)
   sigs <- suppressWarnings(CimpleG(

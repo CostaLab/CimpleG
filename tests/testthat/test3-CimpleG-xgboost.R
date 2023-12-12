@@ -1,5 +1,6 @@
 
 test_that("signatures are generated w/ xgboost", {
+  skip_on_ci()
   set.seed(42)
   res <- suppressWarnings(suppressMessages(CimpleG(
     train_data = train_data[,1:100],
