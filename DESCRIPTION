@@ -2,8 +2,8 @@ Type: Package
 Package: CimpleG
 Title: CimpleG - Individual/Single CpG sites For Classification and
     Deconvolution
-Version: 0.0.5.9003
-Date: 2023-12-11
+Version: 0.0.5.9023
+Date: 2023-12-12
 Authors@R:
     person("Tiago", "F.V. Maié", , "tiagomaie@hotmail.com", role = c("aut", "cre"))
 Maintainer: Tiago Maié <tiagomaie@hotmail.com>
