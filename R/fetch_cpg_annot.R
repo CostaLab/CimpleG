@@ -40,18 +40,27 @@ get_cpg_annotation <- function(
   if(is_epic){
     annot_url <- "https://webdata.illumina.com/downloads/productfiles/methylationEPIC/infinium-methylationepic-v-1-0-b5-manifest-file-csv.zip"
     short_annot_cols <- ANNOT_COLS_EPIC
+    base_name <- paste0("ilmn_annot_epic_")
   }else{
     annot_url <- "https://webdata.illumina.com/downloads/productfiles/humanmethylation450/humanmethylation450_15017482_v1-2.csv"
     short_annot_cols <- ANNOT_COLS_450K
+    base_name <- paste0("ilmn_annot_450k_")
   }
 
   annot <- NULL
 
   tryCatch(
     expr={
-      tmp <- tempfile()
-      message("\n[CimpleG] Getting annotation manifest from Illumina.\n")
-      download.file(url = annot_url, destfile = tmp)
+      tmp_files <- list.files(tempdir(), full.names = TRUE)
+      if(length(tmp_files[grepl(base_name, tmp_files)]) == 0){
+        tmp <- tempfile(pattern = base_name)
+        message("\n[CimpleG] Getting annotation manifest from Illumina.\n")
+        download.file(url = annot_url, destfile = tmp)
+      }else{
+        tmp <- tmp_files[grep(base_name, tmp_files)]
+        # there should only be one file that matches the query but just in case this fail, we select the 1st
+        tmp <- tmp[1]
+      }
       if(silence_warnings){
         # regardless of platform (epic/450) need to skip 7 lines from manifest
         annot <- suppressWarnings(vroom::vroom(tmp, skip = 7, show_col_types = FALSE))
