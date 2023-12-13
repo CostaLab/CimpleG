@@ -83,8 +83,7 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>CimpleG, an R package to find (small) CpG signatures.</p>
-<p><a href="https://github.com/CostaLab/CimpleG/actions" class="external-link"><img src="https://github.com/CostaLab/CimpleG/workflows/R-CMD-check/badge.svg" alt="R build status"></a> <a href="https://github.com/CostaLab/CimpleG" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.0.5.9024-green.svg"></a> <a href="https://doi.org/10.1186/s13059-023-03000-0" class="external-link"><img src="https://img.shields.io/badge/doi-10.1186/s13059--023--03000--0-blue.svg"></a></p>
+<p>CimpleG, an R package to find (small) CpG signatures. <a href="https://github.com/CostaLab/CimpleG/actions" class="external-link"><img src="https://github.com/CostaLab/CimpleG/workflows/R-CMD-check.yaml/badge.svg" alt="R build status"></a> <a href="https://github.com/CostaLab/CimpleG" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.0.5.9024-green.svg"></a> <a href="https://doi.org/10.1186/s13059-023-03000-0" class="external-link"><img src="https://img.shields.io/badge/doi-10.1186/s13059--023--03000--0-blue.svg"></a></p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -256,10 +255,10 @@
 <span>    <span class="st">"fibroblasts"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.407 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.55 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.373 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.514 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.418 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.497 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.509 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.664 sec elapsed</span></span>
 <span></span>
 <span><span class="va">deconv_hyper</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
 <span>  cpg_obj <span class="op">=</span> <span class="va">cimpleg_hyper</span>,</span>
@@ -282,10 +281,10 @@
 <span>    <span class="st">"fibroblasts"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.611 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.614 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.703 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.431 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.638 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.41 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.429 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.422 sec elapsed</span></span>
 <span></span>
 <span><span class="va">deconv_3sigs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
 <span>  cpg_obj <span class="op">=</span> <span class="va">cimpleg_3sigs</span>,</span>
