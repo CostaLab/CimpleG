@@ -31,11 +31,9 @@ get_cpg_annotation <- function(
 
   IlmnID <- NULL
 
-  annot_url <- NULL
+  annot_url <- short_annot_cols <- base_name <-NULL
   ANNOT_COLS_EPIC <- c("IlmnID", "CHR_hg38", "Start_hg38",  "End_hg38", "UCSC_RefGene_Name", "UCSC_RefGene_Group", "UCSC_CpG_Islands_Name", "Relation_to_UCSC_CpG_Island")
   ANNOT_COLS_450K <- c("IlmnID", "CHR", "UCSC_RefGene_Name", "UCSC_CpG_Islands_Name", "Relation_to_UCSC_CpG_Island")
-
-  short_annot_cols <- NULL
 
   if(is_epic){
     annot_url <- "https://webdata.illumina.com/downloads/productfiles/methylationEPIC/infinium-methylationepic-v-1-0-b5-manifest-file-csv.zip"

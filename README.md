@@ -48,6 +48,7 @@ cimpleg_result <- CimpleG(
   test_data = test_data,
   test_targets = test_targets,
   method = "CimpleG",
+  has_annotation = TRUE,
   target_columns = c(
     "neurons",
     "glia",
@@ -64,6 +65,37 @@ cimpleg_result$results
 cimpleg_result$signatures
 #>      neurons         glia  blood_cells  fibroblasts 
 #> "cg24548498" "cg14501977" "cg04785083" "cg03369247"
+```
+
+### Get signature annotation
+
+``` r
+# Get it directly from the results object
+cimpleg_result$annotation
+#> # A tibble: 4 × 8
+#>   IlmnID     CHR_hg38 Start_hg38  End_hg38 UCSC_RefGene_Name  UCSC_RefGene_Group
+#>   <chr>      <chr>         <dbl>     <dbl> <chr>              <chr>             
+#> 1 cg24548498 chr2      181684680 181684682 <NA>               <NA>              
+#> 2 cg14501977 chr12     123948446 123948448 CCDC92             5'UTR             
+#> 3 cg04785083 chr1        8971202   8971204 CA6                Body              
+#> 4 cg03369247 chr8       20174518  20174520 SLC18A1;SLC18A1;S… Body;Body;Body;Bo…
+#> # ℹ 2 more variables: UCSC_CpG_Islands_Name <chr>,
+#> #   Relation_to_UCSC_CpG_Island <chr>
+
+# or idependently through the "get_cpg_annotation" function
+signature_annotation <- get_cpg_annotation(cimpleg_result$signatures)
+
+# check signature annotation
+signature_annotation
+#> # A tibble: 4 × 8
+#>   IlmnID     CHR_hg38 Start_hg38  End_hg38 UCSC_RefGene_Name  UCSC_RefGene_Group
+#>   <chr>      <chr>         <dbl>     <dbl> <chr>              <chr>             
+#> 1 cg24548498 chr2      181684680 181684682 <NA>               <NA>              
+#> 2 cg14501977 chr12     123948446 123948448 CCDC92             5'UTR             
+#> 3 cg04785083 chr1        8971202   8971204 CA6                Body              
+#> 4 cg03369247 chr8       20174518  20174520 SLC18A1;SLC18A1;S… Body;Body;Body;Bo…
+#> # ℹ 2 more variables: UCSC_CpG_Islands_Name <chr>,
+#> #   Relation_to_UCSC_CpG_Island <chr>
 ```
 
 ### Plot generated signatures
@@ -83,7 +115,7 @@ plt <- signature_plot(
 print(plt$plot)
 ```
 
-![](man/figures/README-unnamed-chunk-5-1.png)<!-- -->
+![](man/figures/README-plot_sigs-1.png)<!-- -->
 
 ## Difference of means vs Sum of variances (dmsv) plots
 
@@ -97,7 +129,7 @@ plt <- diffmeans_sumvariance_plot(
 print(plt)
 ```
 
-![](man/figures/README-unnamed-chunk-6-1.png)<!-- -->
+![](man/figures/README-dmsv_plots-1.png)<!-- -->
 
 ### adding color, highlighting selected features
 
@@ -126,7 +158,7 @@ plt <- diffmeans_sumvariance_plot(
 print(plt)
 ```
 
-![](man/figures/README-unnamed-chunk-7-1.png)<!-- -->
+![](man/figures/README-hl_feats_plt-1.png)<!-- -->
 
 ### labeling specific features
 
@@ -138,7 +170,7 @@ plt <- diffmeans_sumvariance_plot(
 print(plt)
 ```
 
-![](man/figures/README-unnamed-chunk-8-1.png)<!-- -->
+![](man/figures/README-label_feats-1.png)<!-- -->
 
 ## Deconvolution plots
 
@@ -159,7 +191,7 @@ plt <- deconvolution_barplot(
 print(plt$plot)
 ```
 
-![](man/figures/README-unnamed-chunk-9-1.png)<!-- -->
+![](man/figures/README-deconv_bar_plt-1.png)<!-- -->
 
 ### this example is a little more advanced
 
@@ -186,10 +218,10 @@ cimpleg_hyper <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.431 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.497 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.524 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.639 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.34 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.286 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.345 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.307 sec elapsed
 
 deconv_hyper <- run_deconvolution(
   cpg_obj = cimpleg_hyper,
@@ -212,10 +244,10 @@ cimpleg_3sigs <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.62 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.424 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.428 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.434 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.447 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.392 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.451 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.39 sec elapsed
 
 deconv_3sigs <- run_deconvolution(
   cpg_obj = cimpleg_3sigs,
@@ -260,7 +292,7 @@ scatter_panel <- scatter_plts |> patchwork::wrap_plots(ncol=1)
 print(scatter_panel)
 ```
 
-![](man/figures/README-unnamed-chunk-12-1.png)<!-- -->
+![](man/figures/README-deconv_pred_obs_plt-1.png)<!-- -->
 
 #### now, more interestingly, we can see in detail and rank one of the measures used to evaluate the deconvolution results
 
@@ -278,4 +310,4 @@ rank_panel <- list(rank_plts$perf_boxplt[[1]],rank_plts$nemenyi_plt[[1]]) |> pat
 print(rank_panel)
 ```
 
-![](man/figures/README-unnamed-chunk-13-1.png)<!-- -->
+![](man/figures/README-deconv_rank_plt-1.png)<!-- -->
