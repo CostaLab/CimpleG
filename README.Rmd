@@ -17,8 +17,7 @@ knitr::opts_chunk$set(
 ## Overview
 
 CimpleG, an R package to find (small) CpG signatures.
-
-`r badger::badge_github_actions("CostaLab/CimpleG")`
+`r badger::badge_github_actions("CostaLab/CimpleG","R-CMD-check.yaml")`
 `r badger::badge_devel("CostaLab/CimpleG", "green")`
 `r badger::badge_doi("10.1186/s13059-023-03000-0", "blue")`
 
