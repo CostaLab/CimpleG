@@ -37,7 +37,7 @@
     
     <a class="navbar-brand me-2" href="index.html">CimpleG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.5.9024</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.5.9028</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,7 +84,7 @@
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
 <p>CimpleG, an R package to find (small) CpG signatures.</p>
-<p><a href="https://github.com/CostaLab/CimpleG/actions" class="external-link"><img src="https://github.com/CostaLab/CimpleG/workflows/R-CMD-check/badge.svg" alt="R build status"></a> <a href="https://github.com/CostaLab/CimpleG" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.0.5.9024-green.svg"></a> <a href="https://doi.org/10.1186/s13059-023-03000-0" class="external-link"><img src="https://img.shields.io/badge/doi-10.1186/s13059--023--03000--0-blue.svg"></a></p>
+<p><a href="https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://github.com/CostaLab/CimpleG" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.0.5.9028-green.svg"></a> <a href="https://doi.org/10.1186/s13059-023-03000-0" class="external-link"><img src="https://img.shields.io/badge/doi-10.1186/s13059--023--03000--0-blue.svg"></a></p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -124,6 +124,7 @@
 <span>  test_data <span class="op">=</span> <span class="va">test_data</span>,</span>
 <span>  test_targets <span class="op">=</span> <span class="va">test_targets</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"CimpleG"</span>,</span>
+<span>  has_annotation <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  target_columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"neurons"</span>,</span>
 <span>    <span class="st">"glia"</span>,</span>
@@ -139,9 +140,40 @@
 <span><span class="co">#&gt;      neurons         glia  blood_cells  fibroblasts </span></span>
 <span><span class="co">#&gt; "cg24548498" "cg14501977" "cg04785083" "cg03369247"</span></span></code></pre></div>
 <div class="section level3">
-<h3 id="plot-generated-signatures">Plot generated signatures<a class="anchor" aria-label="anchor" href="#plot-generated-signatures"></a>
+<h3 id="get-signature-annotation">Get signature annotation<a class="anchor" aria-label="anchor" href="#get-signature-annotation"></a>
 </h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Get it directly from the results object</span></span>
+<span><span class="va">cimpleg_result</span><span class="op">$</span><span class="va">annotation</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 8</span></span>
+<span><span class="co">#&gt;   IlmnID     CHR_hg38 Start_hg38  End_hg38 UCSC_RefGene_Name  UCSC_RefGene_Group</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;      &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;              &lt;chr&gt;             </span></span>
+<span><span class="co">#&gt; 1 cg24548498 chr2      181684680 181684682 &lt;NA&gt;               &lt;NA&gt;              </span></span>
+<span><span class="co">#&gt; 2 cg14501977 chr12     123948446 123948448 CCDC92             5'UTR             </span></span>
+<span><span class="co">#&gt; 3 cg04785083 chr1        8971202   8971204 CA6                Body              </span></span>
+<span><span class="co">#&gt; 4 cg03369247 chr8       20174518  20174520 SLC18A1;SLC18A1;S… Body;Body;Body;Bo…</span></span>
+<span><span class="co">#&gt; # ℹ 2 more variables: UCSC_CpG_Islands_Name &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   Relation_to_UCSC_CpG_Island &lt;chr&gt;</span></span>
+<span></span>
+<span><span class="co"># or idependently through the "get_cpg_annotation" function</span></span>
+<span><span class="va">signature_annotation</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_cpg_annotation.html">get_cpg_annotation</a></span><span class="op">(</span><span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># check signature annotation</span></span>
+<span><span class="va">signature_annotation</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 8</span></span>
+<span><span class="co">#&gt;   IlmnID     CHR_hg38 Start_hg38  End_hg38 UCSC_RefGene_Name  UCSC_RefGene_Group</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;      &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;              &lt;chr&gt;             </span></span>
+<span><span class="co">#&gt; 1 cg24548498 chr2      181684680 181684682 &lt;NA&gt;               &lt;NA&gt;              </span></span>
+<span><span class="co">#&gt; 2 cg14501977 chr12     123948446 123948448 CCDC92             5'UTR             </span></span>
+<span><span class="co">#&gt; 3 cg04785083 chr1        8971202   8971204 CA6                Body              </span></span>
+<span><span class="co">#&gt; 4 cg03369247 chr8       20174518  20174520 SLC18A1;SLC18A1;S… Body;Body;Body;Bo…</span></span>
+<span><span class="co">#&gt; # ℹ 2 more variables: UCSC_CpG_Islands_Name &lt;chr&gt;,</span></span>
+<span><span class="co">#&gt; #   Relation_to_UCSC_CpG_Island &lt;chr&gt;</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="plot-generated-signatures">Plot generated signatures<a class="anchor" aria-label="anchor" href="#plot-generated-signatures"></a>
+</h3>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># adjust target names to match signature names</span></span>
 <span></span>
@@ -154,7 +186,7 @@
 <span>  true_label_column <span class="op">=</span> <span class="st">"cell_type"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-5-1.png"><!-- --></p>
+<p><img src="reference/figures/README-plot_sigs-1.png"><!-- --></p>
 </div>
 </div>
 <div class="section level2">
@@ -163,18 +195,18 @@
 <div class="section level3">
 <h3 id="basic-plot">basic plot<a class="anchor" aria-label="anchor" href="#basic-plot"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">train_data</span>,</span>
 <span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">neurons</span> <span class="op">==</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-6-1.png"><!-- --></p>
+<p><img src="reference/figures/README-dmsv_plots-1.png"><!-- --></p>
 </div>
 <div class="section level3">
 <h3 id="adding-color-highlighting-selected-features">adding color, highlighting selected features<a class="anchor" aria-label="anchor" href="#adding-color-highlighting-selected-features"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df_dmeansvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_diffmeans_sumvar.html">compute_diffmeans_sumvar</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">train_data</span>,</span>
 <span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">neurons</span> <span class="op">==</span> <span class="fl">1</span></span>
@@ -197,18 +229,18 @@
 <span>  func_factor <span class="op">=</span> <span class="va">parab_param</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-7-1.png"><!-- --></p>
+<p><img src="reference/figures/README-hl_feats_plt-1.png"><!-- --></p>
 </div>
 <div class="section level3">
 <h3 id="labeling-specific-features">labeling specific features<a class="anchor" aria-label="anchor" href="#labeling-specific-features"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">df_dmeansvar</span>,</span>
 <span>  feats_to_highlight <span class="op">=</span> <span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-8-1.png"><!-- --></p>
+<p><img src="reference/figures/README-label_feats-1.png"><!-- --></p>
 </div>
 </div>
 <div class="section level2">
@@ -217,7 +249,7 @@
 <div class="section level3">
 <h3 id="mini-example-with-just-4-signatures">mini example with just 4 signatures<a class="anchor" aria-label="anchor" href="#mini-example-with-just-4-signatures"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">deconv_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
 <span>  cpg_obj <span class="op">=</span> <span class="va">cimpleg_result</span>,</span>
 <span>  new_data <span class="op">=</span> <span class="va">test_data</span></span>
@@ -230,7 +262,7 @@
 <span>  true_label <span class="op">=</span> <span class="st">"cell_type"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-9-1.png"><!-- --></p>
+<p><img src="reference/figures/README-deconv_bar_plt-1.png"><!-- --></p>
 </div>
 <div class="section level3">
 <h3 id="this-example-is-a-little-more-advanced">this example is a little more advanced<a class="anchor" aria-label="anchor" href="#this-example-is-a-little-more-advanced"></a>
@@ -239,7 +271,7 @@
 <h4 id="first-lets-create-additional-deconvolution-results-so-that-we-can-compare-them">first lets create additional deconvolution results so that we can compare them<a class="anchor" aria-label="anchor" href="#first-lets-create-additional-deconvolution-results-so-that-we-can-compare-them"></a>
 </h4>
 <p>In this example, we’ll create two additional models made with CimpleG. One using only hypermethylated signatures, and the other using 3 CpGs per signature instead of just one.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">cimpleg_hyper</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/CimpleG.html">CimpleG</a></span><span class="op">(</span></span>
@@ -256,10 +288,10 @@
 <span>    <span class="st">"fibroblasts"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.407 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.55 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.373 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.514 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.342 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.304 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.352 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.317 sec elapsed</span></span>
 <span></span>
 <span><span class="va">deconv_hyper</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
 <span>  cpg_obj <span class="op">=</span> <span class="va">cimpleg_hyper</span>,</span>
@@ -282,10 +314,10 @@
 <span>    <span class="st">"fibroblasts"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.611 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.614 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.703 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.431 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.471 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.39 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.459 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.403 sec elapsed</span></span>
 <span></span>
 <span><span class="va">deconv_3sigs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
 <span>  cpg_obj <span class="op">=</span> <span class="va">cimpleg_3sigs</span>,</span>
@@ -297,7 +329,7 @@
 <div class="section level4">
 <h4 id="remember-this-is-just-an-example-the-results-themselves-are-meaningless">remember this is just an example, the results themselves are meaningless!<a class="anchor" aria-label="anchor" href="#remember-this-is-just-an-example-the-results-themselves-are-meaningless"></a>
 </h4>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">deconv_3sigs</span><span class="op">$</span><span class="va">prop_3sigs</span> <span class="op">&lt;-</span> <span class="va">deconv_3sigs</span><span class="op">$</span><span class="va">proportion</span></span>
 <span><span class="va">deconv_hyper</span><span class="op">$</span><span class="va">prop_hyper</span> <span class="op">&lt;-</span> <span class="va">deconv_hyper</span><span class="op">$</span><span class="va">proportion</span></span>
 <span><span class="va">deconv_result</span><span class="op">$</span><span class="va">prop_cimpleg</span> <span class="op">&lt;-</span> <span class="va">deconv_result</span><span class="op">$</span><span class="va">proportion</span></span>
@@ -317,7 +349,7 @@
 <div class="section level4">
 <h4 id="first-we-can-check-how-the-true-values-compare-against-the-predicted-values">first we can check how the true values compare against the predicted values<a class="anchor" aria-label="anchor" href="#first-we-can-check-how-the-true-values-compare-against-the-predicted-values"></a>
 </h4>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scatter_plts</span> <span class="op">&lt;-</span> <span class="fu">CimpleG</span><span class="fu">:::</span><span class="fu"><a href="reference/deconv_pred_obs_plot.html">deconv_pred_obs_plot</a></span><span class="op">(</span></span>
 <span>  deconv_df <span class="op">=</span> <span class="va">dummy_deconvolution_data</span>,</span>
 <span>  true_values_col <span class="op">=</span> <span class="st">"true_vals"</span>,</span>
@@ -328,12 +360,12 @@
 <span><span class="va">scatter_panel</span> <span class="op">&lt;-</span> <span class="va">scatter_plts</span> <span class="op">|&gt;</span> <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span>ncol<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">scatter_panel</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-12-1.png"><!-- --></p>
+<p><img src="reference/figures/README-deconv_pred_obs_plt-1.png"><!-- --></p>
 </div>
 <div class="section level4">
 <h4 id="now-more-interestingly-we-can-see-in-detail-and-rank-one-of-the-measures-used-to-evaluate-the-deconvolution-results">now, more interestingly, we can see in detail and rank one of the measures used to evaluate the deconvolution results<a class="anchor" aria-label="anchor" href="#now-more-interestingly-we-can-see-in-detail-and-rank-one-of-the-measures-used-to-evaluate-the-deconvolution-results"></a>
 </h4>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rank_plts</span> <span class="op">&lt;-</span> <span class="fu">CimpleG</span><span class="fu">:::</span><span class="fu"><a href="reference/deconv_ranking_plot.html">deconv_ranking_plot</a></span><span class="op">(</span></span>
 <span>  deconv_df <span class="op">=</span> <span class="va">dummy_deconvolution_data</span>,</span>
 <span>  true_values_col <span class="op">=</span> <span class="st">"true_vals"</span>,</span>
@@ -345,7 +377,7 @@
 <span><span class="va">rank_panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">rank_plts</span><span class="op">$</span><span class="va">perf_boxplt</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,<span class="va">rank_plts</span><span class="op">$</span><span class="va">nemenyi_plt</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rank_panel</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-13-1.png"><!-- --></p>
+<p><img src="reference/figures/README-deconv_rank_plt-1.png"><!-- --></p>
 </div>
 </div>
 </div>
