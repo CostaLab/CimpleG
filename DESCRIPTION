@@ -55,11 +55,11 @@ Imports:
     workflows,
     yardstick
 Suggests: 
-    Biobase (>= 2.62.0),
+    Biobase (>= 2.66.0),
     biomaRt,
     C50,
     circlize,
-    EpiDISH (>= 2.16.0),
+    EpiDISH (>= 2.22.0),
     furrr,
     future,
     future.apply,
@@ -68,7 +68,7 @@ Suggests:
     ggsignif,
     glmnet,
     knitr,
-    minfi (>= 1.46.0),
+    minfi (>= 1.52.1),
     mltools,
     NMF,
     nnet,
@@ -80,7 +80,7 @@ Suggests:
     rmarkdown,
     spelling,
     stringr,
-    SummarizedExperiment (>= 1.30.2),
+    SummarizedExperiment (>= 1.36.0),
     testthat (>= 3.0.0),
     withr,
     xgboost
@@ -96,4 +96,4 @@ Config/testthat/parallel: true
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
