@@ -4,16 +4,17 @@
 \alias{save_object}
 \title{Save an R object to disk with fast and efficient compression algorithms.}
 \usage{
-save_object(object, file_name, file_format = "zstd")
+save_object(object, file_name, file_format = "lz4")
 }
 \arguments{
 \item{object}{Object to be saved to disk.}
 
 \item{file_name}{Name of the file where the R object is saved to.}
 
-\item{file_format}{One of "zstd", "lz4", "gzip", "bzip2","xz", "nocomp".
-\code{zstd} is the best option, fast compression and loading times, low space usage.
-Formats "zstd" and "lz4" are only available if package \code{archive} is installed.}
+\item{file_format}{One of "lz4", "gzip", "bzip2","xz", "nocomp".
+\code{lz4} is the best option, fast compression and loading times, low space usage.
+Format "lz4" is only available if package \code{archive} is installed.
+Format "zstd"  is not supported anymore as the library now needs to be precompiled with R.}
 }
 \description{
 Save an R object to disk with fast and efficient compression algorithms.
