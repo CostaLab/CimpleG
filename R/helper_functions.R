@@ -942,7 +942,8 @@ train_general_model <- function(
       parsnip::set_engine("glmnet")
   }
   if(model_type == "decision_tree"){
-    corr_filter <- cimpleg_recipe %>%
+
+    cimpleg_recipe <- cimpleg_recipe %>%
       recipes::step_nzv(recipes::all_predictors()) %>%
       recipes::step_lincomb(recipes::all_predictors()) %>%
       recipes::step_corr(
@@ -950,10 +951,6 @@ train_general_model <- function(
         threshold = .5,
         method = "spearman"
       )
-
-    cimpleg_recipe <- recipes::prep(
-      corr_filter, training = train_data
-    )
 
     general_model <-
       parsnip::decision_tree(
@@ -998,7 +995,7 @@ train_general_model <- function(
 
   if (model_type == "mlp") {
 
-    corr_filter <- cimpleg_recipe %>%
+    cimpleg_recipe <- cimpleg_recipe %>%
       recipes::step_nzv(recipes::all_predictors()) %>%
       recipes::step_lincomb(recipes::all_predictors()) %>%
       recipes::step_corr(
@@ -1007,9 +1004,6 @@ train_general_model <- function(
         method = "spearman"
       )
 
-    cimpleg_recipe <- recipes::prep(
-      corr_filter, training = train_data
-    )
     general_model <-
       # specify the model
       parsnip::mlp(
@@ -1024,7 +1018,7 @@ train_general_model <- function(
   }
 
   if (model_type == "rand_forest") {
-    corr_filter <- cimpleg_recipe %>%
+    cimpleg_recipe <- cimpleg_recipe %>%
       recipes::step_nzv(recipes::all_predictors()) %>%
       recipes::step_lincomb(recipes::all_predictors()) %>%
       recipes::step_corr(
@@ -1033,9 +1027,6 @@ train_general_model <- function(
         method = "spearman"
       )
 
-    cimpleg_recipe <- recipes::prep(
-      corr_filter, training = train_data
-    )
     general_model <-
       # specify the model
       parsnip::rand_forest(
@@ -1057,7 +1048,7 @@ train_general_model <- function(
     # choose either the continuous regression or binary classification mode
     parsnip::set_mode("classification")
 
-  cimpleg_workflow <- workflows::workflow()%>%
+  cimpleg_workflow <- workflows::workflow() %>%
     workflows::add_recipe(cimpleg_recipe) %>%
     workflows::add_model(general_model)
 
