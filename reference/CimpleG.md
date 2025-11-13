@@ -1,0 +1,270 @@
+# Find simple CpG (CimpleG) signatures.
+
+Train a classification model using (CpGs) as features for the given
+target data.
+
+## Usage
+
+``` r
+CimpleG(
+  train_data,
+  train_targets = NULL,
+  target_columns = NULL,
+  test_data = NULL,
+  test_targets = NULL,
+  method = c("CimpleG", "CimpleG_parab", "brute_force", "logistic_reg", "decision_tree",
+    "boost_tree", "mlp", "rand_forest"),
+  pred_type = c("both", "hypo", "hyper"),
+  engine = c("glmnet", "xgboost", "nnet", "ranger"),
+  rank_method = c("ac_rank", "a_rank", "c_rank"),
+  k_folds = 10,
+  grid_n = 10,
+  param_p = 2,
+  n_sigs = 1,
+  quantile_threshold = 0.005,
+  train_only = FALSE,
+  split_data = FALSE,
+  run_parallel = FALSE,
+  deconvolution_reference = TRUE,
+  has_annotation = FALSE,
+  save_dir = NULL,
+  save_format = c("lz4", "gzip", "bzip2", "xz", "nocomp"),
+  verbose = 1,
+  targets = NULL
+)
+
+cimpleg(
+  train_data,
+  train_targets = NULL,
+  target_columns = NULL,
+  test_data = NULL,
+  test_targets = NULL,
+  method = c("CimpleG", "CimpleG_parab", "brute_force", "logistic_reg", "decision_tree",
+    "boost_tree", "mlp", "rand_forest"),
+  pred_type = c("both", "hypo", "hyper"),
+  engine = c("glmnet", "xgboost", "nnet", "ranger"),
+  rank_method = c("ac_rank", "a_rank", "c_rank"),
+  k_folds = 10,
+  grid_n = 10,
+  param_p = 2,
+  n_sigs = 1,
+  quantile_threshold = 0.005,
+  train_only = FALSE,
+  split_data = FALSE,
+  run_parallel = FALSE,
+  deconvolution_reference = TRUE,
+  has_annotation = FALSE,
+  save_dir = NULL,
+  save_format = c("lz4", "gzip", "bzip2", "xz", "nocomp"),
+  verbose = 1,
+  targets = NULL
+)
+
+cpg(
+  train_data,
+  train_targets = NULL,
+  target_columns = NULL,
+  test_data = NULL,
+  test_targets = NULL,
+  method = c("CimpleG", "CimpleG_parab", "brute_force", "logistic_reg", "decision_tree",
+    "boost_tree", "mlp", "rand_forest"),
+  pred_type = c("both", "hypo", "hyper"),
+  engine = c("glmnet", "xgboost", "nnet", "ranger"),
+  rank_method = c("ac_rank", "a_rank", "c_rank"),
+  k_folds = 10,
+  grid_n = 10,
+  param_p = 2,
+  n_sigs = 1,
+  quantile_threshold = 0.005,
+  train_only = FALSE,
+  split_data = FALSE,
+  run_parallel = FALSE,
+  deconvolution_reference = TRUE,
+  has_annotation = FALSE,
+  save_dir = NULL,
+  save_format = c("lz4", "gzip", "bzip2", "xz", "nocomp"),
+  verbose = 1,
+  targets = NULL
+)
+```
+
+## Arguments
+
+- train_data:
+
+  Training dataset. A matrix (s x f) with methylation data (Beta values)
+  that will be used to train/find the predictors. Samples (s) must be in
+  rows while features/CpGs (f) must be in columns.
+
+- train_targets:
+
+  A data frame with the training target samples one-hot encoded. A data
+  frame with at least 1 column, with as many rows and in the same order
+  as \`train_data\`. Target columns need to be one-hot encoded, meaning
+  that, for that column the target samples should be encoded as \`1\`
+  while every other sample should be encoded as \`0\`.
+
+- target_columns:
+
+  A string specifying the name of the column in \`train_targets\` to be
+  used for training. Can be a character vector if there are several
+  columns in \`train_targets\` to be used for training. If this argument
+  is a character vector, CimpleG will search for the best predictors for
+  each target sequentially or in parallel depending on the value of
+  \`run_parallel\`
+
+- test_data:
+
+  Testing dataset. A matrix (s x f) with methylation data (Beta values)
+  that will be used to test the performance of the found predictors.
+  Samples (s) must be in rows while features/CpGs (f) must be in
+  columns. If \`test_data\` \*OR\* \`test_targets\` are NULL, CimpleG
+  will generate a stratified test dataset based on \`train_targets\` by
+  removing 25 samples from \`train_data\` and \`train_targets\`.
+
+- test_targets:
+
+  A data frame with the testing target samples one-hot encoded. A data
+  frame with at least 1 column, with as many rows and in the same order
+  as \`test_data\`. Target columns need to be one-hot encoded, meaning
+  that, for that column the target samples should be encoded as \`1\`
+  while every other sample should be encoded as \`0\`. If \`test_data\`
+  \*OR\* \`test_targets\` are NULL, CimpleG will generate a stratified
+  test dataset based on \`train_targets\` by removing 25 samples from
+  \`train_data\` and \`train_targets\`.
+
+- method:
+
+  A string specifying the method or type of machine learning
+  model/algorithm to be used for training. These are divided in two main
+  groups. \* The simple models (classifiers that use a single feature),
+  \`CimpleG\` (default), \`brute_force\`, \`CimpleG_unscaled\` or
+  \`oner\`; \* the complex models (classifiers that use several
+  features), \`logistic_reg\`, \`decision_tree\`, \`boost_tree\`,
+  \`mlp\` or \`rand_forest\`.
+
+- pred_type:
+
+  A string specifying the type of predictor/CpG to be searched for
+  during training. Only used for simple models. One of \`both\`
+  (default), \`hypo\` or \`hyper\`. If \`hypo\`, only hypomethylated
+  predictors will be considered. If \`hyper\`, only hypermethylated
+  predictors will be considered.
+
+- engine:
+
+  A string specifying the machine learning engine behind \`method\`.
+  Only used for complex models. Currently not in use.
+
+- rank_method:
+
+  A string specifying the ranking strategy to rank the features during
+  training.
+
+- k_folds:
+
+  An integer specifying the number of folds (K) to be used in training
+  for the stratified K-fold cross-validation procedure.
+
+- grid_n:
+
+  An integer specifying the number of hyperparameter combinations to
+  train for.
+
+- param_p:
+
+  An even number in \`sigma / (delta^param_p)\`. Tunes how much weight
+  will be given to delta when doing feature selection. Default is `2`.
+
+- n_sigs:
+
+  Number of signatures to be saved for classification and used in
+  deconvolution. Default is `1`.
+
+- quantile_threshold:
+
+  A number between 0 and 1. Determines how many features will be kept.
+  Default is `0.005`.
+
+- train_only:
+
+  A boolean, if TRUE, CimpleG will only train (find predictors) but not
+  test them against a test dataset.
+
+- split_data:
+
+  A boolean, if \`TRUE\`, it will subset the train data provided,
+  creating a smaller test set that will be used to test the models after
+  training. This parameter is experimental. Default is \`FALSE\`.
+
+- run_parallel:
+
+  A boolean, if \`FALSE\`, the default, it will search for predictors
+  for multiple targets sequentially. If \`TRUE\` it will search for
+  predictors for multiple targets at the same time (parallel processing)
+  in order to save in computational time. You need to set up
+  \`future::plan()\` before running this function.
+
+- deconvolution_reference:
+
+  A boolean, if \`TRUE\`, it will create a deconvolution reference
+  matrix based on the training data. This can later be used to perform
+  deconvolution. Default is \`FALSE\`.
+
+- has_annotation:
+
+  A boolean, if \`TRUE\`, it will get the CpG annotation from Illumina
+  for the generated signature. Default is \`FALSE\`.
+
+- save_dir:
+
+  If defined it will save the resulting model to the given directory.
+  Default is `NULL`.
+
+- save_format:
+
+  Only used if `save_dir` is not `NULL`. One of "lz4", "gzip",
+  "bzip2","xz", "nocomp". `lz4` is the best option, fast compression and
+  loading times, low space usage.
+
+- verbose:
+
+  How verbose you want CimpleG to be while it is running. At 0, no
+  message is displayed, at 3 every message is displayed. Default is `1`.
+
+- targets:
+
+  DEPRECATED use \`target_columns\`.
+
+## Value
+
+A CimpleG object with the results per target class.
+
+## Examples
+
+``` r
+library("CimpleG")
+
+# read data
+data(train_data)
+data(train_targets)
+data(test_data)
+data(test_targets)
+
+# run CimpleG
+cimpleg_result <- CimpleG(
+  train_data = train_data,
+  train_targets = train_targets,
+  test_data = test_data,
+  test_targets = test_targets,
+  method = "CimpleG",
+  target_columns = c("glia","neurons")
+)
+#> Training for target 'glia' with 'CimpleG' has finished.: 2.163 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.393 sec elapsed
+
+# check signatures
+cimpleg_result$signatures
+#>         glia      neurons 
+#> "cg14501977" "cg24548498" 
+```
