@@ -15,7 +15,7 @@ We load the CimpleG package.
 ``` r
 library("CimpleG")
 #> --------------------------
-#> CimpleG version 0.0.5.9034
+#> CimpleG version 0.0.5.9035
 #> --------------------------
 ```
 

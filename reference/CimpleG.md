@@ -260,8 +260,8 @@ cimpleg_result <- CimpleG(
   method = "CimpleG",
   target_columns = c("glia","neurons")
 )
-#> Training for target 'glia' with 'CimpleG' has finished.: 2.163 sec elapsed
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.393 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 2.063 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.367 sec elapsed
 
 # check signatures
 cimpleg_result$signatures
