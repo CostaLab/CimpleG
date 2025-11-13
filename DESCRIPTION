@@ -6,9 +6,9 @@ Version: 0.0.5.9032
 Date: 2025-09-18
 Authors@R:
     person("Tiago", "F.V. Maié", , "tiagomaie@hotmail.com", role = c("aut", "cre"))
-Maintainer: Tiago Maié <tiagomaie@hotmail.com>
-Description: CimpleG is a simple package to find single-CpG based
-    signatures for use in classification and deconvolution.
+Maintainer: Tiago F.V. Maié <tiagomaie@hotmail.com>
+Description: This is a package to find single-CpG (DNAm) based signatures
+    for use in classification and deconvolution.
 License: GPL (>= 3)
 URL: https://github.com/CostaLab/CimpleG,
     https://costalab.github.io/CimpleG/

@@ -7,7 +7,7 @@ install_package:
 	Rscript -e "pak::pkg_install('.')"
 
 check_package:
-	Rscript -e "devtools::check(error_on='error')"
+	Rscript -e "devtools::check(error_on = 'error', cran = TRUE, remote = TRUE, env_vars = c(NOT_CRAN = 'false'))"
 
 fastcheck_package:
 	Rscript -e "devtools::check(error_on='error', args = c('--timings', '--no-tests', '--no-examples'))"

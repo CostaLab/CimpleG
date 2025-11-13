@@ -92,8 +92,8 @@
 #'  Default is \code{NULL}.
 #'
 #' @param save_format Only used if \code{save_dir} is not \code{NULL}.
-#'  One of "zstd", "lz4", "gzip", "bzip2","xz", "nocomp".
-#'  \code{zstd} is the best option, fast compression and loading times, low space usage.
+#'  One of "lz4", "gzip", "bzip2","xz", "nocomp".
+#'  \code{lz4} is the best option, fast compression and loading times, low space usage.
 #'
 #' @param verbose How verbose you want CimpleG to be while it is running.
 #'  At 0, no message is displayed, at 3 every message is displayed.
@@ -165,7 +165,7 @@ CimpleG <- function(
   deconvolution_reference = TRUE,
   has_annotation = FALSE,
   save_dir = NULL,
-  save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
+  save_format = c("lz4", "gzip", "bzip2","xz", "nocomp"),
   verbose=1,
   targets=NULL
 ) {
@@ -203,7 +203,7 @@ CimpleG.matrix <- function(
   deconvolution_reference = TRUE,
   has_annotation = FALSE,
   save_dir = NULL,
-  save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
+  save_format = c("lz4", "gzip", "bzip2","xz", "nocomp"),
   verbose=1,
   targets=NULL
 ){
@@ -286,7 +286,7 @@ CimpleG.data.frame <- function(
   deconvolution_reference = TRUE,
   has_annotation = FALSE,
   save_dir = NULL,
-  save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
+  save_format = c("lz4", "gzip", "bzip2","xz", "nocomp"),
   verbose=1,
   targets=NULL
 ){
@@ -368,7 +368,7 @@ CimpleG.SummarizedExperiment <- function(
   deconvolution_reference = TRUE,
   has_annotation = FALSE,
   save_dir = NULL,
-  save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
+  save_format = c("lz4", "gzip", "bzip2","xz", "nocomp"),
   verbose=1,
   targets=NULL
 ){
@@ -470,7 +470,7 @@ CimpleG_main <- function(
   deconvolution_reference = TRUE,
   has_annotation = FALSE,
   save_dir = NULL,
-  save_format = c("zstd", "lz4", "gzip", "bzip2","xz", "nocomp"),
+  save_format = c("lz4", "gzip", "bzip2","xz", "nocomp"),
   verbose=1
 ) {
 

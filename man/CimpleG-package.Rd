@@ -5,7 +5,7 @@
 \alias{CimpleG-package}
 \title{CimpleG: CimpleG - Individual/Single CpG sites For Classification and Deconvolution}
 \description{
-CimpleG is a simple package to find single-CpG based signatures for use in classification and deconvolution.
+This is a package to find single-CpG (DNAm) based signatures for use in classification and deconvolution.
 }
 \seealso{
 Useful links:
