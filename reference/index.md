@@ -27,15 +27,11 @@
 - [`deconvolution_nnls()`](https://costalab.github.io/CimpleG/reference/deconvolution_nnls.md)
   : NNLS deconvolution
 - [`diffmeans_sumvariance_plot()`](https://costalab.github.io/CimpleG/reference/diffmeans_sumvariance_plot.md)
-  : Represent CpGs in the difference in means, sum of variances space.
-  This plot is often used to select CpGs that would be good classifiers.
-  These CpGs are often located on the bottom left and bottom right of
-  this plot.
+  : Creates the old version of the difference in means by sum of
+  variances plot
 - [`dmsv_plot()`](https://costalab.github.io/CimpleG/reference/dmsv_plot.md)
-  : Represent CpGs in the difference in means, sum of variances space.
-  This plot is often used to select CpGs that would be good classifiers.
-  These CpGs are often located on the bottom left and bottom right of
-  this plot.
+  : Creates the old version of the difference in means by sum of
+  variances plot
 - [`eval_test_data()`](https://costalab.github.io/CimpleG/reference/eval_test_data.md)
   : Evaluation of produced models on test data
 - [`get_cpg_annotation()`](https://costalab.github.io/CimpleG/reference/get_cpg_annotation.md)
@@ -46,6 +42,8 @@
   : Load an R object saved with CimpleG or an RDS file.
 - [`make_color_palette()`](https://costalab.github.io/CimpleG/reference/make_color_palette.md)
   : Make color palette data frame
+- [`make_deconv_pred_obs_data()`](https://costalab.github.io/CimpleG/reference/make_deconv_pred_obs_data.md)
+  : Make tidy data for use in deconvolution plots
 - [`make_deconv_ref_matrix()`](https://costalab.github.io/CimpleG/reference/make_deconv_ref_matrix.md)
   : Build deconvolution reference matrix
 - [`predict(`*`<CimpleG>`*`)`](https://costalab.github.io/CimpleG/reference/predict.CimpleG.md)

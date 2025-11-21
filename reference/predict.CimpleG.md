@@ -28,3 +28,7 @@ predict(object, ..., new_data, class_labels = NULL)
 - class_labels:
 
   Class labels of new data if these are not provided directly with it.
+
+## Value
+
+prediction object, list with an entry for each signature

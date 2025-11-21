@@ -25,3 +25,7 @@ eval_test_data(test_data, final_model, method = "oner", verbose = 1)
 - verbose:
 
   How verbose the logs should be.
+
+## Value
+
+a data.frame with the evaluation statistics

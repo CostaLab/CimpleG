@@ -13,3 +13,7 @@ make_color_palette(classes)
 - classes:
 
   Vector with classes for which to create a color palette
+
+## Value
+
+data.frane with colors defined for each class provided

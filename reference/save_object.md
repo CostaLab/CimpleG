@@ -25,3 +25,7 @@ save_object(object, file_name, file_format = "lz4")
   "lz4" is only available if package `archive` is installed. Format
   "zstd" is not supported anymore as the library now needs to be
   precompiled with R.
+
+## Value
+
+NULL invisibly

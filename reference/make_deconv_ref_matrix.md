@@ -27,4 +27,9 @@ make_deconv_ref_matrix(cpg_obj, ref_data, ref_data_labels, method = NULL)
 - method:
 
   Method used to train models in the CimpleG object. If not provided
-  (NULL), method will be taken from the CimpleG object.
+  (NULL), method will be taken from the CimpleG object. Creates the old
+  version of the difference in means by sum of variances plot
+
+## Value
+
+A list object containing the deconvolution reference matrix

@@ -17,3 +17,7 @@ darken(color, factor = 0.5)
 - factor:
 
   Multiplicative factor by which \`color\` will be darkened down
+
+## Value
+
+a character value, hex color code of the darkened color provided

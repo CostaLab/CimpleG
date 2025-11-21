@@ -43,12 +43,13 @@ signatures.
 ## Examples
 
 ``` r
+# \donttest{
 library("CimpleG")
 
 # read data
 signatures <- c("cg14501977", "cg24548498")
 
-# Get signature annotation 
+# Get signature annotation
 signature_annotation <- get_cpg_annotation(signatures)
 #> 
 #> [CimpleG] Getting annotation manifest from Illumina.
@@ -62,4 +63,5 @@ signature_annotation
 #> 2 cg24548498 chr2      181684680 181684682 NA                NA                
 #> # ℹ 2 more variables: UCSC_CpG_Islands_Name <chr>,
 #> #   Relation_to_UCSC_CpG_Island <chr>
+# }
 ```

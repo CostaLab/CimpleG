@@ -17,3 +17,7 @@ load_object(file_name)
   [`CimpleG::save_object`](https://costalab.github.io/CimpleG/reference/save_object.md)
   and [`base::saveRDS`](https://rdrr.io/r/base/readRDS.html) files are
   supported.
+
+## Value
+
+the loaded R object

@@ -22,3 +22,7 @@ compute_ax(dm, sv, p)
 
   even number, the greater 'p' is the more importance will be given to
   sigma
+
+## Value
+
+numeric value, score used for feature selection

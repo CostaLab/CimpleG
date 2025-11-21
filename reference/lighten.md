@@ -17,3 +17,7 @@ lighten(color, factor = 0.5)
 - factor:
 
   Multiplicative factor by which \`color\` will be lightened up
+
+## Value
+
+a character value, hex color code of the lightened color provided

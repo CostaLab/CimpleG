@@ -42,3 +42,7 @@ run_deconvolution(
   Extra parameters only used when deconvolution_method is set to
   \`NMF\`. The most relevant parameter are probably \`method\` and
   \`beta\`.
+
+## Value
+
+a data.table with the deconvolution results

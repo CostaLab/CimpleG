@@ -48,3 +48,7 @@ deconv_pred_obs_plot(
 
   A list with two entries, \`x\` and \`y\`, defining the limits of the x
   and y axis of the plot.
+
+## Value
+
+list of ggplot2 objects

@@ -1,4 +1,4 @@
-# Represent CpGs in the difference in means, sum of variances space. This plot is often used to select CpGs that would be good classifiers. These CpGs are often located on the bottom left and bottom right of this plot.
+# Creates the old version of the difference in means by sum of variances plot
 
 Represent CpGs in the difference in means, sum of variances space. This
 plot is often used to select CpGs that would be good classifiers. These

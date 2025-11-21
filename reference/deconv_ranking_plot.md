@@ -54,3 +54,7 @@ deconv_ranking_plot(
 
   A named vector with colours, where the names are the values defined in
   \`predicted_cols\`. If \`NULL\`, default colours will be used.
+
+## Value
+
+list object with data and deconvolution performance plots
