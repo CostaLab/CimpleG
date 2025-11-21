@@ -1,10 +1,8 @@
 save_different_plot_format <- function(
-  plt = NULL, plot_dir = NULL, create_plot_subdir = FALSE,
-  save_device = c("ggplot", "grDevice", "complexheatmap"),
-  type_name = "", name_tag = "", formats = c("png", "pdf", "tiff"),
-  units = "cm", width = 15, height = 15, ...
-) {
-
+    plt = NULL, plot_dir = NULL, create_plot_subdir = FALSE,
+    save_device = c("ggplot", "grDevice", "complexheatmap"),
+    type_name = "", name_tag = "", formats = c("png", "pdf", "tiff"),
+    units = "cm", width = 15, height = 15, ...) {
   if (!is.null(plot_dir) & !is.null(plt)) {
     save_device <- match.arg(save_device)
 
@@ -27,22 +25,23 @@ save_different_plot_format <- function(
 
 #' Make color palette data frame
 #' @param classes Vector with classes for which to create a color palette
+#' @return data.frane with colors defined for each class provided
 #' @export
-make_color_palette <- function(classes){
-  if(requireNamespace("ggsci",quietly = TRUE)){
+make_color_palette <- function(classes) {
+  if (requireNamespace("ggsci", quietly = TRUE)) {
     color_palette_df <- data.frame(
-      classes=classes,
-      class_color=grDevices::colorRampPalette(ggsci::pal_ucscgb()(26))(length(classes))
+      classes = classes,
+      class_color = grDevices::colorRampPalette(ggsci::pal_ucscgb()(26))(length(classes))
     )
-  }else if(requireNamespace("RColorBrewer",quietly = TRUE)){
+  } else if (requireNamespace("RColorBrewer", quietly = TRUE)) {
     color_palette_df <- data.frame(
-      classes=classes,
-      class_color=grDevices::colorRampPalette(RColorBrewer::brewer.pal(9,"Set1"))(length(classes))
+      classes = classes,
+      class_color = grDevices::colorRampPalette(RColorBrewer::brewer.pal(9, "Set1"))(length(classes))
     )
-  }else{
+  } else {
     color_palette_df <- data.frame(
-      classes=classes,
-      class_color=grDevices::colorRampPalette(grDevices::rainbow(length(classes)+1))(length(classes))
+      classes = classes,
+      class_color = grDevices::colorRampPalette(grDevices::rainbow(length(classes) + 1))(length(classes))
     )
   }
   return(color_palette_df)

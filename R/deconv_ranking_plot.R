@@ -10,6 +10,7 @@
 #' @param group_col A string with the name of the column containing the cell types or groups in `deconv_df`.
 #' @param metrics A list with two entries, `x` and `y`, defining the limits of the x and y axis of the plot.
 #' @param custom_colours A named vector with colours, where the names are the values defined in `predicted_cols`. If `NULL`, default colours will be used.
+#' @return list object with data and deconvolution performance plots
 #' @export
 deconv_ranking_plot <- function(
   deconv_df,

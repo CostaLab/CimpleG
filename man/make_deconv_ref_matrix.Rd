@@ -14,7 +14,11 @@ make_deconv_ref_matrix(cpg_obj, ref_data, ref_data_labels, method = NULL)
 \item{ref_data_labels}{A character vector with the true labels of the samples in the `reference_data`.}
 
 \item{method}{Method used to train models in the CimpleG object. 
-If not provided (NULL), method will be taken from the CimpleG object.}
+  If not provided (NULL), method will be taken from the CimpleG object.
+Creates the old version of the difference in means by sum of variances plot}
+}
+\value{
+A list object containing the deconvolution reference matrix
 }
 \description{
 Build deconvolution reference matrix

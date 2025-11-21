@@ -15,6 +15,9 @@ eval_test_data(test_data, final_model, method = "oner", verbose = 1)
 
 \item{verbose}{How verbose the logs should be.}
 }
+\value{
+a data.frame with the evaluation statistics
+}
 \description{
 Evaluation of produced models on test data
 }

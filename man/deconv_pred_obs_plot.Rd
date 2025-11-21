@@ -26,6 +26,9 @@ deconv_pred_obs_plot(
 
 \item{axis_lims}{A list with two entries, `x` and `y`, defining the limits of the x and y axis of the plot.}
 }
+\value{
+list of ggplot2 objects
+}
 \description{
 Produces one plot panel per number of methods with predictions. Each plot panel has one plot per cell type.
 }

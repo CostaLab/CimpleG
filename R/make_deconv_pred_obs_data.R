@@ -1,13 +1,19 @@
-
-
+#' Make tidy data for use in deconvolution plots
+#'
+#' Produces data with varied deconvolution performance metrics.
+#' @param dat data.frame with predictions as columns, each row should be a prediction for a given sample and given group/celltype
+#' @param true_values_col A string with the name of the column with the true values in `dat`. true values should be between 0 and 1.
+#' @param predicted_cols A vector of strings with the name of the columns with the predictions for different methods in `dat`. predictions should be between 0 and 1
+#' @param sample_id_col A string with the name of the column with the sample name or ID in `dat`.
+#' @param group_col A string with the name of the column containing the cell types or groups in `dat`. group col should be a factor, otherwise the function will make it a factor
+#' @return tibble with tidied up deconvolution performance data in nested fields
+#' @export
 make_deconv_pred_obs_data <- function(
-  dat, # data.frame with predictions as columns, each row should be a prediction for a given sample and given group/celltype
-  true_values_col, # true values should be between 0 and 1
-  predicted_cols, # predictions should be between 0 and 1
-  sample_id_col,
-  group_col # group col should be a factor, otherwise the function will make it a factor
-  # returns tibble with nested fields
-){
+    dat,
+    true_values_col,
+    predicted_cols,
+    sample_id_col,
+    group_col) {
   dfit <- data <- NULL
 
   assertthat::assert_that(is.data.frame(dat))
@@ -18,7 +24,7 @@ make_deconv_pred_obs_data <- function(
   assertthat::assert_that(all(dat[, c(predicted_cols, true_values_col)] <= 1))
 
   # if grouping column is not a factor, make it a factor
-  if(!is.factor(dat[[group_col]])){
+  if (!is.factor(dat[[group_col]])) {
     dat <- dat |> dplyr::mutate("{group_col}" := as.factor(!!dplyr::sym(group_col)))
   }
   assertthat::assert_that(is.factor(dat[[group_col]]))
@@ -27,7 +33,7 @@ make_deconv_pred_obs_data <- function(
   names(predicted_cols) <- predicted_cols
 
   tidy_dat <-
-    purrr::map_dfr(.x = predicted_cols,.id="method", .f = function(pcol){
+    purrr::map_dfr(.x = predicted_cols, .id = "method", .f = function(pcol) {
       tidy_subset_dat <-
         dat |>
         tibble::as_tibble() |>

@@ -24,6 +24,9 @@ Samples should be in rows and probes/CpGs in columns.}
 
 \item{...}{Extra parameters only used when deconvolution_method is set to `NMF`. The most relevant parameter are probably `method` and `beta`.}
 }
+\value{
+a data.table with the deconvolution results
+}
 \description{
 Perform deconvolution on a new set of samples, based on the CimpleG models trained
 }

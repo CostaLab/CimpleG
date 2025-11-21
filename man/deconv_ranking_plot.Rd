@@ -29,6 +29,9 @@ deconv_ranking_plot(
 
 \item{custom_colours}{A named vector with colours, where the names are the values defined in `predicted_cols`. If `NULL`, default colours will be used.}
 }
+\value{
+list object with data and deconvolution performance plots
+}
 \description{
 Produces data with varied deconvolution performance metrics. Produces one boxplot and one ranking plot with the for each metric.
 }

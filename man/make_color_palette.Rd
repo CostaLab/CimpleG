@@ -9,6 +9,9 @@ make_color_palette(classes)
 \arguments{
 \item{classes}{Vector with classes for which to create a color palette}
 }
+\value{
+data.frane with colors defined for each class provided
+}
 \description{
 Make color palette data frame
 }

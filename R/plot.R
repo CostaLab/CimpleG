@@ -1,5 +1,7 @@
 # TODO make dmsv_plot the default of this kind
 
+#' Creates the old version of the difference in means by sum of variances plot
+#'
 #' Represent CpGs in the difference in means, sum of variances space.
 #' This plot is often used to select CpGs that would be good classifiers.
 #' These CpGs are often located on the bottom left and
@@ -72,27 +74,26 @@
 #' @export
 diffmeans_sumvariance_plot <- function(
   data,
-  xcol="diff_means",
-  ycol="sum_variance",
-  feature_id_col="id",
-  is_feature_selected_col=NULL,
-  label_var1="Target",
-  label_var2="Others",
-  target_vector=NULL,
-  mean_cutoff=NULL,
-  var_cutoff=NULL,
-  threshold_func=NULL,
-  func_factor=NULL,
-  feats_to_highlight=NULL,
-  cpg_ranking_df=NULL,
-  color_all_points=NULL,
-  pltDensity=TRUE,
-  density_type=c("density", "histogram", "boxplot",
-  "violin", "densigram"),
-  plot_dir=NULL,
-  id_tag=NULL,
-  file_tag=NULL,
-  custom_mods=FALSE
+  xcol = "diff_means",
+  ycol = "sum_variance",
+  feature_id_col = "id",
+  is_feature_selected_col = NULL,
+  label_var1 = "Target",
+  label_var2 = "Others",
+  target_vector = NULL,
+  mean_cutoff = NULL,
+  var_cutoff = NULL,
+  threshold_func = NULL,
+  func_factor = NULL,
+  feats_to_highlight = NULL,
+  cpg_ranking_df = NULL,
+  color_all_points = NULL,
+  pltDensity = TRUE,
+  density_type = c("density", "histogram", "boxplot", "violin", "densigram"),
+  plot_dir = NULL,
+  id_tag = NULL,
+  file_tag = NULL,
+  custom_mods = FALSE
 ){
 
   if(!is.null(target_vector)){
@@ -103,13 +104,13 @@ diffmeans_sumvariance_plot <- function(
 
   data <- as.data.frame(data)
 
-  assertthat::assert_that(xcol%in%colnames(data))
-  assertthat::assert_that(ycol%in%colnames(data))
+  assertthat::assert_that(xcol %in% colnames(data))
+  assertthat::assert_that(ycol %in% colnames(data))
 
-  if(!feature_id_col%in%colnames(data)){
+  if(!feature_id_col %in% colnames(data)){
     data[,feature_id_col] = rownames(data)
   }
-  assertthat::assert_that(feature_id_col%in%colnames(data))
+  assertthat::assert_that(feature_id_col %in% colnames(data))
 
   assertthat::assert_that(
     typeof(label_var1) == 'character' && typeof(label_var2) == 'character'
@@ -208,8 +209,8 @@ diffmeans_sumvariance_plot <- function(
         max.iter=10000
       )
   }else if(
-    length(feats_to_highlight)<25 &&
-    length(feats_to_highlight)>2
+    length(feats_to_highlight) < 25 &&
+    length(feats_to_highlight) > 2
   ){
     plt_diffMeanSumVar <- plt_diffMeanSumVar +
       ggrepel::geom_label_repel(
@@ -411,7 +412,7 @@ diffmeans_sumvariance_plot <- function(
 
   plt_diffMeanSumVar <- plt_diffMeanSumVar +
     #scale_color_manual(values = color_vals)+
-    ggplot2::theme_minimal(base_size=18)+
+    ggplot2::theme_classic(base_size=14)+
     ggplot2::theme(
       legend.position="none",
       axis.title.y = ggplot2::element_text(face="bold",size=22),
@@ -425,7 +426,7 @@ diffmeans_sumvariance_plot <- function(
   #print(plt_diffMeanSumVar)
 
   simple_plot = simple_plot +
-    ggplot2::theme_minimal(base_size=18)+
+    ggplot2::theme_classic(base_size=14)+
     ggplot2::theme(
       legend.position="none",
       axis.title.y = ggplot2::element_text(face="bold",size=22),
@@ -505,6 +506,7 @@ diffmeans_sumvariance_plot <- function(
 #'
 #' @param color Color name or hex code of a color
 #' @param factor Multiplicative factor by which `color` will be lightened up
+#' @return a character value, hex color code of the lightened color provided
 #' @export
 lighten <- function(color, factor = 0.5) {
   if ((factor > 1) | (factor < 0)) stop("factor needs to be within [0,1]")
@@ -518,6 +520,7 @@ lighten <- function(color, factor = 0.5) {
 #'
 #' @param color Color name or hex code of a color
 #' @param factor Multiplicative factor by which `color` will be darkened down
+#' @return a character value, hex color code of the darkened color provided
 #' @export
 darken <- function(color, factor = 0.5) {
   if ((factor > 1) | (factor < 0)) stop("factor needs to be within [0,1]")
@@ -528,6 +531,8 @@ darken <- function(color, factor = 0.5) {
 }
 
 
+#' Creates the old version of the difference in means by sum of variances plot
+#'
 #' Represent CpGs in the difference in means, sum of variances space.
 #' This plot is often used to select CpGs that would be good classifiers.
 #' These CpGs are often located on the bottom left and

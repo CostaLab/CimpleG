@@ -9,6 +9,7 @@
 #'  Format "lz4" is only available if package \code{archive} is installed.
 #'  Format "zstd"  is not supported anymore as the library now needs to be precompiled with R.
 #'
+#' @return NULL invisibly
 #' @export
 save_object <- function(object, file_name, file_format = "lz4") {
   stopifnot(file_format %in% c("lz4", "gzip", "bzip2", "xz", "nocomp"))
@@ -39,6 +40,7 @@ save_object <- function(object, file_name, file_format = "lz4") {
 #' @param file_name File name in the working directory or path to file
 #'  to be loaded. Files saved with \code{CimpleG::save_object} and \code{base::saveRDS}
 #'  files are supported.
+#' @return the loaded R object
 #' @export
 load_object <- function(file_name) {
   if (!file.exists(file_name)) stop(paste0("File '", file_name, "' not found."))

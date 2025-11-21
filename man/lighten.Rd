@@ -11,6 +11,9 @@ lighten(color, factor = 0.5)
 
 \item{factor}{Multiplicative factor by which `color` will be lightened up}
 }
+\value{
+a character value, hex color code of the lightened color provided
+}
 \description{
 Helper function to lighten up a given color.
 }

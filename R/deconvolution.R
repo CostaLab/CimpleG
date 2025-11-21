@@ -6,6 +6,7 @@
 #' @param ref_mat If the CimpleG object does not have the reference matrix, you can provide it here instead. See `make_deconv_ref_matrix`
 #' @param deconvolution_method Deconvolution method to be used. One of #TODO
 #' @param ... Extra parameters only used when deconvolution_method is set to `NMF`. The most relevant parameter are probably `method` and `beta`.
+#' @return a data.table with the deconvolution results
 #' @export
 run_deconvolution <- function(
   cpg_obj = NULL,
@@ -199,6 +200,8 @@ deconvolution_epidish <- function(
 #' @param ref_data_labels A character vector with the true labels of the samples in the `reference_data`.
 #' @param method Method used to train models in the CimpleG object. 
 #'   If not provided (NULL), method will be taken from the CimpleG object.
+#' Creates the old version of the difference in means by sum of variances plot
+#' @return A list object containing the deconvolution reference matrix
 #' @export
 make_deconv_ref_matrix <- function(
   cpg_obj,

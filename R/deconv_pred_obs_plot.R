@@ -8,6 +8,7 @@
 #' @param sample_id_col A string with the name of the column with the sample name or ID in `deconv_df`.
 #' @param group_col A string with the name of the column containing the cell types or groups in `deconv_df`.
 #' @param axis_lims A list with two entries, `x` and `y`, defining the limits of the x and y axis of the plot.
+#' @return list of ggplot2 objects
 #' @export
 deconv_pred_obs_plot <- function(
   deconv_df,# data.frame with predictions as columns, each row should be a prediction for a given sample and given group/celltype

@@ -16,6 +16,9 @@ save_object(object, file_name, file_format = "lz4")
 Format "lz4" is only available if package \code{archive} is installed.
 Format "zstd"  is not supported anymore as the library now needs to be precompiled with R.}
 }
+\value{
+NULL invisibly
+}
 \description{
 Save an R object to disk with fast and efficient compression algorithms.
 }

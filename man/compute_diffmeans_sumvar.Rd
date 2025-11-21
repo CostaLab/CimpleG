@@ -11,6 +11,9 @@ compute_diffmeans_sumvar(data, target_vector)
 
 \item{target_vector}{boolean vector defining which samples in data are part of the target class}
 }
+\value{
+data.frame with computed difference in means and sum of variances for target comparison (target v others)
+}
 \description{
 Compute diff mean sum var dataframe
 }

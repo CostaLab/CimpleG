@@ -16,6 +16,9 @@ Last column of `new_data` should have the target/class labels coded as 0 or 1.}
 
 \item{class_labels}{Class labels of new data if these are not provided directly with it.}
 }
+\value{
+prediction object, list with an entry for each signature
+}
 \description{
 Predict outcome from a CimpleG signatures on new data
 }

@@ -11,6 +11,9 @@ darken(color, factor = 0.5)
 
 \item{factor}{Multiplicative factor by which `color` will be darkened down}
 }
+\value{
+a character value, hex color code of the darkened color provided
+}
 \description{
 Helper function to darken down a given color.
 }

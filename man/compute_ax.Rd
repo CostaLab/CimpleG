@@ -13,6 +13,9 @@ compute_ax(dm, sv, p)
 
 \item{p, }{even number, the greater 'p' is the more importance will be given to sigma}
 }
+\value{
+numeric value, score used for feature selection
+}
 \description{
 Feature selection function used in the sigma delta space
 }

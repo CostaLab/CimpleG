@@ -11,6 +11,9 @@ load_object(file_name)
 to be loaded. Files saved with \code{CimpleG::save_object} and \code{base::saveRDS}
 files are supported.}
 }
+\value{
+the loaded R object
+}
 \description{
 Load an R object saved with CimpleG or an RDS file.
 }

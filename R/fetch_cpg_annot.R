@@ -10,7 +10,7 @@
 #' @return A table with the annotated CpGs in the same order as the provided signatures.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library("CimpleG")
 #'
 #' # read data

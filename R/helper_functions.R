@@ -148,6 +148,7 @@ do_cv <- function(
 #' @param final_model Model to be tested.
 #' @param method Method used to train model.
 #' @param verbose How verbose the logs should be.
+#' @return a data.frame with the evaluation statistics
 #' @export
 eval_test_data <- function(
   test_data,
@@ -247,7 +248,6 @@ eval_test <- function(
   dt_dmsv <- merge(train_results, rbind(hypo_aupr, hyper_aupr), by = "id")
   data.table::setnames(dt_dmsv, "validation_aupr", "validation_mean_aupr")
   data.table::setnames(dt_dmsv, "train_aupr", "train_mean_aupr")
-  #   dt_dmsv[, stat_origin := NULL]
   data.table::setkeyv(dt_dmsv, "train_rank")
 
   return(dt_dmsv)
@@ -260,6 +260,7 @@ eval_test <- function(
 #' @param new_data Data to be predicted, samples should be in rows and features in columns.
 #'  Last column of `new_data` should have the target/class labels coded as 0 or 1.
 #' @param class_labels Class labels of new data if these are not provided directly with it.
+#' @return prediction object, list with an entry for each signature
 #' @importFrom stats predict
 #' @export
 predict.CimpleG <- function(
@@ -1174,6 +1175,7 @@ select_features <- function(x, y, a) {
 #' @param dm, delta (difference in mean values)
 #' @param sv, sigma (sum of variance values)
 #' @param p, even number, the greater 'p' is the more importance will be given to sigma
+#' @return numeric value, score used for feature selection
 #' @export
 compute_ax <- function(dm, sv, p){
   return(sv / (dm ** p))
@@ -1370,6 +1372,7 @@ make_train_test_split <- function(
 #' Compute diff mean sum var dataframe
 #' @param data Matrix with beta values that will be used to compute diffmeans sumvar data frame
 #' @param target_vector boolean vector defining which samples in data are part of the target class
+#' @return data.frame with computed difference in means and sum of variances for target comparison (target v others)
 #' @export
 compute_diffmeans_sumvar <- function(data, target_vector) {
 

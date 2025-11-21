@@ -27,15 +27,16 @@ A table with the annotated CpGs in the same order as the provided signatures.
 Get CpG annotation from Illumina
 }
 \examples{
+\donttest{
 library("CimpleG")
 
 # read data
 signatures <- c("cg14501977", "cg24548498")
 
-# Get signature annotation 
+# Get signature annotation
 signature_annotation <- get_cpg_annotation(signatures)
 
 # check signature annotation
 signature_annotation
-
+}
 }

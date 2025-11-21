@@ -2,10 +2,7 @@
 % Please edit documentation in R/plot.R
 \name{diffmeans_sumvariance_plot}
 \alias{diffmeans_sumvariance_plot}
-\title{Represent CpGs in the difference in means, sum of variances space.
-This plot is often used to select CpGs that would be good classifiers.
-These CpGs are often located on the bottom left and
-bottom right of this plot.}
+\title{Creates the old version of the difference in means by sum of variances plot}
 \usage{
 diffmeans_sumvariance_plot(
   data,
