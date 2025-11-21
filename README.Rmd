@@ -32,9 +32,9 @@ devtools::install_github("costalab/CimpleG")
 #  - ie navigating through your system
 install.packages(file.choose(), repos = NULL, type = "source")
 #  - ie given a path to a local source
-install.packages("~/Downloads/CimpleG_0.0.5.XXXX.tar.gz", repos = NULL, type = "source")
+install.packages("~/Downloads/CimpleG_1.0.0.XXXX.tar.gz", repos = NULL, type = "source")
 # or
-devtools::install_local("~/Downloads/CimpleG_0.0.5.XXXX.tar.gz")
+devtools::install_local("~/Downloads/CimpleG_1.0.0.XXXX.tar.gz")
 ```
 
 ## Getting started
