@@ -23,7 +23,7 @@ diffmeans_sumvariance_plot(
   feats_to_highlight = NULL,
   cpg_ranking_df = NULL,
   color_all_points = NULL,
-  plot_density = TRUE,
+  pltDensity = TRUE,
   density_type = c("density", "histogram", "boxplot", "violin", "densigram"),
   plot_dir = NULL,
   id_tag = NULL,
@@ -82,59 +82,47 @@ diffmeans_sumvariance_plot(
 
 - threshold_func:
 
-  specification of the parabola function, see examples
+  TODO
 
 - func_factor:
 
-  argument to be passed to the parabola function, see examples
+  TODO
 
 - feats_to_highlight:
 
-  features (CpGs) to be highlighted in the plot
+  TODO
 
 - cpg_ranking_df:
 
-  data.frame with ranked features (CpGs) to be highlighted in the plot,
-  if present must have the following columns: .id, predType, Rank and
-  DiffAndFoldScaledAUPR
+  TODO
 
 - color_all_points:
 
-  color that all non-highlighted points should have, argument defaults
-  to NULL, the default color is black
+  TODO
 
-- plot_density:
+- pltDensity:
 
-  A boolean, if TRUE (default) the function will produce density plots
-  on top/side of scatterplot
+  TODO
 
 - density_type:
 
-  One of "density", "histogram", "boxplot", "violin" or "densigram".
-  Defines the type of density plot if \`plot_density = TRUE\`
+  TODO
 
 - plot_dir:
 
-  path to directory where to save the plot. If NULL (default), plot will
-  not be saved.
+  TODO
 
 - id_tag:
 
-  character string to identify plots, is displayed in the plot and
-  present in the file name
+  TODO
 
 - file_tag:
 
-  character string to identify plots, tags only the file name
+  TODO
 
 - custom_mods:
 
-  a boolean, if TRUE will add some custom labels to the plot. Default is
-  FALSE
-
-## Value
-
-a `ggplot2` object with the dmsv plot.
+  TODO
 
 ## Examples
 

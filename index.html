@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>A Method to Identify Single CpG Sites for Classification and Deconvolution • CimpleG</title>
+<title>A Package to Identify Single CpG Sites for Classification and Deconvolution • CimpleG</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -15,7 +15,7 @@
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="A Method to Identify Single CpG Sites for Classification and Deconvolution">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="A Package to Identify Single CpG Sites for Classification and Deconvolution">
 <meta name="description" content="DNA methylation signatures are usually based on multivariate approaches that require hundreds of sites for predictions. CimpleG is a method for the detection of small CpG methylation signatures used for cell-type classification and deconvolution. CimpleG is time efficient and performs as well as top performing methods for cell-type classification of blood cells and other somatic cells, while basing its prediction on a single DNA methylation site per cell type (but users can also select more sites if they so wish). Users can train cell type classifiers (CimpleG based, and others) and directly apply these in a deconvolution of cell mixes context. Altogether, CimpleG provides a complete computational framework for the delineation of DNAm signatures and cellular deconvolution. For more details see Maié et al. (2023) &lt;doi:10.1186/s13059-023-03000-0&gt;.">
 <meta property="og:description" content="DNA methylation signatures are usually based on multivariate approaches that require hundreds of sites for predictions. CimpleG is a method for the detection of small CpG methylation signatures used for cell-type classification and deconvolution. CimpleG is time efficient and performs as well as top performing methods for cell-type classification of blood cells and other somatic cells, while basing its prediction on a single DNA methylation site per cell type (but users can also select more sites if they so wish). Users can train cell type classifiers (CimpleG based, and others) and directly apply these in a deconvolution of cell mixes context. Altogether, CimpleG provides a complete computational framework for the delineation of DNAm signatures and cellular deconvolution. For more details see Maié et al. (2023) &lt;doi:10.1186/s13059-023-03000-0&gt;.">
 <meta property="og:image" content="https://costalab.github.io/CimpleG/logo.png">
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">CimpleG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.0000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,7 +67,7 @@
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
 <p>CimpleG, an R package to find (small) CpG signatures.</p>
-<p><a href="https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://github.com/CostaLab/CimpleG" class="external-link"><img src="https://img.shields.io/badge/devel%20version-1.0.0-green.svg"></a> <a href="https://doi.org/10.1186/s13059-023-03000-0" class="external-link"><img src="https://img.shields.io/badge/doi-10.1186/s13059--023--03000--0-blue.svg"></a></p>
+<p><a href="https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://github.com/CostaLab/CimpleG" class="external-link"><img src="https://img.shields.io/badge/devel%20version-1.0.0.0000-green.svg"></a> <a href="https://doi.org/10.1186/s13059-023-03000-0" class="external-link"><img src="https://img.shields.io/badge/doi-10.1186/s13059--023--03000--0-blue.svg"></a></p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -271,10 +271,10 @@
 <span>    <span class="st">"fibroblasts"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.265 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.263 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.245 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.236 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.297 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.335 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.279 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.278 sec elapsed</span></span>
 <span></span>
 <span><span class="va">deconv_hyper</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
 <span>  cpg_obj <span class="op">=</span> <span class="va">cimpleg_hyper</span>,</span>
@@ -297,10 +297,10 @@
 <span>    <span class="st">"fibroblasts"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.352 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.292 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.298 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.34 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.386 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.33 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.318 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.369 sec elapsed</span></span>
 <span></span>
 <span><span class="va">deconv_3sigs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
 <span>  cpg_obj <span class="op">=</span> <span class="va">cimpleg_3sigs</span>,</span>
