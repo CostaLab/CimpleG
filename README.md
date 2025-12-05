@@ -8,7 +8,7 @@
 CimpleG, an R package to find (small) CpG signatures.
 
 [![R-CMD-check](https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml)
-[![](https://img.shields.io/badge/devel%20version-1.0.0-green.svg)](https://github.com/CostaLab/CimpleG)
+[![](https://img.shields.io/badge/devel%20version-1.0.1-green.svg)](https://github.com/CostaLab/CimpleG)
 [![](https://img.shields.io/badge/doi-10.1186/s13059--023--03000--0-blue.svg)](https://doi.org/10.1186/s13059-023-03000-0)
 
 ## Installation
@@ -254,10 +254,10 @@ cimpleg_hyper <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.259 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.256 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.281 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.265 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.251 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.253 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.29 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.268 sec elapsed
 
 deconv_hyper <- run_deconvolution(
   cpg_obj = cimpleg_hyper,
@@ -280,10 +280,10 @@ cimpleg_3sigs <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.31 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.301 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.352 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.31 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.315 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.296 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.349 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.307 sec elapsed
 
 deconv_3sigs <- run_deconvolution(
   cpg_obj = cimpleg_3sigs,

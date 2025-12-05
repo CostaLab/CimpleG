@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>CimpleG - Individual/Single CpG sites For Classification and Deconvolution • CimpleG</title>
+<title>A Method to Identify Single CpG Sites for Classification and Deconvolution • CimpleG</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
@@ -14,9 +14,9 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="CimpleG - Individual/Single CpG sites For Classification and Deconvolution">
-<meta name="description" content="CimpleG is a simple package to find single-CpG based signatures for use in classification and deconvolution.">
-<meta property="og:description" content="CimpleG is a simple package to find single-CpG based signatures for use in classification and deconvolution.">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="A Method to Identify Single CpG Sites for Classification and Deconvolution">
+<meta name="description" content="DNA methylation signatures are usually based on multivariate approaches that require hundreds of sites for predictions. CimpleG is a method for the detection of small CpG methylation signatures used for cell-type classification and deconvolution. CimpleG is time efficient and performs as well as top performing methods for cell-type classification of blood cells and other somatic cells, while basing its prediction on a single DNA methylation site per cell type (but users can also select more sites if they so wish). Users can train cell type classifiers (CimpleG based, and others) and directly apply these in a deconvolution of cell mixes context. Altogether, CimpleG provides a complete computational framework for the delineation of DNAm signatures and cellular deconvolution. For more details see Maié et al. (2023) &lt;doi:10.1186/s13059-023-03000-0&gt;.">
+<meta property="og:description" content="DNA methylation signatures are usually based on multivariate approaches that require hundreds of sites for predictions. CimpleG is a method for the detection of small CpG methylation signatures used for cell-type classification and deconvolution. CimpleG is time efficient and performs as well as top performing methods for cell-type classification of blood cells and other somatic cells, while basing its prediction on a single DNA methylation site per cell type (but users can also select more sites if they so wish). Users can train cell type classifiers (CimpleG based, and others) and directly apply these in a deconvolution of cell mixes context. Altogether, CimpleG provides a complete computational framework for the delineation of DNAm signatures and cellular deconvolution. For more details see Maié et al. (2023) &lt;doi:10.1186/s13059-023-03000-0&gt;.">
 <meta property="og:image" content="https://costalab.github.io/CimpleG/logo.png">
 </head>
 <body>
@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="index.html">CimpleG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.5.9032</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,22 +66,17 @@
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
 <p>CimpleG, an R package to find (small) CpG signatures.</p>
-<p><a href="https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://github.com/CostaLab/CimpleG" class="external-link"><img src="https://img.shields.io/badge/devel%20version-0.0.5.9032-green.svg"></a> <a href="https://doi.org/10.1186/s13059-023-03000-0" class="external-link"><img src="https://img.shields.io/badge/doi-10.1186/s13059--023--03000--0-blue.svg"></a></p>
+<p><a href="https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/CostaLab/CimpleG/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://github.com/CostaLab/CimpleG" class="external-link"><img src="https://img.shields.io/badge/devel%20version-1.0.1-green.svg"></a> <a href="https://doi.org/10.1186/s13059-023-03000-0" class="external-link"><img src="https://img.shields.io/badge/doi-10.1186/s13059--023--03000--0-blue.svg"></a></p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Install directly from github:</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"costalab/CimpleG"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Install from CRAN:</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"CimpleG"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Alternatively, downloading from our release page and installing it from a local source:</span></span>
-<span><span class="co">#  - ie navigating through your system</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"source"</span><span class="op">)</span></span>
-<span><span class="co">#  - ie given a path to a local source</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"~/Downloads/CimpleG_0.0.5.XXXX.tar.gz"</span>, repos <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"source"</span><span class="op">)</span></span>
-<span><span class="co"># or</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_local.html" class="external-link">install_local</a></span><span class="op">(</span><span class="st">"~/Downloads/CimpleG_0.0.5.XXXX.tar.gz"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Install dev version from github:</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"costalab/CimpleG"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
@@ -156,8 +151,7 @@
 <h3 id="plot-generated-signatures">Plot generated signatures<a class="anchor" aria-label="anchor" href="#plot-generated-signatures"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># adjust target names to match signature names</span></span>
+<code class="sourceCode R"><span><span class="co"># adjust target names to match signature names</span></span>
 <span></span>
 <span><span class="co"># check generated signatures</span></span>
 <span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/signature_plot.html">signature_plot</a></span><span class="op">(</span></span>
@@ -174,21 +168,29 @@
 <div class="section level2">
 <h2 id="difference-of-means-vs-sum-of-variances-dmsv-plots">Difference of means vs Sum of variances (dmsv) plots<a class="anchor" aria-label="anchor" href="#difference-of-means-vs-sum-of-variances-dmsv-plots"></a>
 </h2>
+<p>We have two different functions to produce these plots, one with a simpler interface (and arguably cleaner look) than the other. I might unify these interfaces in the future.</p>
 <div class="section level3">
 <h3 id="basic-plot">basic plot<a class="anchor" aria-label="anchor" href="#basic-plot"></a>
 </h3>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dmsv_plot.html">dmsv_plot</a></span><span class="op">(</span></span>
+<span>  dat <span class="op">=</span> <span class="va">train_data</span>,</span>
+<span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">neurons</span> <span class="op">==</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-dmsv_plot1-1.png"><!-- --></p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">train_data</span>,</span>
 <span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">neurons</span> <span class="op">==</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-dmsv_plots-1.png"><!-- --></p>
+<p><img src="reference/figures/README-dmsv_plot2-1.png"><!-- --></p>
 </div>
 <div class="section level3">
 <h3 id="adding-color-highlighting-selected-features">adding color, highlighting selected features<a class="anchor" aria-label="anchor" href="#adding-color-highlighting-selected-features"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df_dmeansvar</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_diffmeans_sumvar.html">compute_diffmeans_sumvar</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">train_data</span>,</span>
 <span>  target_vector <span class="op">=</span> <span class="va">train_targets</span><span class="op">$</span><span class="va">neurons</span> <span class="op">==</span> <span class="fl">1</span></span>
@@ -197,29 +199,47 @@
 <span><span class="va">parab_param</span> <span class="op">&lt;-</span> <span class="fl">.7</span></span>
 <span></span>
 <span><span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">is_selected</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/select_features.html">select_features</a></span><span class="op">(</span></span>
-<span>    x <span class="op">=</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">diff_means</span>,</span>
-<span>    y <span class="op">=</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">sum_variance</span>,</span>
-<span>    a <span class="op">=</span> <span class="va">parab_param</span></span>
+<span>  x <span class="op">=</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">diff_means</span>,</span>
+<span>  y <span class="op">=</span> <span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">sum_variance</span>,</span>
+<span>  a <span class="op">=</span> <span class="va">parab_param</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>With the simpler interface</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dmsv_plot.html">dmsv_plot</a></span><span class="op">(</span></span>
+<span>  dat <span class="op">=</span> <span class="va">df_dmeansvar</span>,</span>
+<span>  label_var1 <span class="op">=</span> <span class="st">"Neurons"</span>,</span>
+<span>  highlight_var <span class="op">=</span> <span class="st">"is_selected"</span>,</span>
+<span>  display_var <span class="op">=</span> <span class="st">"is_selected"</span>,</span>
+<span>  point_color <span class="op">=</span> <span class="st">"purple"</span></span>
 <span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-hl_feats_plt2-1.png"><!-- --></p>
+<p>With the more complex interface</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">df_dmeansvar</span>,</span>
 <span>  label_var1 <span class="op">=</span> <span class="st">"Neurons"</span>,</span>
 <span>  color_all_points <span class="op">=</span> <span class="st">"purple"</span>,</span>
-<span>  threshold_func <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">a</span><span class="op">)</span> <span class="op">(</span><span class="va">a</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span> <span class="op">^</span> <span class="fl">2</span>,</span>
+<span>  threshold_func <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">a</span><span class="op">)</span> <span class="op">(</span><span class="va">a</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>,</span>
 <span>  is_feature_selected_col <span class="op">=</span> <span class="st">"is_selected"</span>,</span>
 <span>  func_factor <span class="op">=</span> <span class="va">parab_param</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-hl_feats_plt-1.png"><!-- --></p>
+<p><img src="reference/figures/README-hl_feats_plt3-1.png"><!-- --></p>
 </div>
 <div class="section level3">
 <h3 id="labeling-specific-features">labeling specific features<a class="anchor" aria-label="anchor" href="#labeling-specific-features"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/diffmeans_sumvariance_plot.html">diffmeans_sumvariance_plot</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">df_dmeansvar</span>,</span>
-<span>  feats_to_highlight <span class="op">=</span> <span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># labeling best signature found by CimpleG</span></span>
+<span><span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">best_neuron_sig</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">df_dmeansvar</span><span class="op">$</span><span class="va">id</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="va">cimpleg_result</span><span class="op">$</span><span class="va">signatures</span><span class="op">[</span><span class="st">"neurons"</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">plt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dmsv_plot.html">dmsv_plot</a></span><span class="op">(</span></span>
+<span>  dat <span class="op">=</span> <span class="va">df_dmeansvar</span>,</span>
+<span>  label_var1 <span class="op">=</span> <span class="st">"Neurons"</span>,</span>
+<span>  highlight_var <span class="op">=</span> <span class="st">"is_selected"</span>,</span>
+<span>  display_var <span class="op">=</span> <span class="st">"best_neuron_sig"</span>,</span>
+<span>  point_color <span class="op">=</span> <span class="st">"red"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-label_feats-1.png"><!-- --></p>
@@ -231,7 +251,7 @@
 <div class="section level3">
 <h3 id="mini-example-with-just-4-signatures">mini example with just 4 signatures<a class="anchor" aria-label="anchor" href="#mini-example-with-just-4-signatures"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">deconv_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
 <span>  cpg_obj <span class="op">=</span> <span class="va">cimpleg_result</span>,</span>
 <span>  new_data <span class="op">=</span> <span class="va">test_data</span></span>
@@ -246,16 +266,19 @@
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">plt</span><span class="op">$</span><span class="va">plot</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-deconv_bar_plt-1.png"><!-- --></p>
 </div>
+</div>
+<div class="section level2">
+<h2 id="benchmarking-example">Benchmarking example<a class="anchor" aria-label="anchor" href="#benchmarking-example"></a>
+</h2>
 <div class="section level3">
-<h3 id="this-example-is-a-little-more-advanced">this example is a little more advanced<a class="anchor" aria-label="anchor" href="#this-example-is-a-little-more-advanced"></a>
+<h3 id="this-example-is-a-little-more-advanced">This example is a little more advanced<a class="anchor" aria-label="anchor" href="#this-example-is-a-little-more-advanced"></a>
 </h3>
 <div class="section level4">
 <h4 id="first-lets-create-additional-deconvolution-results-so-that-we-can-compare-them">first lets create additional deconvolution results so that we can compare them<a class="anchor" aria-label="anchor" href="#first-lets-create-additional-deconvolution-results-so-that-we-can-compare-them"></a>
 </h4>
-<p>In this example, we’ll create two additional models made with CimpleG. One using only hypermethylated signatures, and the other using 3 CpGs per signature instead of just one.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
+<p>In this example, we’ll create two additional models made with CimpleG. One using only hypermethylated signatures, and the other using 3 CpGs per signature instead of just one. Then we will benchmark them against eachother. This is similar to the approach that we use in the paper except there we use real data.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">cimpleg_hyper</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/CimpleG.html">CimpleG</a></span><span class="op">(</span></span>
 <span>  train_data <span class="op">=</span> <span class="va">train_data</span>,</span>
 <span>  train_targets <span class="op">=</span> <span class="va">train_targets</span>,</span>
@@ -270,10 +293,10 @@
 <span>    <span class="st">"fibroblasts"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.277 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.303 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.275 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.264 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.251 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.253 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.29 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.268 sec elapsed</span></span>
 <span></span>
 <span><span class="va">deconv_hyper</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
 <span>  cpg_obj <span class="op">=</span> <span class="va">cimpleg_hyper</span>,</span>
@@ -296,34 +319,38 @@
 <span>    <span class="st">"fibroblasts"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.4 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.331 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.337 sec elapsed</span></span>
-<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.385 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'neurons' with 'CimpleG' has finished.: 0.315 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'glia' with 'CimpleG' has finished.: 0.296 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'blood_cells' with 'CimpleG' has finished.: 0.349 sec elapsed</span></span>
+<span><span class="co">#&gt; Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.307 sec elapsed</span></span>
 <span></span>
 <span><span class="va">deconv_3sigs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/run_deconvolution.html">run_deconvolution</a></span><span class="op">(</span></span>
 <span>  cpg_obj <span class="op">=</span> <span class="va">cimpleg_3sigs</span>,</span>
 <span>  new_data <span class="op">=</span> <span class="va">test_data</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4"><h4 id="lets-also-create-some-fake-true-values-just-so-that-we-can-compare-all-the-results">let’s also create some fake true values just so that we can compare all the results<a class="anchor" aria-label="anchor" href="#lets-also-create-some-fake-true-values-just-so-that-we-can-compare-all-the-results"></a>
+<div class="section level4"><h4 id="lets-also-create-some-simulated-true-values-just-so-that-we-can-compare-all-the-results">let’s also create some simulated true values just so that we can compare all the results<a class="anchor" aria-label="anchor" href="#lets-also-create-some-simulated-true-values-just-so-that-we-can-compare-all-the-results"></a>
 </h4></div>
 <div class="section level4">
 <h4 id="remember-this-is-just-an-example-the-results-themselves-are-meaningless">remember this is just an example, the results themselves are meaningless!<a class="anchor" aria-label="anchor" href="#remember-this-is-just-an-example-the-results-themselves-are-meaningless"></a>
 </h4>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">deconv_3sigs</span><span class="op">$</span><span class="va">prop_3sigs</span> <span class="op">&lt;-</span> <span class="va">deconv_3sigs</span><span class="op">$</span><span class="va">proportion</span></span>
 <span><span class="va">deconv_hyper</span><span class="op">$</span><span class="va">prop_hyper</span> <span class="op">&lt;-</span> <span class="va">deconv_hyper</span><span class="op">$</span><span class="va">proportion</span></span>
 <span><span class="va">deconv_result</span><span class="op">$</span><span class="va">prop_cimpleg</span> <span class="op">&lt;-</span> <span class="va">deconv_result</span><span class="op">$</span><span class="va">proportion</span></span>
 <span></span>
 <span><span class="va">dummy_deconvolution_data</span> <span class="op">&lt;-</span></span>
-<span>  <span class="va">deconv_result</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>true_vals <span class="op">=</span> <span class="va">proportion</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">deconv_result</span><span class="op">)</span>, min<span class="op">=</span><span class="op">-</span><span class="fl">0.1</span>,max<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">cell_type</span>,<span class="va">sample_id</span>,<span class="va">prop_cimpleg</span>,<span class="va">true_vals</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">deconv_hyper</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">proportion</span><span class="op">)</span>, by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample_id"</span>,<span class="st">"cell_type"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">deconv_3sigs</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">proportion</span><span class="op">)</span>, by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample_id"</span>,<span class="st">"cell_type"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html" class="external-link">mutate_if</a></span><span class="op">(</span><span class="va">is.numeric</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">x</span><span class="op">&lt;</span><span class="fl">0</span>,<span class="fl">0</span>,<span class="va">x</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html" class="external-link">mutate_if</a></span><span class="op">(</span><span class="va">is.numeric</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">x</span><span class="op">&gt;</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="va">x</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="va">deconv_result</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>true_vals <span class="op">=</span> <span class="va">proportion</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">deconv_result</span><span class="op">)</span>, min <span class="op">=</span> <span class="op">-</span><span class="fl">0.1</span>, max <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">cell_type</span>, <span class="va">sample_id</span>, <span class="va">prop_cimpleg</span>, <span class="va">true_vals</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">deconv_hyper</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">proportion</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample_id"</span>, <span class="st">"cell_type"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">deconv_3sigs</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">proportion</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sample_id"</span>, <span class="st">"cell_type"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html" class="external-link">mutate_if</a></span><span class="op">(</span><span class="va">is.numeric</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;</span> <span class="fl">0</span>, <span class="fl">0</span>, <span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate_all.html" class="external-link">mutate_if</a></span><span class="op">(</span><span class="va">is.numeric</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&gt;</span> <span class="fl">1</span>, <span class="fl">1</span>, <span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4"><h4 id="lets-now-make-use-of-some-plotting-functions-designed-to-compare-deconvolution-results">let’s now make use of some plotting functions designed to compare deconvolution results<a class="anchor" aria-label="anchor" href="#lets-now-make-use-of-some-plotting-functions-designed-to-compare-deconvolution-results"></a>
@@ -331,15 +358,15 @@
 <div class="section level4">
 <h4 id="first-we-can-check-how-the-true-values-compare-against-the-predicted-values">first we can check how the true values compare against the predicted values<a class="anchor" aria-label="anchor" href="#first-we-can-check-how-the-true-values-compare-against-the-predicted-values"></a>
 </h4>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">scatter_plts</span> <span class="op">&lt;-</span> <span class="fu">CimpleG</span><span class="fu">:::</span><span class="fu"><a href="reference/deconv_pred_obs_plot.html">deconv_pred_obs_plot</a></span><span class="op">(</span></span>
 <span>  deconv_df <span class="op">=</span> <span class="va">dummy_deconvolution_data</span>,</span>
 <span>  true_values_col <span class="op">=</span> <span class="st">"true_vals"</span>,</span>
-<span>  predicted_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"prop_cimpleg"</span>,<span class="st">"prop_hyper"</span>,<span class="st">"prop_3sigs"</span><span class="op">)</span>,</span>
+<span>  predicted_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"prop_cimpleg"</span>, <span class="st">"prop_hyper"</span>, <span class="st">"prop_3sigs"</span><span class="op">)</span>,</span>
 <span>  sample_id_col <span class="op">=</span> <span class="st">"sample_id"</span>,</span>
-<span>  group_col<span class="op">=</span> <span class="st">"cell_type"</span></span>
+<span>  group_col <span class="op">=</span> <span class="st">"cell_type"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">scatter_panel</span> <span class="op">&lt;-</span> <span class="va">scatter_plts</span> <span class="op">|&gt;</span> <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span>ncol<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">scatter_panel</span> <span class="op">&lt;-</span> <span class="va">scatter_plts</span> <span class="op">|&gt;</span> <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span>ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">scatter_panel</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-deconv_pred_obs_plt-1.png"><!-- --></p>
@@ -347,16 +374,16 @@
 <div class="section level4">
 <h4 id="now-more-interestingly-we-can-see-in-detail-and-rank-one-of-the-measures-used-to-evaluate-the-deconvolution-results">now, more interestingly, we can see in detail and rank one of the measures used to evaluate the deconvolution results<a class="anchor" aria-label="anchor" href="#now-more-interestingly-we-can-see-in-detail-and-rank-one-of-the-measures-used-to-evaluate-the-deconvolution-results"></a>
 </h4>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rank_plts</span> <span class="op">&lt;-</span> <span class="fu">CimpleG</span><span class="fu">:::</span><span class="fu"><a href="reference/deconv_ranking_plot.html">deconv_ranking_plot</a></span><span class="op">(</span></span>
 <span>  deconv_df <span class="op">=</span> <span class="va">dummy_deconvolution_data</span>,</span>
 <span>  true_values_col <span class="op">=</span> <span class="st">"true_vals"</span>,</span>
-<span>  predicted_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"prop_cimpleg"</span>,<span class="st">"prop_hyper"</span>,<span class="st">"prop_3sigs"</span><span class="op">)</span>,</span>
+<span>  predicted_cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"prop_cimpleg"</span>, <span class="st">"prop_hyper"</span>, <span class="st">"prop_3sigs"</span><span class="op">)</span>,</span>
 <span>  sample_id_col <span class="op">=</span> <span class="st">"sample_id"</span>,</span>
-<span>  group_col<span class="op">=</span> <span class="st">"cell_type"</span>,</span>
+<span>  group_col <span class="op">=</span> <span class="st">"cell_type"</span>,</span>
 <span>  metrics <span class="op">=</span> <span class="st">"rmse"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">rank_panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">rank_plts</span><span class="op">$</span><span class="va">perf_boxplt</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,<span class="va">rank_plts</span><span class="op">$</span><span class="va">nemenyi_plt</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">rank_panel</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">rank_plts</span><span class="op">$</span><span class="va">perf_boxplt</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="va">rank_plts</span><span class="op">$</span><span class="va">nemenyi_plt</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu">patchwork</span><span class="fu">::</span><span class="fu"><a href="https://patchwork.data-imaginist.com/reference/wrap_plots.html" class="external-link">wrap_plots</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rank_panel</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-deconv_rank_plt-1.png"><!-- --></p>
@@ -367,6 +394,7 @@
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li><a href="https://cloud.r-project.org/package=CimpleG" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/CostaLab/CimpleG/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/CostaLab/CimpleG/issues" class="external-link">Report a bug</a></li>
 </ul>

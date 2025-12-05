@@ -2,7 +2,7 @@ Type: Package
 Package: CimpleG
 Title: A Method to Identify Single CpG Sites for Classification and
     Deconvolution
-Version: 1.0.0
+Version: 1.0.1
 Date: 2025-11-21
 Authors@R:
     person("Tiago", "F.V. Maié", , "tiagomaie@hotmail.com", role = c("aut", "cre"))
@@ -33,7 +33,6 @@ Imports:
     butcher,
     caret,
     data.table,
-    devtools,
     dplyr,
     forcats,
     ggExtra,
