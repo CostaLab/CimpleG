@@ -20,7 +20,7 @@ diffmeans_sumvariance_plot(
   feats_to_highlight = NULL,
   cpg_ranking_df = NULL,
   color_all_points = NULL,
-  pltDensity = TRUE,
+  plot_density = TRUE,
   density_type = c("density", "histogram", "boxplot", "violin", "densigram"),
   plot_dir = NULL,
   id_tag = NULL,
@@ -53,27 +53,30 @@ and the sum of variances within the target and others will be calculated.}
 
 \item{var_cutoff}{a numeric draw variance cutoff at given position}
 
-\item{threshold_func}{TODO}
+\item{threshold_func}{specification of the parabola function, see examples}
 
-\item{func_factor}{TODO}
+\item{func_factor}{argument to be passed to the parabola function, see examples}
 
-\item{feats_to_highlight}{TODO}
+\item{feats_to_highlight}{features (CpGs) to be highlighted in the plot}
 
-\item{cpg_ranking_df}{TODO}
+\item{cpg_ranking_df}{data.frame with ranked features (CpGs) to be highlighted in the plot, if present must have the following columns: .id, predType, Rank and DiffAndFoldScaledAUPR}
 
-\item{color_all_points}{TODO}
+\item{color_all_points}{color that all non-highlighted points should have, argument defaults to NULL, the default color is black}
 
-\item{pltDensity}{TODO}
+\item{plot_density}{A boolean, if TRUE (default) the function will produce density plots on top/side of scatterplot}
 
-\item{density_type}{TODO}
+\item{density_type}{One of "density", "histogram", "boxplot", "violin" or "densigram". Defines the type of density plot if `plot_density = TRUE`}
 
-\item{plot_dir}{TODO}
+\item{plot_dir}{path to directory where to save the plot. If NULL (default), plot will not be saved.}
 
-\item{id_tag}{TODO}
+\item{id_tag}{character string to identify plots, is displayed in the plot and present in the file name}
 
-\item{file_tag}{TODO}
+\item{file_tag}{character string to identify plots, tags only the file name}
 
-\item{custom_mods}{TODO}
+\item{custom_mods}{a boolean, if TRUE will add some custom labels to the plot. Default is FALSE}
+}
+\value{
+a \code{ggplot2} object with the dmsv plot.
 }
 \description{
 Represent CpGs in the difference in means, sum of variances space.

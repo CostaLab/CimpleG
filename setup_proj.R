@@ -14,8 +14,8 @@ usethis::use_build_ignore(c(
 ))
 
 # vignettes
-usethis::use_vignette("generate-signatures","Generate signatures")
-usethis::use_vignette("save_load_objects","Quickly save and load (large) objects")
+usethis::use_vignette("generate-signatures", "Generate signatures")
+usethis::use_vignette("save_load_objects", "Quickly save and load (large) objects")
 
 # misc
 # usethis::use_citation()
@@ -87,10 +87,14 @@ usethis::use_package("biomaRt",import_tag)
 usethis::use_package("spelling",import_tag)
 
 # remotes
-usethis::use_dev_package("Biobase", import_tag, "Biobase")
-usethis::use_dev_package("SummarizedExperiment", import_tag, remote="SummarizedExperiment")
-usethis::use_dev_package("minfi", import_tag, remote="minfi")
-usethis::use_dev_package("EpiDISH", import_tag, "EpiDISH")
+# usethis::use_dev_package("Biobase", import_tag, "Biobase")
+# usethis::use_dev_package("SummarizedExperiment", import_tag, remote="SummarizedExperiment")
+# usethis::use_dev_package("minfi", import_tag, remote="minfi")
+# usethis::use_dev_package("EpiDISH", import_tag, "EpiDISH")
+usethis::use_package("Biobase", import_tag)
+usethis::use_package("SummarizedExperiment", import_tag)
+usethis::use_package("minfi", import_tag)
+usethis::use_package("EpiDISH", import_tag)
 
 # import from
 usethis::use_package_doc()

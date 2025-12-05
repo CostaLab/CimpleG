@@ -22,18 +22,18 @@
 #' @param target_vector if not NULL a vector target class assignment, see data
 #' @param mean_cutoff a numeric draw mean cutoff at given position
 #' @param var_cutoff a numeric draw variance cutoff at given position
-#' @param threshold_func TODO
-#' @param func_factor TODO
-#' @param feats_to_highlight TODO
-#' @param cpg_ranking_df TODO
-#' @param color_all_points TODO
-#' @param pltDensity TODO
-#' @param density_type TODO
-#' @param plot_dir TODO
-#' @param id_tag TODO
-#' @param file_tag TODO
-#' @param custom_mods TODO
-#'
+#' @param threshold_func specification of the parabola function, see examples
+#' @param func_factor argument to be passed to the parabola function, see examples
+#' @param feats_to_highlight features (CpGs) to be highlighted in the plot
+#' @param cpg_ranking_df data.frame with ranked features (CpGs) to be highlighted in the plot, if present must have the following columns: .id, predType, Rank and DiffAndFoldScaledAUPR
+#' @param color_all_points color that all non-highlighted points should have, argument defaults to NULL, the default color is black
+#' @param plot_density A boolean, if TRUE (default) the function will produce density plots on top/side of scatterplot
+#' @param density_type One of "density", "histogram", "boxplot", "violin" or "densigram". Defines the type of density plot if `plot_density = TRUE`
+#' @param plot_dir path to directory where to save the plot. If NULL (default), plot will not be saved.
+#' @param id_tag character string to identify plots, is displayed in the plot and present in the file name
+#' @param file_tag character string to identify plots, tags only the file name
+#' @param custom_mods a boolean, if TRUE will add some custom labels to the plot. Default is FALSE 
+#' @return a \code{ggplot2} object with the dmsv plot.
 #'
 #' @examples
 #' library("CimpleG")
@@ -88,7 +88,7 @@ diffmeans_sumvariance_plot <- function(
   feats_to_highlight = NULL,
   cpg_ranking_df = NULL,
   color_all_points = NULL,
-  pltDensity = TRUE,
+  plot_density = TRUE,
   density_type = c("density", "histogram", "boxplot", "violin", "densigram"),
   plot_dir = NULL,
   id_tag = NULL,
@@ -438,7 +438,7 @@ diffmeans_sumvariance_plot <- function(
     ggplot2::xlim(c(-1,1))+
     ggplot2::ylim(c(0,ymaxlim))
 
-  if(pltDensity){
+  if(plot_density){
     if(requireNamespace("ggExtra",quietly = TRUE)){
       plt_diffMeanSumVar <- ggExtra::ggMarginal(
         p=plt_diffMeanSumVar,
@@ -460,7 +460,7 @@ diffmeans_sumvariance_plot <- function(
         type=density_type,
         size=10)
     }else{
-      warning("You need to install the package `ggExtra` to use the pltDensity feature.")
+      warning("You need to install the package `ggExtra` to use the plot_density feature.")
     }
   }
 
