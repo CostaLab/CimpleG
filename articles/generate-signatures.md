@@ -25,9 +25,9 @@ We load the CimpleG package.
 
 ``` r
 library("CimpleG")
-#> --------------------------
-#> CimpleG version 1.0.0.0000
-#> --------------------------
+#> ---------------------
+#> CimpleG version 1.0.0
+#> ---------------------
 ```
 
 ### Loading data
@@ -57,8 +57,8 @@ cimpleg_result <- CimpleG(
   target_columns = c("blood_cells", "hepatocytes"),
   train_only = TRUE
 )
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 2.047 sec elapsed
-#> Training for target 'hepatocytes' with 'CimpleG' has finished.: 0.738 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 2.001 sec elapsed
+#> Training for target 'hepatocytes' with 'CimpleG' has finished.: 0.728 sec elapsed
 ```
 
 Here we are generating signatures to find leukocytes and hepatocytes.

@@ -13,7 +13,7 @@ bottom right of this plot."><meta property="og:image" content="https://costalab.
 
     <a class="navbar-brand me-2" href="../index.html">CimpleG</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0.0000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ bottom right of this plot."><meta property="og:image" content="https://costalab.
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Creates the old version of the difference in means by sum of variances plot</h1>
-      <small class="dont-index">Source: <a href="https://github.com/CostaLab/CimpleG/blob/v1.0.0/R/plot.R" class="external-link"><code>R/plot.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/CostaLab/CimpleG/blob/main/R/plot.R" class="external-link"><code>R/plot.R</code></a></small>
       <div class="d-none name"><code>diffmeans_sumvariance_plot.Rd</code></div>
     </div>
 
@@ -67,7 +67,7 @@ bottom right of this plot.</p>
 <span>  feats_to_highlight <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cpg_ranking_df <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  color_all_points <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  pltDensity <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  plot_density <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  density_type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"density"</span>, <span class="st">"histogram"</span>, <span class="st">"boxplot"</span>, <span class="st">"violin"</span>, <span class="st">"densigram"</span><span class="op">)</span>,</span>
 <span>  plot_dir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  id_tag <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -125,49 +125,53 @@ and the sum of variances within the target and others will be calculated.</p></d
 
 
 <dt id="arg-threshold-func">threshold_func<a class="anchor" aria-label="anchor" href="#arg-threshold-func"></a></dt>
-<dd><p>TODO</p></dd>
+<dd><p>specification of the parabola function, see examples</p></dd>
 
 
 <dt id="arg-func-factor">func_factor<a class="anchor" aria-label="anchor" href="#arg-func-factor"></a></dt>
-<dd><p>TODO</p></dd>
+<dd><p>argument to be passed to the parabola function, see examples</p></dd>
 
 
 <dt id="arg-feats-to-highlight">feats_to_highlight<a class="anchor" aria-label="anchor" href="#arg-feats-to-highlight"></a></dt>
-<dd><p>TODO</p></dd>
+<dd><p>features (CpGs) to be highlighted in the plot</p></dd>
 
 
 <dt id="arg-cpg-ranking-df">cpg_ranking_df<a class="anchor" aria-label="anchor" href="#arg-cpg-ranking-df"></a></dt>
-<dd><p>TODO</p></dd>
+<dd><p>data.frame with ranked features (CpGs) to be highlighted in the plot, if present must have the following columns: .id, predType, Rank and DiffAndFoldScaledAUPR</p></dd>
 
 
 <dt id="arg-color-all-points">color_all_points<a class="anchor" aria-label="anchor" href="#arg-color-all-points"></a></dt>
-<dd><p>TODO</p></dd>
+<dd><p>color that all non-highlighted points should have, argument defaults to NULL, the default color is black</p></dd>
 
 
-<dt id="arg-pltdensity">pltDensity<a class="anchor" aria-label="anchor" href="#arg-pltdensity"></a></dt>
-<dd><p>TODO</p></dd>
+<dt id="arg-plot-density">plot_density<a class="anchor" aria-label="anchor" href="#arg-plot-density"></a></dt>
+<dd><p>A boolean, if TRUE (default) the function will produce density plots on top/side of scatterplot</p></dd>
 
 
 <dt id="arg-density-type">density_type<a class="anchor" aria-label="anchor" href="#arg-density-type"></a></dt>
-<dd><p>TODO</p></dd>
+<dd><p>One of "density", "histogram", "boxplot", "violin" or "densigram". Defines the type of density plot if `plot_density = TRUE`</p></dd>
 
 
 <dt id="arg-plot-dir">plot_dir<a class="anchor" aria-label="anchor" href="#arg-plot-dir"></a></dt>
-<dd><p>TODO</p></dd>
+<dd><p>path to directory where to save the plot. If NULL (default), plot will not be saved.</p></dd>
 
 
 <dt id="arg-id-tag">id_tag<a class="anchor" aria-label="anchor" href="#arg-id-tag"></a></dt>
-<dd><p>TODO</p></dd>
+<dd><p>character string to identify plots, is displayed in the plot and present in the file name</p></dd>
 
 
 <dt id="arg-file-tag">file_tag<a class="anchor" aria-label="anchor" href="#arg-file-tag"></a></dt>
-<dd><p>TODO</p></dd>
+<dd><p>character string to identify plots, tags only the file name</p></dd>
 
 
 <dt id="arg-custom-mods">custom_mods<a class="anchor" aria-label="anchor" href="#arg-custom-mods"></a></dt>
-<dd><p>TODO</p></dd>
+<dd><p>a boolean, if TRUE will add some custom labels to the plot. Default is FALSE</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>a <code>ggplot2</code> object with the dmsv plot.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
