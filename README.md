@@ -14,16 +14,11 @@ CimpleG, an R package to find (small) CpG signatures.
 ## Installation
 
 ``` r
-# Install directly from github:
-devtools::install_github("costalab/CimpleG")
+# Install from CRAN:
+install.packages("CimpleG")
 
-# Alternatively, downloading from our release page and installing it from a local source:
-#  - ie navigating through your system
-install.packages(file.choose(), repos = NULL, type = "source")
-#  - ie given a path to a local source
-install.packages("~/Downloads/CimpleG_1.0.0.XXXX.tar.gz", repos = NULL, type = "source")
-# or
-devtools::install_local("~/Downloads/CimpleG_1.0.0.XXXX.tar.gz")
+# Install dev version from github:
+devtools::install_github("costalab/CimpleG")
 ```
 
 ## Getting started
@@ -101,7 +96,6 @@ signature_annotation
 ### Plot generated signatures
 
 ``` r
-
 # adjust target names to match signature names
 
 # check generated signatures
@@ -119,7 +113,21 @@ print(plt$plot)
 
 ## Difference of means vs Sum of variances (dmsv) plots
 
+We have two different functions to produce these plots, one with a
+simpler interface (and arguably cleaner look) than the other. I might
+unify these interfaces in the future.
+
 ### basic plot
+
+``` r
+plt <- dmsv_plot(
+  dat = train_data,
+  target_vector = train_targets$neurons == 1
+)
+print(plt)
+```
+
+![](man/figures/README-dmsv_plot1-1.png)<!-- -->
 
 ``` r
 plt <- diffmeans_sumvariance_plot(
@@ -129,7 +137,7 @@ plt <- diffmeans_sumvariance_plot(
 print(plt)
 ```
 
-![](man/figures/README-dmsv_plots-1.png)<!-- -->
+![](man/figures/README-dmsv_plot2-1.png)<!-- -->
 
 ### adding color, highlighting selected features
 
@@ -142,30 +150,55 @@ df_dmeansvar <- compute_diffmeans_sumvar(
 parab_param <- .7
 
 df_dmeansvar$is_selected <- select_features(
-    x = df_dmeansvar$diff_means,
-    y = df_dmeansvar$sum_variance,
-    a = parab_param
+  x = df_dmeansvar$diff_means,
+  y = df_dmeansvar$sum_variance,
+  a = parab_param
 )
+```
 
+With the simpler interface
+
+``` r
+plt <- dmsv_plot(
+  dat = df_dmeansvar,
+  label_var1 = "Neurons",
+  highlight_var = "is_selected",
+  display_var = "is_selected",
+  point_color = "purple"
+)
+print(plt)
+```
+
+![](man/figures/README-hl_feats_plt2-1.png)<!-- -->
+
+With the more complex interface
+
+``` r
 plt <- diffmeans_sumvariance_plot(
   data = df_dmeansvar,
   label_var1 = "Neurons",
   color_all_points = "purple",
-  threshold_func = function(x, a) (a * x) ^ 2,
+  threshold_func = function(x, a) (a * x)^2,
   is_feature_selected_col = "is_selected",
   func_factor = parab_param
 )
 print(plt)
 ```
 
-![](man/figures/README-hl_feats_plt-1.png)<!-- -->
+![](man/figures/README-hl_feats_plt3-1.png)<!-- -->
 
 ### labeling specific features
 
 ``` r
-plt <- diffmeans_sumvariance_plot(
-  data = df_dmeansvar,
-  feats_to_highlight = cimpleg_result$signatures
+# labeling best signature found by CimpleG
+df_dmeansvar$best_neuron_sig <- (df_dmeansvar$id %in% cimpleg_result$signatures["neurons"])
+
+plt <- dmsv_plot(
+  dat = df_dmeansvar,
+  label_var1 = "Neurons",
+  highlight_var = "is_selected",
+  display_var = "best_neuron_sig",
+  point_color = "red"
 )
 print(plt)
 ```
@@ -193,16 +226,19 @@ print(plt$plot)
 
 ![](man/figures/README-deconv_bar_plt-1.png)<!-- -->
 
-### this example is a little more advanced
+## Benchmarking example
+
+### This example is a little more advanced
 
 #### first lets create additional deconvolution results so that we can compare them
 
 In this example, we’ll create two additional models made with CimpleG.
 One using only hypermethylated signatures, and the other using 3 CpGs
-per signature instead of just one.
+per signature instead of just one. Then we will benchmark them against
+eachother. This is similar to the approach that we use in the paper
+except there we use real data.
 
 ``` r
-
 set.seed(42)
 cimpleg_hyper <- CimpleG(
   train_data = train_data,
@@ -218,10 +254,10 @@ cimpleg_hyper <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.265 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.263 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.245 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.236 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.259 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.256 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.281 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.265 sec elapsed
 
 deconv_hyper <- run_deconvolution(
   cpg_obj = cimpleg_hyper,
@@ -244,10 +280,10 @@ cimpleg_3sigs <- CimpleG(
     "fibroblasts"
   )
 )
-#> Training for target 'neurons' with 'CimpleG' has finished.: 0.352 sec elapsed
-#> Training for target 'glia' with 'CimpleG' has finished.: 0.292 sec elapsed
-#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.298 sec elapsed
-#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.34 sec elapsed
+#> Training for target 'neurons' with 'CimpleG' has finished.: 0.31 sec elapsed
+#> Training for target 'glia' with 'CimpleG' has finished.: 0.301 sec elapsed
+#> Training for target 'blood_cells' with 'CimpleG' has finished.: 0.352 sec elapsed
+#> Training for target 'fibroblasts' with 'CimpleG' has finished.: 0.31 sec elapsed
 
 deconv_3sigs <- run_deconvolution(
   cpg_obj = cimpleg_3sigs,
@@ -255,7 +291,7 @@ deconv_3sigs <- run_deconvolution(
 )
 ```
 
-#### let’s also create some fake true values just so that we can compare all the results
+#### let’s also create some simulated true values just so that we can compare all the results
 
 #### remember this is just an example, the results themselves are meaningless\!
 
@@ -265,13 +301,17 @@ deconv_hyper$prop_hyper <- deconv_hyper$proportion
 deconv_result$prop_cimpleg <- deconv_result$proportion
 
 dummy_deconvolution_data <-
-  deconv_result |> 
-  dplyr::mutate(true_vals = proportion + runif(nrow(deconv_result), min=-0.1,max=0.1)) |>
-  dplyr::select(cell_type,sample_id,prop_cimpleg,true_vals) |>
-  dplyr::left_join(deconv_hyper |> dplyr::select(-proportion), by=c("sample_id","cell_type")) |>
-  dplyr::left_join(deconv_3sigs |> dplyr::select(-proportion), by=c("sample_id","cell_type")) |>
-  dplyr::mutate_if(is.numeric, function(x){ifelse(x<0,0,x)}) |>
-  dplyr::mutate_if(is.numeric, function(x){ifelse(x>1,1,x)}) |> 
+  deconv_result |>
+  dplyr::mutate(true_vals = proportion + runif(nrow(deconv_result), min = -0.1, max = 0.1)) |>
+  dplyr::select(cell_type, sample_id, prop_cimpleg, true_vals) |>
+  dplyr::left_join(deconv_hyper |> dplyr::select(-proportion), by = c("sample_id", "cell_type")) |>
+  dplyr::left_join(deconv_3sigs |> dplyr::select(-proportion), by = c("sample_id", "cell_type")) |>
+  dplyr::mutate_if(is.numeric, function(x) {
+    ifelse(x < 0, 0, x)
+  }) |>
+  dplyr::mutate_if(is.numeric, function(x) {
+    ifelse(x > 1, 1, x)
+  }) |>
   tibble::as_tibble()
 ```
 
@@ -283,11 +323,11 @@ dummy_deconvolution_data <-
 scatter_plts <- CimpleG:::deconv_pred_obs_plot(
   deconv_df = dummy_deconvolution_data,
   true_values_col = "true_vals",
-  predicted_cols = c("prop_cimpleg","prop_hyper","prop_3sigs"),
+  predicted_cols = c("prop_cimpleg", "prop_hyper", "prop_3sigs"),
   sample_id_col = "sample_id",
-  group_col= "cell_type"
+  group_col = "cell_type"
 )
-scatter_panel <- scatter_plts |> patchwork::wrap_plots(ncol=1)
+scatter_panel <- scatter_plts |> patchwork::wrap_plots(ncol = 1)
 
 print(scatter_panel)
 ```
@@ -300,12 +340,12 @@ print(scatter_panel)
 rank_plts <- CimpleG:::deconv_ranking_plot(
   deconv_df = dummy_deconvolution_data,
   true_values_col = "true_vals",
-  predicted_cols = c("prop_cimpleg","prop_hyper","prop_3sigs"),
+  predicted_cols = c("prop_cimpleg", "prop_hyper", "prop_3sigs"),
   sample_id_col = "sample_id",
-  group_col= "cell_type",
+  group_col = "cell_type",
   metrics = "rmse"
 )
-rank_panel <- list(rank_plts$perf_boxplt[[1]],rank_plts$nemenyi_plt[[1]]) |> patchwork::wrap_plots()
+rank_panel <- list(rank_plts$perf_boxplt[[1]], rank_plts$nemenyi_plt[[1]]) |> patchwork::wrap_plots()
 
 print(rank_panel)
 ```
