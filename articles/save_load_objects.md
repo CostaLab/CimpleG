@@ -14,9 +14,9 @@ We load the CimpleG package.
 
 ``` r
 library("CimpleG")
-#> --------------------------
-#> CimpleG version 1.0.0.0000
-#> --------------------------
+#> ---------------------
+#> CimpleG version 1.0.0
+#> ---------------------
 ```
 
 ### Saving an object
